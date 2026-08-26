@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="MotelLease.Api/MotelLease.Api.csproj" />
+  <Project Path="MotelLease.Application/MotelLease.Application.csproj" />
+  <Project Path="MotelLease.Domain/MotelLease.Domain.csproj" />
+  <Project Path="MotelLease.Infrastructure/MotelLease.Infrastructure.csproj" />
+  <Project Path="MotelLease.Tests/MotelLease.Tests.csproj" />
+</Solution>
