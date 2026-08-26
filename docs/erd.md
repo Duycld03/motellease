@@ -215,16 +215,33 @@ Index: unique `(BoardingHouseId, Year, Month)` (cần cho `REFRESH ... CONCURREN
 
 ## 8. Ghi chú migration
 
-1. Migration đầu tiên phải bật extension trước mọi bảng:
-   `modelBuilder.HasPostgresExtension("postgis")` và `HasPostgresExtension("pgcrypto")` (cho `gen_random_uuid()`).
+> Toàn bộ mục này đã **kiểm chứng thật** trên `postgis/postgis:17-3.5`
+> (PostgreSQL 17.5, PostGIS 3.5.2) — xem `docs/verification/erd-check.sql`.
+
+1. Migration đầu tiên bật extension trước mọi bảng: `modelBuilder.HasPostgresExtension("postgis")`.
+   **Không cần `pgcrypto`**: `gen_random_uuid()` đã nằm trong core PostgreSQL từ bản 13,
+   đã test chạy được khi chưa cài extension nào.
 2. `BoardingHouses.Location` khai bằng
    `.HasComputedColumnSql("ST_SetSRID(ST_MakePoint(\"Longitude\", \"Latitude\"), 4326)::geography", stored: true)`
-   → seed chỉ cần nhập `Latitude`/`Longitude`, xem `seed-plan.md`.
+   → seed chỉ cần nhập `Latitude`/`Longitude`, xem `seed-plan.md`. Đã kiểm:
+   - `ST_MakePoint` nhận trực tiếp cột `decimal(9,6)`, **không cần cast** sang `double precision`
+   - Sửa `Latitude`/`Longitude` thì `Location` tự cập nhật theo
+   - Ghi thẳng vào `Location` bị PostgreSQL từ chối
+     (`column "Location" can only be updated to DEFAULT`) → property này phải map
+     `.ValueGeneratedOnAddOrUpdate()` và không bao giờ nằm trong `INSERT`/`UPDATE` của EF
+   - `ST_DWithin` trên 5.000 bản ghi dùng **Bitmap Index Scan** trên index GiST
+     (`Location && _st_expand(...)`), không seq scan
 3. Enum: lưu dạng `text` + `HasConversion<string>()` thay vì PG enum type — đổi/thêm giá trị
    không cần migration `ALTER TYPE`.
 4. Xóa mềm: `IsDeleted` + `HasQueryFilter(e => !e.IsDeleted)`. Mọi unique index trên bảng
-   có xóa mềm phải là **partial index** `WHERE "IsDeleted" = false`.
-5. Tiền: `decimal(18,2)`. Không dùng `float`/`double` ở bất kỳ cột tiền nào.
+   có xóa mềm phải là **partial index** `WHERE "IsDeleted" = false`. Đã kiểm: trùng số phòng
+   khi chưa xóa thì bị chặn, xóa mềm rồi tạo lại cùng số phòng thì được.
+5. Partial unique `WHERE "Status" = 'Active'` chặn được lease Active thứ hai trên cùng phòng,
+   trong khi vẫn cho phép nhiều lease `Ended` — đã kiểm.
+6. `REFRESH MATERIALIZED VIEW CONCURRENTLY` yêu cầu view có **unique index**; thiếu là
+   lệnh refresh fail. Đã kiểm với `vw_test`.
+7. Tiền: `decimal(18,2)`. Không dùng `float`/`double` ở bất kỳ cột tiền nào.
+
 
 
 
