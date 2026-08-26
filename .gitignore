@@ -1,0 +1,30 @@
+# .NET
+bin/
+obj/
+*.user
+appsettings.Development.json
+appsettings.Local.json
+
+# Node / Nuxt
+node_modules/
+.nuxt/
+.output/
+.nitro/
+dist/
+*.log
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+
+# Database
+*.dump
+*.sql.gz
+
+# IDE / OS
+.vs/
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
