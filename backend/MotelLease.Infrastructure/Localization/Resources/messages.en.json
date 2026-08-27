@@ -89,6 +89,7 @@
   "error.payment.provider_not_available": "This payment provider is not available.",
   "error.payment.deposit_not_awaiting_payment": "This deposit request is not waiting for a payment.",
   "error.payment.deadline_passed": "The payment deadline for this deposit request has passed.",
+  "error.payment.gateway_rejected": "The payment provider would not open this payment. Please try again or pick another provider.",
   "error.bill.not_found": "Bill not found.",
   "error.bill.not_yours": "This bill belongs to another room.",
   "error.bill.not_payable": "Only an issued or overdue bill can be paid.",

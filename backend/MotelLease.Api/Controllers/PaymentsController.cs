@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 using MotelLease.Application.Common;
 using MotelLease.Application.Common.Contracts;
 using MotelLease.Application.Common.Security;
@@ -71,13 +72,14 @@ public sealed class PaymentsController : ControllerBase
     /// </summary>
     [HttpGet("vnpay/ipn")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(GatewayAcknowledgement), StatusCodes.Status200OK)]
-    public async Task<ActionResult<GatewayAcknowledgement>> VnPayIpn(
+    [ProducesResponseType(typeof(VnPayAcknowledgement), StatusCodes.Status200OK)]
+    public async Task<ActionResult<VnPayAcknowledgement>> VnPayIpn(
         [FromServices] ConfirmPaymentHandler handler,
         CancellationToken cancellationToken) =>
         // Always 200: the acknowledgement code in the body is what VNPay reads, and an HTTP error
         // would make it retry a callback that was in fact understood and refused.
-        Ok(await handler.HandleAsync(PaymentProvider.VNPay, QueryFields(), cancellationToken));
+        Ok(VnPayAcknowledgement.For(
+            await handler.HandleAsync(PaymentProvider.VNPay, QueryFields(), cancellationToken)));
 
     /// <summary>
     /// Where VNPay sends the payer's browser. Redirects to the frontend with the outcome and writes
@@ -94,13 +96,79 @@ public sealed class PaymentsController : ControllerBase
         var result = await handler.HandleAsync(
             PaymentProvider.VNPay, QueryFields(), cancellationToken);
 
-        var query = QueryString
+        return Redirect($"{urls.Value.WebBaseUrl.TrimEnd('/')}/payments/result{Outcome(result)}");
+    }
+
+    /// <summary>
+    /// MoMo's IPN. The same rule as VNPay's, answered the way MoMo reads an answer: it looks at the
+    /// HTTP status rather than at a code in a body, so a settled callback is 204 and anything it
+    /// should not keep resending is a 400.
+    /// </summary>
+    [HttpPost("momo/ipn")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> MoMoIpn(
+        [FromBody] JsonElement body,
+        [FromServices] ConfirmPaymentHandler handler,
+        CancellationToken cancellationToken)
+    {
+        var confirmation = await handler.HandleAsync(
+            PaymentProvider.MoMo, BodyFields(body), cancellationToken);
+
+        // A retry is acknowledged rather than refused: MoMo resends until it gets a 2xx, and the
+        // second delivery of a payment we have already recorded is a success from its point of view.
+        return confirmation is PaymentConfirmation.Confirmed or PaymentConfirmation.AlreadyConfirmed
+            ? NoContent()
+            : BadRequest();
+    }
+
+    /// <summary>
+    /// Where MoMo sends the payer's browser. Writes nothing, for the same reason VNPay's does not.
+    /// </summary>
+    [HttpGet("momo/return")]
+    [AllowAnonymous]
+    public async Task<IActionResult> MoMoReturn(
+        [FromServices] ReadPaymentReturnHandler handler,
+        [FromServices] IOptions<AppUrlOptions> urls,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.HandleAsync(
+            PaymentProvider.MoMo, QueryFields(), cancellationToken);
+
+        return Redirect($"{urls.Value.WebBaseUrl.TrimEnd('/')}/payments/result{Outcome(result)}");
+    }
+
+    /// <summary>
+    /// Flattens a callback body to strings. MoMo posts JSON where VNPay signs a query string, and what
+    /// either of them signed is the values rather than the encoding they arrived in.
+    /// </summary>
+    private static Dictionary<string, string> BodyFields(JsonElement body)
+    {
+        var fields = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        if (body.ValueKind != JsonValueKind.Object)
+        {
+            return fields;
+        }
+
+        foreach (var property in body.EnumerateObject())
+        {
+            fields[property.Name] = property.Value.ValueKind switch
+            {
+                JsonValueKind.String => property.Value.GetString() ?? string.Empty,
+                JsonValueKind.Null or JsonValueKind.Undefined => string.Empty,
+                _ => property.Value.GetRawText()
+            };
+        }
+
+        return fields;
+    }
+
+    private static QueryString Outcome(PaymentReturn result) =>
+        QueryString
             .Create("outcome", result.Outcome.ToString())
             .Add("transactionId", result.TransactionId?.ToString() ?? string.Empty)
             .Add("depositId", result.DepositId?.ToString() ?? string.Empty);
-
-        return Redirect($"{urls.Value.WebBaseUrl.TrimEnd('/')}/payments/result{query}");
-    }
 
     private Dictionary<string, string> QueryFields() =>
         Request.Query.ToDictionary(q => q.Key, q => q.Value.ToString(), StringComparer.Ordinal);

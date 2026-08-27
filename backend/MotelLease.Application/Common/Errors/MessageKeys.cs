@@ -140,6 +140,7 @@ public static class MessageKeys
         public const string ProviderNotAvailable = "error.payment.provider_not_available";
         public const string DepositNotAwaitingPayment = "error.payment.deposit_not_awaiting_payment";
         public const string DeadlinePassed = "error.payment.deadline_passed";
+        public const string GatewayRejected = "error.payment.gateway_rejected";
 
         /// <summary>Shown on the gateway's own page, so it is resolved in the payer's language.</summary>
         public const string DepositDescription = "payment.deposit.description";

@@ -144,5 +144,20 @@ public static class DependencyInjection
         {
             services.AddSingleton<IPaymentGateway, VnPayGateway>();
         }
+
+        var momo = configuration.GetSection(MoMoOptions.SectionName);
+
+        services.AddOptions<MoMoOptions>()
+            .Bind(momo)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        // The same rule, and a typed HttpClient because MoMo has to be asked for a payment URL
+        // rather than handed one.
+        if ((momo.Get<MoMoOptions>() ?? new MoMoOptions()).IsConfigured)
+        {
+            services.AddHttpClient(MoMoGateway.HttpClientName);
+            services.AddSingleton<IPaymentGateway, MoMoGateway>();
+        }
     }
 }
