@@ -466,11 +466,13 @@ export interface PaymentTransactionResponse {
 // Lease Contracts
 export interface LeaseTenantResponse {
   id: string
-  tenantUserId?: string
+  userId?: string
   fullName: string
-  phoneNumber: string
+  phoneNumber?: string
   idCardNumber?: string
   isPrimary: boolean
+  movedInAt?: string
+  movedOutAt?: string
 }
 
 export interface LeaseResponse {
@@ -479,14 +481,83 @@ export interface LeaseResponse {
   roomNumber: string
   boardingHouseId: string
   boardingHouseName: string
-  monthlyRent: number
-  depositHeld: number
+  depositId?: string
+  primaryTenantUserId?: string
+  primaryTenantFullName?: string
   startDate: string
   endDate: string
+  termMonths?: number
+  monthlyRent: number
+  depositHeld: number
   status: LeaseStatus
+  tenants: LeaseTenantResponse[]
+  createdAt: string
   endedAt?: string
   endReason?: string
-  tenants: LeaseTenantResponse[]
+  finalElectricityReading?: number
+  finalWaterReading?: number
+  depositDeducted?: number
+  depositRefunded?: number
+}
+
+export interface AddLeaseTenantRequest {
+  fullName: string
+  phoneNumber?: string
+  idCardNumber?: string
+  userId?: string
+}
+
+export interface TerminateLeaseRequest {
+  finalElectricityReading: number
+  finalWaterReading: number
+  depositDeducted?: number
+  endReason?: string
+}
+
+export interface LeaseTerminationPreviewResponse {
+  leaseId: string
+  roomId: string
+  depositHeld: number
+  electricityOld: number
+  finalElectricityReading: number
+  electricityQty: number
+  electricityUnitPrice: number
+  electricityAmount: number
+  waterOld: number
+  finalWaterReading: number
+  waterQty: number
+  waterUnitPrice: number
+  waterAmount: number
+  depositDeducted: number
+  depositRefunded: number
+}
+
+// Extension Requests
+export interface CreateExtensionRequest {
+  leaseId: string
+  requestedEndDate: string
+  tenantNote?: string
+}
+
+export interface RejectExtensionRequest {
+  ownerNote?: string
+}
+
+export interface ExtensionRequestResponse {
+  id: string
+  leaseId: string
+  roomId: string
+  roomNumber: string
+  boardingHouseId: string
+  boardingHouseName: string
+  requestedByUserId: string
+  requesterFullName: string
+  currentEndDate: string
+  requestedEndDate: string
+  status: RequestStatus
+  tenantNote?: string
+  ownerNote?: string
+  handledByUserId?: string
   createdAt: string
 }
 
