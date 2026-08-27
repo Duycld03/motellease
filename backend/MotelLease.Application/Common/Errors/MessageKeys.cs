@@ -130,8 +130,30 @@ public static class MessageKeys
     public static class Lease
     {
         public const string NotFound = "error.lease.not_found";
+        public const string NotYours = "error.lease.not_yours";
         public const string RoomAlreadyLeased = "error.lease.room_already_leased";
         public const string RoomFullyOccupied = "error.lease.room_fully_occupied";
+        public const string NotActive = "error.lease.not_active";
+        public const string CannotRemovePrimaryTenant = "error.lease.cannot_remove_primary_tenant";
+        public const string TenantAlreadyMovedOut = "error.lease.tenant_already_moved_out";
+        public const string TenantNotFound = "error.lease.tenant_not_found";
+        public const string NotTerminable = "error.lease.not_terminable";
+        public const string ReadingBelowCurrent = "error.lease.reading_below_current";
+    }
+
+    public static class Extension
+    {
+        public const string NotFound = "error.extension.not_found";
+        public const string NotYours = "error.extension.not_yours";
+        public const string AlreadyPending = "error.extension.already_pending";
+        public const string EndDateMustBeAfterCurrent = "error.extension.end_date_must_be_after_current";
+        public const string NotPending = "error.extension.not_pending";
+    }
+
+    public static class AdditionalFee
+    {
+        public const string NotFound = "error.additional_fee.not_found";
+        public const string AlreadyBilled = "error.additional_fee.already_billed";
     }
 
     public static class Payment
@@ -160,6 +182,12 @@ public static class MessageKeys
         public const string NotFound = "error.bill.not_found";
         public const string NotYours = "error.bill.not_yours";
         public const string NotPayable = "error.bill.not_payable";
+        public const string AlreadyExistsForPeriod = "error.bill.already_exists_for_period";
+        public const string NoActiveLease = "error.bill.no_active_lease";
+        public const string ReadingWentBackwards = "error.bill.reading_went_backwards";
+        public const string NotDraft = "error.bill.not_draft";
+        public const string NotCancellable = "error.bill.not_cancellable";
+        public const string NoLiveTenants = "error.bill.no_live_tenants";
     }
 
     public static class Notification

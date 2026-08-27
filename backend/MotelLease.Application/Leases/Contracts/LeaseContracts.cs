@@ -22,13 +22,74 @@ public sealed record LeaseResponse(
     decimal DepositHeld,
     LeaseStatus Status,
     IReadOnlyList<LeaseTenantResponse> Tenants,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    DateTimeOffset? EndedAt = null,
+    string? EndReason = null,
+    decimal? FinalElectricityReading = null,
+    decimal? FinalWaterReading = null,
+    decimal DepositDeducted = 0,
+    decimal DepositRefunded = 0);
 
 public sealed record LeaseTenantResponse(
     Guid Id,
     Guid? UserId,
     string FullName,
     string? PhoneNumber,
+    string? IdCardNumber,
     bool IsPrimary,
     DateTimeOffset MovedInAt,
     DateTimeOffset? MovedOutAt);
+
+public sealed record AddLeaseTenantRequest(
+    string FullName,
+    string? PhoneNumber = null,
+    string? IdCardNumber = null,
+    Guid? UserId = null);
+
+public sealed record TerminateLeaseRequest(
+    decimal FinalElectricityReading,
+    decimal FinalWaterReading,
+    decimal DepositDeducted = 0,
+    string? EndReason = null);
+
+public sealed record LeaseTerminationPreviewResponse(
+    Guid LeaseId,
+    Guid RoomId,
+    decimal DepositHeld,
+    decimal ElectricityOld,
+    decimal FinalElectricityReading,
+    decimal ElectricityQty,
+    decimal ElectricityUnitPrice,
+    decimal ElectricityAmount,
+    decimal WaterOld,
+    decimal FinalWaterReading,
+    decimal WaterQty,
+    decimal WaterUnitPrice,
+    decimal WaterAmount,
+    decimal DepositDeducted,
+    decimal DepositRefunded);
+
+public sealed record CreateExtensionRequest(
+    Guid LeaseId,
+    DateOnly RequestedEndDate,
+    string? TenantNote);
+
+public sealed record RejectExtensionRequest(
+    string? OwnerNote);
+
+public sealed record ExtensionRequestResponse(
+    Guid Id,
+    Guid LeaseId,
+    Guid RoomId,
+    string RoomNumber,
+    Guid BoardingHouseId,
+    string BoardingHouseName,
+    Guid RequestedByUserId,
+    string RequesterFullName,
+    DateOnly CurrentEndDate,
+    DateOnly RequestedEndDate,
+    RequestStatus Status,
+    string? TenantNote,
+    string? OwnerNote,
+    Guid? HandledByUserId,
+    DateTimeOffset CreatedAt);
