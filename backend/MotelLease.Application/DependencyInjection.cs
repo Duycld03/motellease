@@ -11,6 +11,7 @@ using MotelLease.Application.Common.Security;
 using MotelLease.Application.Deposits;
 using MotelLease.Application.Expenses;
 using MotelLease.Application.Extensions;
+using MotelLease.Application.Images;
 using MotelLease.Application.Leases;
 using MotelLease.Application.Maintenance;
 using MotelLease.Application.Notifications;
@@ -258,6 +259,9 @@ public static class DependencyInjection
 
         services.AddScoped<AdminListAuditLogsHandler>();
         services.AddScoped<AdminGetStatsSummaryHandler>();
+
+        services.AddScoped<UploadImageHandler>();
+        services.AddScoped<DeleteImageHandler>();
 
         return services;
     }

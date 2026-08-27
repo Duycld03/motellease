@@ -50,7 +50,8 @@ public sealed class MotelLeaseAppFactory(
     int otpPermitLimit = 10_000,
     string? googleClientId = null,
     IGoogleTokenVerifier? googleTokens = null,
-    IImageStorage? imageStorage = null) : WebApplicationFactory<Program>
+    IImageStorage? imageStorage = null,
+    bool useRealSignalR = false) : WebApplicationFactory<Program>
 {
     /// <summary>The timed sweeps, unregistered so a tick cannot land inside a test.</summary>
     private static readonly Type[] ScheduledJobs =
@@ -141,8 +142,11 @@ public sealed class MotelLeaseAppFactory(
             services.RemoveAll<IEmailSender>();
             services.AddSingleton<IEmailSender>(Emails);
 
-            services.RemoveAll<INotificationRealtime>();
-            services.AddSingleton<INotificationRealtime>(Realtime);
+            if (!useRealSignalR)
+            {
+                services.RemoveAll<INotificationRealtime>();
+                services.AddSingleton<INotificationRealtime>(Realtime);
+            }
 
             services.AddHttpClient(MoMoGateway.HttpClientName)
                 .ConfigurePrimaryHttpMessageHandler(() => MoMoApi);
