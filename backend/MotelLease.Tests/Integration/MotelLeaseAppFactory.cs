@@ -32,12 +32,18 @@ namespace MotelLease.Tests.Integration;
 /// account linking, a locked account — can be reached. Null keeps the real verifier, which is what
 /// the tests about malformed tokens need.
 /// </param>
+/// <param name="imageStorage">
+/// Substitutes Cloudinary. No credentials are configured in a test run, so the real registration
+/// is <c>UnconfiguredImageStorage</c>, which throws; the image tests pass
+/// <see cref="RecordingImageStorage"/> instead of uploading to a live account.
+/// </param>
 public sealed class MotelLeaseAppFactory(
     string connectionString,
     int authPermitLimit = 10_000,
     int otpPermitLimit = 10_000,
     string? googleClientId = null,
-    IGoogleTokenVerifier? googleTokens = null) : WebApplicationFactory<Program>
+    IGoogleTokenVerifier? googleTokens = null,
+    IImageStorage? imageStorage = null) : WebApplicationFactory<Program>
 {
     public RecordingEmailSender Emails { get; } = new();
 
@@ -87,6 +93,12 @@ public sealed class MotelLeaseAppFactory(
             {
                 services.RemoveAll<IGoogleTokenVerifier>();
                 services.AddSingleton(googleTokens);
+            }
+
+            if (imageStorage is not null)
+            {
+                services.RemoveAll<IImageStorage>();
+                services.AddSingleton(imageStorage);
             }
         });
     }
@@ -152,6 +164,35 @@ public sealed class StubGoogleTokenVerifier(GoogleIdentity? identity) : IGoogleT
         string idToken,
         CancellationToken cancellationToken = default) =>
         Task.FromResult(identity);
+}
+
+/// <summary>
+/// Stands in for Cloudinary. Records what was uploaded and what was deleted, so a test can assert
+/// that removing a listing image also removes the remote file.
+/// </summary>
+public sealed class RecordingImageStorage : IImageStorage
+{
+    private readonly ConcurrentQueue<string> _deleted = new();
+
+    public Task<StoredImage> UploadAsync(
+        ImageUpload upload,
+        string folder,
+        CancellationToken cancellationToken = default)
+    {
+        var publicId = $"{folder}/{Guid.NewGuid():N}";
+
+        return Task.FromResult(
+            new StoredImage($"https://images.test/{publicId}.jpg", publicId, 800, 600));
+    }
+
+    public Task DeleteAsync(string publicId, CancellationToken cancellationToken = default)
+    {
+        _deleted.Enqueue(publicId);
+
+        return Task.CompletedTask;
+    }
+
+    public bool WasDeleted(string publicId) => _deleted.Contains(publicId);
 }
 
 /// <summary>Keeps every log entry the app writes, so a test can assert on one.</summary>
