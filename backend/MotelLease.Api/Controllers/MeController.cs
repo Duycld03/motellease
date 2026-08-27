@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MotelLease.Application.Accounts;
 using MotelLease.Application.Accounts.Contracts;
 using MotelLease.Application.Auth.Contracts;
+using MotelLease.Application.Common;
 
 namespace MotelLease.Api.Controllers;
 
@@ -35,7 +36,7 @@ public sealed class MeController : ControllerBase
     /// length, because a form limit alone says nothing about what the storage provider gets.
     /// </summary>
     [HttpPut("avatar")]
-    [RequestSizeLimit(UpdateAvatarHandler.MaxBytes)]
+    [RequestSizeLimit(ImageUploadRules.MaxBytes)]
     [ProducesResponseType(typeof(AvatarResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<AvatarResponse>> UpdateAvatar(
         IFormFile file,

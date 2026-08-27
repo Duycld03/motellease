@@ -1,7 +1,7 @@
 namespace MotelLease.Application.Common.Errors;
 
 /// <summary>
-/// Every user-facing string in the auth flows, as a key. The text lives in
+/// Every user-facing string the handlers can produce, as a key. The text lives in
 /// Infrastructure/Localization/Resources/messages.*.json.
 /// </summary>
 public static class MessageKeys
@@ -54,6 +54,41 @@ public static class MessageKeys
     public static class Image
     {
         public const string Rejected = "error.image.rejected";
+        public const string TooLarge = "error.image.too_large";
+        public const string TypeNotSupported = "error.image.type_not_supported";
+        public const string NotFound = "error.image.not_found";
+    }
+
+    public static class BoardingHouse
+    {
+        public const string NotFound = "error.boarding_house.not_found";
+        public const string NotYours = "error.boarding_house.not_yours";
+        public const string InUse = "error.boarding_house.in_use";
+        public const string AlreadyUnderReview = "error.boarding_house.already_under_review";
+        public const string NothingToPublish = "error.boarding_house.nothing_to_publish";
+        public const string TypeConflictsWithOccupancy =
+            "error.boarding_house.type_conflicts_with_occupancy";
+        public const string TooManyImages = "error.boarding_house.too_many_images";
+    }
+
+    public static class RoomType
+    {
+        public const string NotFound = "error.room_type.not_found";
+        public const string FacilityNotFound = "error.room_type.facility_not_found";
+        public const string SingleOccupantHouse = "error.room_type.single_occupant_house";
+        public const string MaxOccupantsBelowLive = "error.room_type.max_occupants_below_live";
+        public const string InUse = "error.room_type.in_use";
+    }
+
+    public static class Room
+    {
+        public const string NotFound = "error.room.not_found";
+        public const string NumberTaken = "error.room.number_taken";
+        public const string RoomTypeFromAnotherHouse = "error.room.room_type_from_another_house";
+        public const string StatusNotManuallySettable = "error.room.status_not_manually_settable";
+        public const string StatusLockedByOccupancy = "error.room.status_locked_by_occupancy";
+        public const string ReadingWentBackwards = "error.room.reading_went_backwards";
+        public const string InUse = "error.room.in_use";
     }
 
     public static class Email
@@ -76,5 +111,10 @@ public static class MessageKeys
         public const string OtpFormat = "validation.otp_format";
         public const string TooLong = "validation.too_long";
         public const string FullNameFormat = "validation.full_name_format";
+        public const string NotNegative = "validation.not_negative";
+        public const string Positive = "validation.positive";
+        public const string LatitudeRange = "validation.latitude_range";
+        public const string LongitudeRange = "validation.longitude_range";
+        public const string OutOfRange = "validation.out_of_range";
     }
 }

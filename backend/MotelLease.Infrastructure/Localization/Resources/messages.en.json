@@ -26,6 +26,31 @@
   "error.account.language_not_supported": "Unsupported language. Accepted: {0}.",
 
   "error.image.rejected": "The image could not be processed. Please upload a valid image file.",
+  "error.image.too_large": "The image must not exceed {0} MB.",
+  "error.image.type_not_supported": "Unsupported image format. Accepted: {0}.",
+  "error.image.not_found": "Image not found.",
+
+  "error.boarding_house.not_found": "Boarding house not found.",
+  "error.boarding_house.not_yours": "You are not responsible for this boarding house.",
+  "error.boarding_house.in_use": "This boarding house still has active leases or reserved rooms, so it cannot be deleted.",
+  "error.boarding_house.already_under_review": "Only a draft or rejected listing can be submitted for review.",
+  "error.boarding_house.nothing_to_publish": "Add at least one room before submitting the listing for review.",
+  "error.boarding_house.type_conflicts_with_occupancy": "This boarding house type allows one tenant per room. Lower the maximum occupants on every room type first.",
+  "error.boarding_house.too_many_images": "A listing may have at most {0} images.",
+
+  "error.room_type.not_found": "Room type not found.",
+  "error.room_type.facility_not_found": "One of the selected facilities does not exist.",
+  "error.room_type.single_occupant_house": "This boarding house type allows one tenant per room.",
+  "error.room_type.max_occupants_below_live": "A room of this type currently houses {0} tenants, so the maximum cannot be lower.",
+  "error.room_type.in_use": "Rooms still use this room type, so it cannot be deleted.",
+
+  "error.room.not_found": "Room not found.",
+  "error.room.number_taken": "Room number {0} already exists in this boarding house.",
+  "error.room.room_type_from_another_house": "The room type belongs to a different boarding house.",
+  "error.room.status_not_manually_settable": "Occupied and Reserved follow from leases and deposits and cannot be set by hand.",
+  "error.room.status_locked_by_occupancy": "This room is reserved or occupied. End the lease or release the deposit first.",
+  "error.room.reading_went_backwards": "A meter reading cannot go backwards. Current values: electricity {0}, water {1}.",
+  "error.room.in_use": "This room has an active lease or a paid deposit, so it cannot be deleted.",
 
   "email.registration_otp.subject": "Your MotelLease registration code",
   "email.registration_otp.body": "<p>Your registration code is <strong>{0}</strong>.</p><p>It is valid for {1} minutes. If you did not request an account, you can ignore this email.</p>",
@@ -42,6 +67,11 @@
   "validation.otp_format": "The code is six digits.",
   "validation.too_long": "This value is too long.",
   "validation.full_name_format": "The full name may only contain letters, spaces and ' . -",
+  "validation.not_negative": "This value cannot be negative.",
+  "validation.positive": "This value must be greater than zero.",
+  "validation.latitude_range": "The latitude must be between -90 and 90.",
+  "validation.longitude_range": "The longitude must be between -180 and 180.",
+  "validation.out_of_range": "This value is out of the accepted range.",
 
   "error.validation.title": "The request is invalid.",
   "error.unexpected": "Something went wrong. Please try again later.",

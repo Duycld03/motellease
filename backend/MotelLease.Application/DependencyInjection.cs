@@ -2,6 +2,10 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using MotelLease.Application.Accounts;
 using MotelLease.Application.Auth;
+using MotelLease.Application.BoardingHouses;
+using MotelLease.Application.Common.Security;
+using MotelLease.Application.Rooms;
+using MotelLease.Application.RoomTypes;
 
 namespace MotelLease.Application;
 
@@ -39,6 +43,31 @@ public static class DependencyInjection
         services.AddScoped<VerifyEmailChangeOtpHandler>();
         services.AddScoped<GetSessionsHandler>();
         services.AddScoped<RevokeSessionHandler>();
+
+        services.AddScoped<BoardingHouseAccess>();
+
+        services.AddScoped<ListMyBoardingHousesHandler>();
+        services.AddScoped<GetBoardingHouseHandler>();
+        services.AddScoped<CreateBoardingHouseHandler>();
+        services.AddScoped<UpdateBoardingHouseHandler>();
+        services.AddScoped<DeleteBoardingHouseHandler>();
+        services.AddScoped<SubmitBoardingHouseForReviewHandler>();
+        services.AddScoped<UpdateUtilityPricesHandler>();
+        services.AddScoped<AddBoardingHouseImageHandler>();
+        services.AddScoped<DeleteBoardingHouseImageHandler>();
+        services.AddScoped<SetPrimaryBoardingHouseImageHandler>();
+
+        services.AddScoped<ListRoomTypesHandler>();
+        services.AddScoped<CreateRoomTypeHandler>();
+        services.AddScoped<UpdateRoomTypeHandler>();
+        services.AddScoped<DeleteRoomTypeHandler>();
+
+        services.AddScoped<ListRoomsHandler>();
+        services.AddScoped<CreateRoomHandler>();
+        services.AddScoped<UpdateRoomHandler>();
+        services.AddScoped<DeleteRoomHandler>();
+        services.AddScoped<UpdateRoomStatusHandler>();
+        services.AddScoped<UpdateMeterReadingsHandler>();
 
         return services;
     }
