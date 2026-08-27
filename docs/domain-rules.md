@@ -1,153 +1,151 @@
-# MotelLease — Quy tắc nghiệp vụ trích từ repo cũ
+# MotelLease — Business rules
 
-> Mỗi quy tắc ghi kèm nơi nó đang nằm trong repo cũ, để đối chiếu khi implement.
-> Phần "Đổi lại" là quyết định cho bản mới — đọc kỹ, có vài chỗ là **sửa lỗi**, không phải port.
+> The source of truth for the Domain and Application layers. Each section states the rule and
+> **why** it holds; the invariants in section 9 are requirements that must have tests, not advice.
 
-## 1. Phòng còn trống
+## 1. Room availability
 
-Đang chôn trong Mongoose `pre("save")` của `backend/src/models/room.js` (lặp lại 3 lần ở
-`updateRoomAvailability`, `updateAllRoomsAvailability`, `checkAvailabilityRules`):
+How many people may live in a room depends on the type of boarding house:
 
-| Loại nhà trọ (`codeName` cũ) | Enum mới | Quy tắc |
-|---|---|---|
-| `nha_tro_truyen_thong` | `Traditional` | Tối đa **1** người thuê / phòng |
-| `mini_house` | `MiniHouse` | Tối đa **1** người thuê / phòng |
-| `nha_tro_kien_truc_xa` | `DormStyle` | Tối đa `RoomType.MaxOccupants` người |
+| Type | Rule |
+|---|---|
+| `Traditional` | At most **1** tenant per room |
+| `MiniHouse` | At most **1** tenant per room |
+| `DormStyle` | At most `RoomType.MaxOccupants` tenants |
 
-**Đổi lại:** `Room.Status` là enum 4 giá trị thay cho `boolean isAvailable`. Số người ở
-tính từ `LeaseTenants` đang hoạt động, không từ array `room.rentBy`. Quy tắc đặt trong
-`Domain/Rooms/RoomOccupancyPolicy.cs`, gọi từ Application layer — **không** đặt trong
-EF interceptor, để test được mà không cần DB.
+`Room.Status` is a four-value enum (`Available`, `Reserved`, `Occupied`, `Maintenance`) rather than
+a boolean flag, because "deposited, not moved in yet" has to be distinguishable from both "free"
+and "occupied".
 
-Hệ quả: bỏ được cron `0 2 * * *` (`models/room.js:419`) vốn tồn tại chỉ để vá lại
-`isAvailable` bị lệch.
+Current occupancy is counted from live `LeaseTenants` — derived from the rows themselves, with no
+parallel counter that could drift. The rule lives in `Domain/Rooms/RoomOccupancyPolicy.cs` and is
+called from the Application layer. It must **not** live in an EF interceptor or a lifecycle hook:
+a rule that needs a database to be tested is in the wrong layer.
 
-## 2. Tiền cọc
+## 2. Deposits
 
-`controllers/depositController.js:53` — `amount: price`, tức **tiền cọc = giá thuê 1 tháng**
-của loại phòng. Kỳ hạn: `rentalTime * (timeType === "month" ? 1 : 12)` → luôn quy về số tháng.
+The deposit equals one month of the room type's rent, **frozen into `Deposits.Amount`** when the
+request is created. Reading `RoomType.Price` at issue time would let an already-agreed amount
+change after the fact.
 
-Ràng buộc đã có: một người không được cọc 2 lần cùng 1 phòng (`existDeposit` check).
+Terms are always normalised to a number of months (`RequestedTermMonths`).
 
-**Đổi lại:** giữ quy tắc "cọc = 1 tháng tiền thuê" nhưng chốt `Deposits.Amount` tại thời
-điểm tạo. Thêm `ExpiresAt`: sau khi chủ trọ duyệt, khách có N giờ để thanh toán, hết hạn
-thì `Status = Expired` và phòng trả về `Available` (bản cũ không có, phòng bị giữ vô thời hạn).
+The same person cannot hold two deposit requests on the same room while the first is still live.
 
-## 3. Tính hóa đơn tháng
+Once the owner accepts, `ExpiresAt` gives the tenant N hours to pay. Past the deadline the status
+becomes `Expired` and the room returns to `Available`, so an unpaid request cannot hold a room
+indefinitely.
 
-`controllers/paymentBillController.js:140–205`:
+## 3. Monthly bill calculation
 
 ```
-electricalQty  = ElectricityNew - ElectricityOld
+electricityQty = ElectricityNew - ElectricityOld
 waterQty       = WaterNew - WaterOld
-electricalAmt  = electricalQty * boardingHouse.electricityPrice
-waterAmt       = waterQty * boardingHouse.waterPrice
-additionalTotal= Σ RoomAdditionalFees(roomId)
-paymentAmount  = roomType.price + electricalAmt + waterAmt + additionalTotal
+electricityAmt = electricityQty * BoardingHouse.ElectricityPrice
+waterAmt       = waterQty * BoardingHouse.WaterPrice
+additionalTotal= Σ RoomAdditionalFees(RoomId, Month, Year)
+TotalAmount    = Leases.MonthlyRent + electricityAmt + waterAmt + additionalTotal
 ```
 
-Sau đó chia đều cho số người ở: `splitAmount = paymentAmount / room.rentBy.length`,
-tạo 1 `UserPayment` cho mỗi người.
+Four things that are easy to get wrong, and how each is settled:
 
-**4 lỗi trong công thức trên phải sửa, không port:**
+1. **Additional fees must be filtered by period.** `RoomAdditionalFees` is filtered on
+   `(RoomId, Month, Year)`, and a fee that has been billed gets its `PaymentBillId` set so a later
+   bill cannot pick it up again.
+2. **Rent comes from `Leases.MonthlyRent`**, the price frozen at signing, never from the current
+   `RoomType.Price`. An owner raising the room price must not change the bill of a tenant who
+   signed at the old one. The general principle: a historical document (bill, contract) never
+   reads a current price.
+3. **Split the money in whole VND, not in floating point.** Divide evenly among the live
+   `LeaseTenants` and give the remainder to the primary tenant (`IsPrimary`), so the sum of the
+   shares is exactly `TotalAmount`. A lease with no live tenant blocks bill issuance — a division
+   by zero must never be reachable.
+4. **The meter update and the bill insert share one EF transaction.** Split apart, a failure in
+   between leaves the reading advanced with no bill to account for it.
 
-1. `RoomAdditionalFees.find({ roomId })` (dòng 151) **không lọc `month`/`year`**, dù bảng có 2
-   cột đó. Hóa đơn tháng 6 đang cộng cả phí phát sinh của tháng 1–5. → Bản mới lọc theo
-   `(RoomId, Month, Year)` và gán `PaymentBillId` cho phí đã dùng để không cộng lại.
-2. `roomType.price` đọc **trực tiếp** lúc tạo hóa đơn. Chủ trọ tăng giá phòng thì mọi hóa
-   đơn tạo sau đó đổi theo, kể cả người đang thuê hợp đồng giá cũ. → Bản mới lấy
-   `Leases.MonthlyRent` (giá chốt khi ký).
-3. `splitAmount = paymentAmount / totalPeople` chia số thực. 3 người → mỗi người
-   333.333,33đ, tổng ≠ hóa đơn. Và `totalPeople = 0` cho ra `Infinity`. → Bản mới chia
-   theo đồng, phần dư dồn cho người đại diện (`LeaseTenants.IsPrimary`), và chặn phát hành
-   hóa đơn khi hợp đồng không có người ở.
-4. `room.save()` (cập nhật chỉ số) và `PaymentBill.create()` là 2 lệnh rời. Fail ở giữa là
-   chỉ số đã nhảy mà hóa đơn không có. → Bản mới nằm trong 1 EF transaction.
+The opening reading of next month's bill comes from this month's `PaymentBills.ElectricityNew`;
+`Rooms.CurrentElectricityReading` is the single current figure. One source of truth, no manual
+synchronisation.
 
-Ngoài ra: bản cũ ghi `room.previousElectricityReading = newNumber` để làm chỉ số cũ cho
-tháng sau. Bản mới chỉ giữ `Rooms.CurrentElectricityReading`; chỉ số cũ của hóa đơn tháng
-sau lấy từ `PaymentBills.ElectricityNew` của tháng trước — một nguồn sự thật, không đồng bộ tay.
+## 4. Viewing appointments
 
-## 4. Lịch xem phòng
+Appointments whose time has passed move to `Expired` via
+`AppointmentExpiryJob : BackgroundService`, registered explicitly in `Program.cs`. A job must not
+be declared inside an entity file: there it runs every time the entity is loaded, including during
+tests, and nobody controls its lifetime.
 
-`models/appointment.js:76` — cron `0 * * * *` mỗi giờ đánh dấu lịch đã qua giờ thành hết hạn.
+## 5. Revenue
 
-**Đổi lại:** giữ nguyên logic, chuyển thành `AppointmentExpiryJob : BackgroundService` khai
-báo tường minh ở `Program.cs`. Không đặt cron trong file entity như bản cũ (đang chạy mỗi
-lần model được import, kể cả trong test).
+`vw_monthly_revenue` is a materialized view over `PaymentBills` with `Status = 'Paid'`.
+Monthly revenue = Σ `TotalAmount` of paid bills, grouped by boarding house.
+Profit = revenue − `BoardingHouseExpenses.TotalExpense` for the same period.
 
-## 5. Doanh thu
+No aggregate is stored in a table of its own: every figure here is recomputable, and a manually
+maintained counter that drifts gives no signal that it has.
 
-Bản cũ ghi vào bảng `Revenue` (`totalRevenue`, `transactionCount`, `transactions[]`) —
-đồng bộ tay, lệch là không phát hiện được.
+## 6. Authorization
 
-**Đổi lại:** `vw_monthly_revenue` materialized view từ `PaymentBills` có `Status = 'Paid'`.
-Doanh thu tháng = Σ `TotalAmount` các hóa đơn đã thanh toán, nhóm theo nhà trọ.
-Lợi nhuận = doanh thu − `BoardingHouseExpenses.TotalExpense` cùng kỳ (bản cũ chưa trừ bao giờ).
+Two layers, because a role alone is not enough: knowing "this user is Staff" does not answer
+"is this staff member responsible for that boarding house".
 
-## 6. Phân quyền
+- **Role policies:** `RequireTenant`, `RequireOwner`, `RequireStaffOrOwner`, `RequireAdmin`. The
+  fallback policy requires an authenticated user, so endpoints are closed by default; a public
+  endpoint opens itself with `[AllowAnonymous]`.
+- **Resource handlers (`IAuthorizationHandler`):** `BoardingHouseAccessHandler` checks
+  `OwnerUserId == currentUser` **or** the existence of a live `StaffAssignment` for
+  `(BoardingHouseId, currentUser)`. Every endpoint that takes a `boardingHouseId` goes through it.
 
-`middlewares/authMiddleware.js` — 4 middleware theo role:
-`authMiddleware` (đã đăng nhập) · `staffMiddleware` (`staff` **hoặc** `owner`) ·
-`ownerMiddleware` (`owner`) · `adminMiddleware` (`admin`).
+## 7. Notifications
 
-Điểm yếu: chỉ kiểm tra role, **không kiểm tra quyền trên tài nguyên cụ thể**. Staff A gọi
-API sửa nhà trọ của owner B vẫn qua middleware.
-
-**Đổi lại:** 2 tầng —
-- Policy theo role: `RequireOwner`, `RequireStaffOrOwner`, `RequireAdmin`
-- `IAuthorizationHandler` theo tài nguyên: `BoardingHouseAccessHandler` kiểm tra
-  `OwnerUserId == currentUser` **hoặc** tồn tại `StaffAssignment` đang hoạt động cho
-  `(BoardingHouseId, currentUser)`. Mọi endpoint nhận `boardingHouseId` đều đi qua handler này.
-
-## 7. Thông báo (mới — bản cũ không có)
-
-| Sự kiện | Người nhận | `Type` |
+| Event | Recipient | `Type` |
 |---|---|---|
-| Lịch xem phòng được xác nhận / từ chối | Khách | `AppointmentHandled` |
-| Có yêu cầu cọc mới | Chủ trọ + staff phụ trách | `DepositRequested` |
-| Cọc được duyệt (kèm hạn thanh toán) | Khách | `DepositAccepted` |
-| Cọc bị từ chối / hết hạn | Khách | `DepositRejected` / `DepositExpired` |
-| Thanh toán thành công | Khách + chủ trọ | `PaymentSucceeded` |
-| Hóa đơn tháng mới được phát hành | Khách đang thuê | `BillIssued` |
-| Hóa đơn sắp đến hạn (trước 3 ngày) | Khách | `BillDueSoon` |
-| Hóa đơn quá hạn | Khách + chủ trọ | `BillOverdue` |
-| Yêu cầu gia hạn được trả lời | Khách | `ExtensionHandled` |
-| Hoàn cọc đã xử lý | Khách | `RefundProcessed` |
-| Yêu cầu rút tiền được duyệt / từ chối | Chủ trọ | `WithdrawHandled` |
-| Hợp đồng sắp hết hạn (trước 30 ngày) | Khách + chủ trọ | `LeaseExpiring` |
-| Có báo sự cố mới | Staff phụ trách | `MaintenanceReported` |
-| Nhà trọ được duyệt / bị từ chối hiển thị | Chủ trọ | `ListingReviewed` |
+| Viewing appointment approved / rejected | Tenant | `AppointmentHandled` |
+| New deposit request | Owner + assigned staff | `DepositRequested` |
+| Deposit accepted (with payment deadline) | Tenant | `DepositAccepted` |
+| Deposit rejected / expired | Tenant | `DepositRejected` / `DepositExpired` |
+| Payment succeeded | Tenant + owner | `PaymentSucceeded` |
+| New monthly bill issued | Current tenant | `BillIssued` |
+| Bill due soon (3 days ahead) | Tenant | `BillDueSoon` |
+| Bill overdue | Tenant + owner | `BillOverdue` |
+| Extension request answered | Tenant | `ExtensionHandled` |
+| Refund processed | Tenant | `RefundProcessed` |
+| Withdrawal approved / rejected | Owner | `WithdrawHandled` |
+| Lease expiring (30 days ahead) | Tenant + owner | `LeaseExpiring` |
+| New maintenance report | Assigned staff | `MaintenanceReported` |
+| Listing approved / rejected | Owner | `ListingReviewed` |
 
-Mỗi thông báo lưu `TitleKey`/`BodyKey` + `PayloadJson`, không lưu câu hoàn chỉnh.
+Each notification stores `TitleKey`/`BodyKey` + `PayloadJson`, never a finished sentence — the
+recipient reads it in the language they have selected when they open it, not when it was sent.
 
-## 8. Background job (thay 2 cron rải rác trong model)
+## 8. Background jobs
 
-| Job | Chu kỳ | Việc |
+All registered explicitly in `Program.cs`, none inside an entity file.
+
+| Job | Period | Work |
 |---|---|---|
-| `AppointmentExpiryJob` | 1 giờ | Lịch xem phòng đã qua giờ → `Expired` |
-| `DepositExpiryJob` | 15 phút | Cọc đã duyệt nhưng quá `ExpiresAt` → `Expired`, phòng về `Available` |
-| `BillReminderJob` | 1 ngày | `BillDueSoon` trước 3 ngày, `Issued` → `Overdue` khi quá hạn |
-| `LeaseExpiryJob` | 1 ngày | `Active` → `Expiring` khi còn ≤30 ngày; quá `EndDate` → `Ended` |
-| `RevenueViewRefreshJob` | 1 giờ + sau khi có hóa đơn `Paid` | `REFRESH MATERIALIZED VIEW CONCURRENTLY` |
+| `AppointmentExpiryJob` | 1 hour | Appointments past their time → `Expired` |
+| `DepositExpiryJob` | 15 minutes | Accepted deposits past `ExpiresAt` → `Expired`, room back to `Available` |
+| `BillReminderJob` | 1 day | `BillDueSoon` 3 days ahead, `Issued` → `Overdue` once past due |
+| `LeaseExpiryJob` | 1 day | `Active` → `Expiring` at ≤30 days left; past `EndDate` → `Ended` |
+| `RevenueViewRefreshJob` | 1 hour + after any bill turns `Paid` | `REFRESH MATERIALIZED VIEW CONCURRENTLY` |
 
-## 9. Bất biến phải giữ (viết test cho từng dòng)
+## 9. Invariants that must hold (one test each)
 
-1. Một phòng có tối đa **1** `Lease` ở trạng thái `Active` (partial unique index).
-2. Số `LeaseTenants` đang ở ≤ `RoomType.MaxOccupants`, và ≤ 1 nếu nhà trọ là
+1. A room has at most **one** `Lease` in status `Active` (partial unique index).
+2. The number of live `LeaseTenants` ≤ `RoomType.MaxOccupants`, and ≤ 1 when the boarding house is
    `Traditional`/`MiniHouse`.
-3. `Rooms.Status` phải nhất quán: có `Lease` `Active` ⇒ `Occupied`; có `Deposit`
-   `Accepted`/`Paid` mà chưa có lease ⇒ `Reserved`; không có gì ⇒ `Available`.
-4. Một `(RoomId, Month, Year)` chỉ có **1** `PaymentBill` (unique index).
+3. `Rooms.Status` stays consistent: an `Active` lease ⇒ `Occupied`; an `Accepted`/`Paid` deposit
+   with no lease yet ⇒ `Reserved`; neither ⇒ `Available`.
+4. One `(RoomId, Month, Year)` has exactly **one** `PaymentBill` (unique index).
 5. `PaymentBills.TotalAmount` = `RentAmount + ElectricityAmount + WaterAmount + AdditionalFeeTotal`.
-6. Σ số tiền chia cho các `LeaseTenants` = `PaymentBills.TotalAmount` (không lệch 1 đồng).
-7. Một `ProviderTxnId` chỉ được ghi nhận thành công **1 lần** (unique index + kiểm tra ở IPN).
-8. `PaymentBills` chỉ sang `Paid` khi có `PaymentTransaction` `Succeeded` với
-   `SignatureVerified = true`.
-9. `ElectricityNew ≥ ElectricityOld` và `WaterNew ≥ WaterOld` (CHECK constraint).
-10. Chỉ tạo được `Review` gốc khi user có `Lease` với nhà trọ đó; mỗi `(UserId, LeaseId)`
-    một đánh giá.
-11. Owner không rút quá `OwnerProfile.AvailableBalance`.
-12. Staff chỉ đọc/ghi được dữ liệu của nhà trọ có `StaffAssignment` đang hoạt động.
-
-
+6. Σ of the amounts split across `LeaseTenants` = `PaymentBills.TotalAmount`, exact to the VND.
+7. A `ProviderTxnId` is recorded as successful exactly **once** (unique index + a check in the IPN
+   handler).
+8. `PaymentBills` reaches `Paid` only with a `Succeeded` `PaymentTransaction` whose
+   `SignatureVerified = true`. Money state is never confirmed from a browser redirect URL — only
+   from a server-to-server callback with a verified signature.
+9. `ElectricityNew ≥ ElectricityOld` and `WaterNew ≥ WaterOld` (CHECK constraint).
+10. A top-level `Review` requires the user to have a `Lease` for that boarding house; one review
+    per `(UserId, LeaseId)`.
+11. An owner cannot withdraw more than `OwnerProfile.AvailableBalance`.
+12. Staff can read and write only data of boarding houses they hold a live `StaffAssignment` for.

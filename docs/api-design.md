@@ -1,20 +1,20 @@
-# MotelLease — Thiết kế API mới
+# MotelLease — API design
 
-> Thiết kế lại từ đầu theo **resource**, không bám theo 221 route của bản cũ.
-> `api-inventory.csv` chỉ dùng làm checklist đối chiếu để không bỏ sót tính năng —
-> không phải nguồn thiết kế, và không cần map 1-1 với bất kỳ route cũ nào.
+> Resource-oriented: one endpoint per resource, authorized by policy rather than by duplicating
+> paths per role.
 
-## Quy ước
+## Conventions
 
-- Base: `/api/v1`. OpenAPI ở `/swagger`, sinh client TS cho Nuxt từ đây.
-- Auth: `Authorization: Bearer <access token>`, refresh qua `POST /auth/refresh`.
-- Phân trang: `?page=1&pageSize=20` → `{ items, page, pageSize, total, totalPages }`.
-- Lọc/sắp xếp bằng query param, **không** có endpoint `/filter` riêng như bản cũ.
-- Lỗi: RFC 7807 `application/problem+json`, message theo `Accept-Language` (`vi`/`en`).
-- Cột `role` dưới đây: `–` công khai · `T` tenant · `S` staff · `O` owner · `A` admin.
-  `S` luôn kèm điều kiện `StaffAssignment` đang hoạt động với nhà trọ liên quan.
+- Base: `/api/v1`. OpenAPI at `/swagger`; the TypeScript client for Nuxt is generated from it.
+- Auth: `Authorization: Bearer <access token>`, refreshed through `POST /auth/refresh`.
+- Paging: `?page=1&pageSize=20` → `{ items, page, pageSize, total, totalPages }`.
+- Filtering and sorting are query params on the list endpoint itself — there is **no** separate
+  `/filter` endpoint.
+- Errors: RFC 7807 `application/problem+json`, message language from `Accept-Language` (`vi`/`en`).
+- The `role` column below: `–` public · `T` tenant · `S` staff · `O` owner · `A` admin.
+  `S` always additionally requires a live `StaffAssignment` for the boarding house in question.
 
-## Auth & tài khoản (16)
+## Auth and accounts (16)
 
 | Method | Path | Role |
 |---|---|---|
@@ -36,20 +36,20 @@
 | POST | `/me/email/verify-otp` | T S O A |
 | GET | `/me/sessions` · DELETE `/me/sessions/{id}` | T S O A |
 
-## Tìm kiếm & danh mục công khai (9)
+## Public search and catalogue (9)
 
-| Method | Path | Ghi chú |
+| Method | Path | Notes |
 |---|---|---|
-| GET | `/boarding-houses` | lọc: `q, province, district, minPrice, maxPrice, facilities[], type, minRating, sort` |
+| GET | `/boarding-houses` | filters: `q, province, district, minPrice, maxPrice, facilities[], type, minRating, sort` |
 | GET | `/boarding-houses/nearby` | **PostGIS**: `lat, lon, radiusKm, sort=distance` |
-| GET | `/boarding-houses/map` | bounding box: `swLat, swLon, neLat, neLon` → marker rút gọn |
-| GET | `/boarding-houses/{id}` | chi tiết + loại phòng + tiện ích + ảnh + rating |
-| GET | `/boarding-houses/{id}/rooms` | phòng còn trống |
-| GET | `/boarding-houses/{id}/reviews` | phân trang, có nhãn đã xác minh |
-| GET | `/facilities` | danh mục tiện ích |
-| GET | `/provinces` · `/provinces/{code}/districts` | dữ liệu địa giới cho bộ lọc |
+| GET | `/boarding-houses/map` | bounding box: `swLat, swLon, neLat, neLon` → trimmed markers |
+| GET | `/boarding-houses/{id}` | detail + room types + facilities + images + rating |
+| GET | `/boarding-houses/{id}/rooms` | vacant rooms |
+| GET | `/boarding-houses/{id}/reviews` | paged, with the verified label |
+| GET | `/facilities` | facility catalogue |
+| GET | `/provinces` · `/provinces/{code}/districts` | administrative data for the filters |
 
-## Tin đã lưu (3) — gộp Favorite + WatchLater
+## Saved listings (3)
 
 | Method | Path | Role |
 |---|---|---|
@@ -57,46 +57,46 @@
 | POST | `/me/saved-listings` | T |
 | DELETE | `/me/saved-listings/{boardingHouseId}` | T |
 
-## Lịch xem phòng (6)
+## Viewing appointments (6)
 
 | Method | Path | Role |
 |---|---|---|
-| GET | `/appointments` | T S O — tenant thấy của mình, S/O thấy theo nhà trọ |
+| GET | `/appointments` | T S O — a tenant sees their own, S/O see theirs by property |
 | POST | `/appointments` | T |
 | GET | `/appointments/{id}` | T S O |
 | PUT | `/appointments/{id}/approve` | S O |
 | PUT | `/appointments/{id}/reject` | S O |
 | PUT | `/appointments/{id}/cancel` | T |
 
-## Đặt cọc (9)
+## Deposits (9)
 
 | Method | Path | Role |
 |---|---|---|
 | GET | `/deposits` | T S O |
 | POST | `/deposits` | T |
 | GET | `/deposits/{id}` | T S O |
-| PUT | `/deposits/{id}/approve` | S O — set `ExpiresAt` |
+| PUT | `/deposits/{id}/approve` | S O — sets `ExpiresAt` |
 | PUT | `/deposits/{id}/reject` | S O |
 | PUT | `/deposits/{id}/cancel` | T |
-| POST | `/deposits/{id}/checkout` | T — tạo `PaymentTransaction`, trả URL cổng |
+| POST | `/deposits/{id}/checkout` | T — creates a `PaymentTransaction`, returns the gateway URL |
 | GET | `/deposits/{id}/contract-preview` | T |
-| POST | `/deposits/{id}/confirm-lease` | S O — cọc `Paid` → tạo `Lease` |
+| POST | `/deposits/{id}/confirm-lease` | S O — a `Paid` deposit becomes a `Lease` |
 
-## Hợp đồng thuê (9) — mới
+## Leases (9)
 
 | Method | Path | Role |
 |---|---|---|
 | GET | `/leases` | T S O |
 | GET | `/leases/{id}` | T S O |
 | GET | `/leases/{id}/bills` | T S O |
-| POST | `/leases/{id}/tenants` | S O — thêm người ở cùng |
+| POST | `/leases/{id}/tenants` | S O — add a co-tenant |
 | DELETE | `/leases/{id}/tenants/{tenantId}` | S O |
-| POST | `/leases/{id}/terminate` | S O — chốt chỉ số cuối, đối trừ cọc |
-| GET | `/leases/{id}/termination-preview` | T S O — xem trước số tiền đối trừ |
+| POST | `/leases/{id}/terminate` | S O — final readings, deposit settlement |
+| GET | `/leases/{id}/termination-preview` | T S O — preview the settlement amount |
 | GET | `/rooms/{roomId}/lease-history` | S O |
 | GET | `/me/current-lease` | T |
 
-## Gia hạn hợp đồng (5)
+## Lease extensions (5)
 
 | Method | Path | Role |
 |---|---|---|
@@ -106,35 +106,35 @@
 | PUT | `/extension-requests/{id}/approve` | S O |
 | PUT | `/extension-requests/{id}/reject` | S O |
 
-## Hóa đơn (10)
+## Bills (10)
 
 | Method | Path | Role |
 |---|---|---|
-| GET | `/bills` | T S O — lọc `status, month, year, boardingHouseId, roomId` |
+| GET | `/bills` | T S O — filters `status, month, year, boardingHouseId, roomId` |
 | GET | `/bills/{id}` | T S O |
 | GET | `/bills/{id}/pdf` | T S O |
-| POST | `/bills/preview` | S O — nhập chỉ số, xem trước tiền trước khi phát hành |
-| POST | `/bills` | S O — phát hành (1 hóa đơn / phòng / tháng) |
-| PUT | `/bills/{id}` | S O — chỉ khi `Draft` |
-| PUT | `/bills/{id}/issue` | S O — `Draft` → `Issued`, đặt `DueDate`, bắn thông báo |
+| POST | `/bills/preview` | S O — enter readings, preview the amount before issuing |
+| POST | `/bills` | S O — issue (one bill per room per month) |
+| PUT | `/bills/{id}` | S O — only while `Draft` |
+| PUT | `/bills/{id}/issue` | S O — `Draft` → `Issued`, sets `DueDate`, sends notifications |
 | PUT | `/bills/{id}/cancel` | S O |
 | GET | `/rooms/{roomId}/additional-fees` | S O |
-| POST/PUT/DELETE | `/rooms/{roomId}/additional-fees[/{id}]` | S O — lọc theo `month`,`year` |
+| POST/PUT/DELETE | `/rooms/{roomId}/additional-fees[/{id}]` | S O — filtered by `month`, `year` |
 
-## Thanh toán (8)
+## Payments (8)
 
 | Method | Path | Role |
 |---|---|---|
-| POST | `/payments/bills/{billId}/checkout` | T — chọn `provider`, trả URL cổng |
-| GET | `/payments/vnpay/ipn` | – **nơi duy nhất** xác nhận tiền, verify HMAC |
-| POST | `/payments/momo/ipn` | – idem, verify HMAC |
-| GET | `/payments/vnpay/return` | – chỉ redirect về UI, không ghi DB |
-| GET | `/payments/momo/return` | – idem |
-| GET | `/payments` | T S O A — lịch sử giao dịch |
+| POST | `/payments/bills/{billId}/checkout` | T — pick a `provider`, returns the gateway URL |
+| GET | `/payments/vnpay/ipn` | – **the only place** money is confirmed; verifies HMAC |
+| POST | `/payments/momo/ipn` | – same |
+| GET | `/payments/vnpay/return` | – redirects to the UI only, writes nothing |
+| GET | `/payments/momo/return` | – same |
+| GET | `/payments` | T S O A — transaction history |
 | GET | `/payments/{id}` | T S O A |
 | GET | `/me/payments` | T |
 
-## Hoàn cọc & rút tiền (10)
+## Refunds and withdrawals (10)
 
 | Method | Path | Role |
 |---|---|---|
@@ -149,72 +149,72 @@
 | PUT | `/withdraw-requests/{id}/approve` | A |
 | PUT | `/withdraw-requests/{id}/reject` | A |
 
-## Nhà trọ / loại phòng / phòng (O, S) (19)
+## Boarding houses / room types / rooms (O, S) (19)
 
 | Method | Path | Role |
 |---|---|---|
-| GET | `/my/boarding-houses` | O S — O thấy của mình, S thấy nhà được gán |
-| POST · GET · PUT · DELETE | `/my/boarding-houses[/{id}]` | O (S chỉ `GET`/`PUT`) |
+| GET | `/my/boarding-houses` | O S — O sees their own, S sees the ones assigned to them |
+| POST · GET · PUT · DELETE | `/my/boarding-houses[/{id}]` | O (S may only `GET`/`PUT`) |
 | PUT | `/my/boarding-houses/{id}/submit-review` | O — `Draft` → `PendingReview` |
 | POST · DELETE | `/my/boarding-houses/{id}/images[/{imageId}]` | O S |
 | PUT | `/my/boarding-houses/{id}/images/{imageId}/primary` | O S |
 | PUT | `/my/boarding-houses/{id}/utility-prices` | O |
 | GET · POST · PUT · DELETE | `/my/boarding-houses/{id}/room-types[/{typeId}]` | O S |
 | GET · POST · PUT · DELETE | `/my/boarding-houses/{id}/rooms[/{roomId}]` | O S |
-| PUT | `/my/rooms/{roomId}/status` | O S — chuyển `Maintenance` ⇄ `Available` |
-| PUT | `/my/rooms/{roomId}/meter-readings` | O S — chốt chỉ số |
+| PUT | `/my/rooms/{roomId}/status` | O S — `Maintenance` ⇄ `Available` |
+| PUT | `/my/rooms/{roomId}/meter-readings` | O S — record readings |
 
-## Nhân viên & công việc (11)
+## Staff and tasks (11)
 
 | Method | Path | Role |
 |---|---|---|
-| GET · POST · PUT · DELETE | `/my/staff[/{id}]` | O — tạo/sửa/khóa tài khoản staff |
+| GET · POST · PUT · DELETE | `/my/staff[/{id}]` | O — create/edit/lock staff accounts |
 | GET | `/my/boarding-houses/{id}/staff` | O |
-| POST | `/my/boarding-houses/{id}/staff` | O — gán staff (`StaffAssignment`) |
-| DELETE | `/my/boarding-houses/{id}/staff/{staffId}` | O — bỏ gán |
-| GET | `/tasks` | O S — lọc `boardingHouseId, assignedTo, status, priority` |
-| POST · GET · PUT | `/tasks[/{id}]` | O (S được `PUT` trạng thái việc của mình) |
+| POST | `/my/boarding-houses/{id}/staff` | O — assign staff (`StaffAssignment`) |
+| DELETE | `/my/boarding-houses/{id}/staff/{staffId}` | O — unassign |
+| GET | `/tasks` | O S — filters `boardingHouseId, assignedTo, status, priority` |
+| POST · GET · PUT | `/tasks[/{id}]` | O (S may `PUT` the status of their own task) |
 | PUT | `/tasks/{id}/status` | O S |
 
-## Báo sự cố (6) — mới
+## Maintenance requests (6)
 
 | Method | Path | Role |
 |---|---|---|
 | GET | `/maintenance-requests` | T S O |
-| POST | `/maintenance-requests` | T — kèm ảnh |
+| POST | `/maintenance-requests` | T — with photos |
 | GET | `/maintenance-requests/{id}` | T S O |
-| PUT | `/maintenance-requests/{id}/accept` | S O — sinh `Task` cho staff phụ trách |
+| PUT | `/maintenance-requests/{id}/accept` | S O — generates a `Task` for the assigned staff |
 | PUT | `/maintenance-requests/{id}/resolve` | S O |
 | PUT | `/maintenance-requests/{id}/reject` | S O |
 
-## Đánh giá & báo cáo vi phạm (12)
+## Reviews and reports (12)
 
 | Method | Path | Role |
 |---|---|---|
-| POST | `/reviews` | T — chỉ khi có `Lease` với nhà trọ đó |
-| PUT · DELETE | `/reviews/{id}` | T (chủ sở hữu) |
+| POST | `/reviews` | T — only with a `Lease` for that property |
+| PUT · DELETE | `/reviews/{id}` | T (the author) |
 | POST | `/reviews/{id}/reply` | O S |
 | PUT · DELETE | `/reviews/{id}/reply/{replyId}` | O S |
 | GET | `/me/reviews` | T |
-| GET | `/my/reviews` | O S — đánh giá về nhà trọ của mình |
-| POST | `/reports` | T — báo cáo nhà trọ hoặc đánh giá |
+| GET | `/my/reviews` | O S — reviews of their own properties |
+| POST | `/reports` | T — report a listing or a review |
 | GET | `/me/reports` | T |
-| GET | `/reports` | A — lọc `targetType, status` |
+| GET | `/reports` | A — filters `targetType, status` |
 | GET | `/reports/{id}` | A |
 | PUT | `/reports/{id}/resolve` · `/reports/{id}/dismiss` | A |
 
-## Chi phí & thống kê chủ trọ (9)
+## Owner expenses and statistics (9)
 
 | Method | Path | Role |
 |---|---|---|
 | GET · POST · PUT · DELETE | `/my/boarding-houses/{id}/expenses[/{expenseId}]` | O |
-| GET | `/my/stats/revenue` | O — từ `vw_monthly_revenue`, lọc `year, boardingHouseId` |
+| GET | `/my/stats/revenue` | O — from `vw_monthly_revenue`, filters `year, boardingHouseId` |
 | GET | `/my/stats/revenue/years` | O |
-| GET | `/my/stats/occupancy` | O — từ `vw_room_occupancy` |
-| GET | `/my/stats/profit` | O — doanh thu − chi phí cùng kỳ |
-| GET | `/my/stats/summary` | O — thẻ tổng quan dashboard |
+| GET | `/my/stats/occupancy` | O — from `vw_room_occupancy` |
+| GET | `/my/stats/profit` | O — revenue − expenses for the same period |
+| GET | `/my/stats/summary` | O — dashboard summary cards |
 
-## Thông báo (5) — mới
+## Notifications (5)
 
 | Method | Path | Role |
 |---|---|---|
@@ -231,26 +231,23 @@
 | GET · POST · PUT · DELETE | `/admin/accounts[/{id}]` |
 | PUT | `/admin/accounts/{id}/lock` · `/admin/accounts/{id}/unlock` |
 | POST | `/admin/accounts/{id}/restore` |
-| GET | `/admin/boarding-houses` — lọc `listingStatus` |
+| GET | `/admin/boarding-houses` — filter `listingStatus` |
 | PUT | `/admin/boarding-houses/{id}/approve` · `/reject` |
 | DELETE · POST | `/admin/boarding-houses/{id}` · `/{id}/restore` |
 | GET · POST · PUT · DELETE | `/admin/facilities[/{id}]` |
 | GET | `/admin/reviews` · DELETE `/admin/reviews/{id}` · POST `/admin/reviews/{id}/restore` |
-| GET | `/admin/audit-logs` — lọc `actor, entityType, entityId, from, to` |
+| GET | `/admin/audit-logs` — filters `actor, entityType, entityId, from, to` |
 | GET | `/admin/stats/summary` |
 
-## Upload ảnh (2)
+## Image upload (2)
 
 | Method | Path | Role |
 |---|---|---|
-| POST | `/images` | T S O A — upload Cloudinary, trả `url` + `publicId` |
-| DELETE | `/images/{id}` | T S O A — xóa cả trên Cloudinary trong cùng luồng |
+| POST | `/images` | T S O A — uploads to Cloudinary, returns `url` + `publicId` |
+| DELETE | `/images/{id}` | T S O A — deletes from Cloudinary in the same flow |
 
 ---
 
-**Tổng: ~150 endpoint** (bản cũ 221). Không mất tính năng nào — phần giảm đến từ:
-bỏ `/filter` trùng, gộp WatchLater vào SavedListing, và một endpoint dùng chung cho
-staff/owner/admin thay vì ba bản sao ở ba router.
-
-
-
+**Total: ~150 endpoints.** The count stays low because of two conventions above: filtering is a
+query param on the list endpoint, and staff/owner/admin share one endpoint with resource-level
+authorization instead of three copies.
