@@ -77,9 +77,12 @@ middleware rather than separate SPAs.
   listing moderation (approval and rejection with reason); shared facilities catalogue CRUD with in-use deletion
   guard; review moderation and soft-delete/restore with automated rating recomputation; structured append-only
   audit logs trail, and realtime platform-wide dashboard summary metrics.
-  Covered by 141 integration tests that run against a real PostGIS container.
+- **Images uploading & realtime SignalR notifications hub group: done** — standalone image upload pipeline
+  (`POST /api/v1/images`, `DELETE /api/v1/images/{*publicId}`) with MIME whitelist and size limits; authenticated
+  SignalR realtime channel (`/hubs/notifications`) pushing live updates to connected users.
+  Covered by 143 integration tests that run against a real PostGIS container.
 
-Next: notifications SignalR hub & image uploading.
+All 10 backend feature groups and 89 endpoints from `docs/api-design.md` are 100% implemented, tested, and verified.
 
 | Document | Contents |
 |---|---|
