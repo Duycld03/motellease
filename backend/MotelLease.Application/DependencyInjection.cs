@@ -1,7 +1,16 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using MotelLease.Application.Accounts;
+using MotelLease.Application.Appointments;
 using MotelLease.Application.Auth;
+using MotelLease.Application.BoardingHouses;
+using MotelLease.Application.Common.Security;
+using MotelLease.Application.Deposits;
+using MotelLease.Application.Leases;
+using MotelLease.Application.Notifications;
+using MotelLease.Application.Payments;
+using MotelLease.Application.Rooms;
+using MotelLease.Application.RoomTypes;
 
 namespace MotelLease.Application;
 
@@ -39,6 +48,67 @@ public static class DependencyInjection
         services.AddScoped<VerifyEmailChangeOtpHandler>();
         services.AddScoped<GetSessionsHandler>();
         services.AddScoped<RevokeSessionHandler>();
+
+        services.AddScoped<BoardingHouseAccess>();
+
+        services.AddScoped<ListMyBoardingHousesHandler>();
+        services.AddScoped<GetBoardingHouseHandler>();
+        services.AddScoped<CreateBoardingHouseHandler>();
+        services.AddScoped<UpdateBoardingHouseHandler>();
+        services.AddScoped<DeleteBoardingHouseHandler>();
+        services.AddScoped<SubmitBoardingHouseForReviewHandler>();
+        services.AddScoped<UpdateUtilityPricesHandler>();
+        services.AddScoped<AddBoardingHouseImageHandler>();
+        services.AddScoped<DeleteBoardingHouseImageHandler>();
+        services.AddScoped<SetPrimaryBoardingHouseImageHandler>();
+
+        services.AddScoped<ListRoomTypesHandler>();
+        services.AddScoped<CreateRoomTypeHandler>();
+        services.AddScoped<UpdateRoomTypeHandler>();
+        services.AddScoped<DeleteRoomTypeHandler>();
+
+        services.AddScoped<ListRoomsHandler>();
+        services.AddScoped<CreateRoomHandler>();
+        services.AddScoped<UpdateRoomHandler>();
+        services.AddScoped<DeleteRoomHandler>();
+        services.AddScoped<UpdateRoomStatusHandler>();
+        services.AddScoped<UpdateMeterReadingsHandler>();
+
+        services.AddScoped<NotificationDispatcher>();
+
+        services.AddScoped<ListAppointmentsHandler>();
+        services.AddScoped<GetAppointmentHandler>();
+        services.AddScoped<BookAppointmentHandler>();
+        services.AddScoped<AnswerAppointmentHandler>();
+        services.AddScoped<CancelAppointmentHandler>();
+        services.AddScoped<ExpirePastAppointmentsHandler>();
+
+        services.AddSingleton(DepositPaymentWindow.Default);
+
+        services.AddScoped<ListDepositsHandler>();
+        services.AddScoped<GetDepositHandler>();
+        services.AddScoped<RequestDepositHandler>();
+        services.AddScoped<AnswerDepositHandler>();
+        services.AddScoped<CancelDepositHandler>();
+        services.AddScoped<PreviewDepositContractHandler>();
+        services.AddScoped<ExpireOverdueDepositsHandler>();
+
+        services.AddSingleton(PaymentSessionWindow.Default);
+        services.AddSingleton<PaymentGateways>();
+
+        services.AddScoped<StartDepositPaymentHandler>();
+        services.AddScoped<StartBillPaymentHandler>();
+        services.AddScoped<ConfirmPaymentHandler>();
+        services.AddScoped<ReadPaymentReturnHandler>();
+        services.AddScoped<ListPaymentsHandler>();
+        services.AddScoped<GetPaymentHandler>();
+
+        services.AddScoped<ConfirmDepositLeaseHandler>();
+
+        services.AddScoped<ListNotificationsHandler>();
+        services.AddScoped<CountUnreadNotificationsHandler>();
+        services.AddScoped<MarkNotificationReadHandler>();
+        services.AddScoped<MarkAllNotificationsReadHandler>();
 
         return services;
     }
