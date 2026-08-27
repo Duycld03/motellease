@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MotelLease.Application.Accounts.Contracts;
+using MotelLease.Application.Common;
 using MotelLease.Application.Common.Abstractions;
 using MotelLease.Application.Common.Errors;
 
@@ -14,29 +15,23 @@ public sealed class UpdateAvatarHandler(
     IImageStorage imageStorage,
     ICurrentUser currentUser)
 {
-    /// <summary>Also used by the Api layer as the multipart request size limit.</summary>
-    public const long MaxBytes = 5 * 1024 * 1024;
-
-    private static readonly string[] AllowedContentTypes =
-        ["image/jpeg", "image/png", "image/webp"];
-
     public async Task<AvatarResponse> HandleAsync(
         UpdateAvatarRequest request,
         CancellationToken cancellationToken = default)
     {
-        if (request.Length > MaxBytes)
+        if (request.Length > ImageUploadRules.MaxBytes)
         {
             throw new BusinessRuleException(
-                MessageKeys.Account.AvatarTooLarge, MaxBytes / (1024 * 1024));
+                MessageKeys.Account.AvatarTooLarge, ImageUploadRules.MaxMegabytes);
         }
 
         // Content type is checked before anything is uploaded; the storage provider is not
         // the place to find out the file is a video.
-        if (!AllowedContentTypes.Contains(request.ContentType, StringComparer.OrdinalIgnoreCase))
+        if (!ImageUploadRules.IsAllowedContentType(request.ContentType))
         {
             throw new BusinessRuleException(
                 MessageKeys.Account.AvatarTypeNotSupported,
-                string.Join(", ", AllowedContentTypes));
+                ImageUploadRules.AllowedContentTypeList);
         }
 
         var userId = currentUser.RequireUserId();

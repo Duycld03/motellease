@@ -26,6 +26,31 @@
   "error.account.language_not_supported": "Ngôn ngữ không được hỗ trợ. Chỉ nhận: {0}.",
 
   "error.image.rejected": "Không xử lý được ảnh này. Vui lòng tải lên một tệp ảnh hợp lệ.",
+  "error.image.too_large": "Ảnh không được vượt quá {0} MB.",
+  "error.image.type_not_supported": "Định dạng ảnh không được hỗ trợ. Chỉ nhận: {0}.",
+  "error.image.not_found": "Không tìm thấy ảnh.",
+
+  "error.boarding_house.not_found": "Không tìm thấy nhà trọ.",
+  "error.boarding_house.not_yours": "Bạn không phụ trách nhà trọ này.",
+  "error.boarding_house.in_use": "Nhà trọ vẫn còn hợp đồng hiệu lực hoặc phòng đã được giữ chỗ nên không thể xóa.",
+  "error.boarding_house.already_under_review": "Chỉ tin đăng ở trạng thái nháp hoặc bị từ chối mới được gửi duyệt.",
+  "error.boarding_house.nothing_to_publish": "Cần có ít nhất một phòng trước khi gửi tin đăng đi duyệt.",
+  "error.boarding_house.type_conflicts_with_occupancy": "Loại nhà trọ này chỉ cho phép một người thuê mỗi phòng. Hãy giảm số người tối đa của mọi loại phòng trước.",
+  "error.boarding_house.too_many_images": "Một tin đăng chỉ được có tối đa {0} ảnh.",
+
+  "error.room_type.not_found": "Không tìm thấy loại phòng.",
+  "error.room_type.facility_not_found": "Một trong các tiện ích đã chọn không tồn tại.",
+  "error.room_type.single_occupant_house": "Loại nhà trọ này chỉ cho phép một người thuê mỗi phòng.",
+  "error.room_type.max_occupants_below_live": "Một phòng thuộc loại này đang có {0} người ở nên số người tối đa không thể thấp hơn.",
+  "error.room_type.in_use": "Vẫn còn phòng thuộc loại này nên không thể xóa.",
+
+  "error.room.not_found": "Không tìm thấy phòng.",
+  "error.room.number_taken": "Phòng số {0} đã tồn tại trong nhà trọ này.",
+  "error.room.room_type_from_another_house": "Loại phòng thuộc một nhà trọ khác.",
+  "error.room.status_not_manually_settable": "Trạng thái đã thuê và đã giữ chỗ được suy ra từ hợp đồng và tiền cọc, không thể đặt bằng tay.",
+  "error.room.status_locked_by_occupancy": "Phòng đang được giữ chỗ hoặc đã có người thuê. Hãy kết thúc hợp đồng hoặc giải phóng tiền cọc trước.",
+  "error.room.reading_went_backwards": "Chỉ số đồng hồ không được giảm. Giá trị hiện tại: điện {0}, nước {1}.",
+  "error.room.in_use": "Phòng đang có hợp đồng hiệu lực hoặc tiền cọc đã thanh toán nên không thể xóa.",
 
   "email.registration_otp.subject": "Mã xác thực đăng ký MotelLease",
   "email.registration_otp.body": "<p>Mã xác thực đăng ký của bạn là <strong>{0}</strong>.</p><p>Mã có hiệu lực trong {1} phút. Nếu bạn không yêu cầu đăng ký, vui lòng bỏ qua email này.</p>",
@@ -42,6 +67,11 @@
   "validation.otp_format": "Mã xác thực gồm 6 chữ số.",
   "validation.too_long": "Giá trị quá dài.",
   "validation.full_name_format": "Họ tên chỉ gồm chữ, dấu cách và các ký tự ' . -",
+  "validation.not_negative": "Giá trị không được là số âm.",
+  "validation.positive": "Giá trị phải lớn hơn 0.",
+  "validation.latitude_range": "Vĩ độ phải nằm trong khoảng -90 đến 90.",
+  "validation.longitude_range": "Kinh độ phải nằm trong khoảng -180 đến 180.",
+  "validation.out_of_range": "Giá trị nằm ngoài khoảng cho phép.",
 
   "error.validation.title": "Dữ liệu không hợp lệ.",
   "error.unexpected": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.",
