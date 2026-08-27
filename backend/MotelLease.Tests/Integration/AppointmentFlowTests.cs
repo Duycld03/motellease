@@ -81,6 +81,10 @@ public sealed class AppointmentFlowTests : IAsyncLifetime
 
         Assert.Equal("Accepted", payload.GetProperty("status").GetString());
         Assert.Equal("101", payload.GetProperty("roomNumber").GetString());
+
+        // And told again over the realtime channel, once the change is committed.
+        Assert.Equal(
+            notification.Id, Assert.Single(_app.Realtime.PushedTo(booked.TenantUserId)).Id);
     }
 
     [Fact]
