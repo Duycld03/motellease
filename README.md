@@ -56,9 +56,15 @@ middleware rather than separate SPAs.
   enforcing Invariant §9.10 (lease requirement, 1 review per lease); automatic property rating and
   review count recomputation; owner and assigned staff review replies; tenant violation reports
   against listings or reviews; admin report inspection, resolution and dismissal.
-  Covered by 131 integration tests that run against a real PostGIS container.
+- **Staff management, work tasks & maintenance requests group: done** — owner staff account creation,
+  boarding house staff assignments with resource-based authorization enforcement (§6, §9.12), staff
+  account locking; owner/staff work tasks lifecycle with priority, due date, status and completion
+  timestamp; tenant room maintenance requests with category, photos, and auto-dispatching
+  `MaintenanceReported` notifications; maintenance request acceptance with automatic linked `WorkTask`
+  generation, resolution and rejection.
+  Covered by 134 integration tests that run against a real PostGIS container.
 
-Next: staff management & work tasks, maintenance requests, refunds & withdrawals.
+Next: refunds & owner withdrawals, expenses & statistics, admin platform management.
 
 | Document | Contents |
 |---|---|
