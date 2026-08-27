@@ -144,6 +144,10 @@
   "notification.LeaseExpiring.body": "Hợp đồng thuê phòng {roomNumber} tại {boardingHouseName} sẽ hết hạn vào ngày {endDate}. Bạn có thể gửi yêu cầu gia hạn nếu muốn tiếp tục thuê.",
   "notification.MaintenanceReported.title": "Yêu cầu sửa chữa mới",
   "notification.MaintenanceReported.body": "Phòng {roomNumber} tại {boardingHouseName} gửi yêu cầu sửa chữa ({category}). Mở để xem chi tiết.",
+  "notification.RefundProcessed.title": "Cập nhật yêu cầu hoàn tiền cọc",
+  "notification.RefundProcessed.body": "Yêu cầu hoàn tiền cọc {amount} VNĐ của bạn đã được {status}.",
+  "notification.WithdrawHandled.title": "Cập nhật yêu cầu rút tiền",
+  "notification.WithdrawHandled.body": "Yêu cầu rút số tiền {amount} VNĐ của bạn đã được {status}.",
 
   "validation.required": "Không được để trống.",
   "validation.email_format": "Email không đúng định dạng.",
@@ -184,6 +188,18 @@
   "error.maintenance.not_yours": "Bạn không có quyền truy cập yêu cầu sửa chữa này.",
   "error.maintenance.no_active_lease": "Bạn cần có hợp đồng thuê còn hiệu lực để gửi yêu cầu sửa chữa.",
   "error.maintenance.already_processed": "Yêu cầu sửa chữa này đã được xử lý trước đó.",
+
+  "error.refund.not_found": "Không tìm thấy yêu cầu hoàn tiền cọc.",
+  "error.refund.not_yours": "Bạn không có quyền truy cập yêu cầu hoàn tiền cọc này.",
+  "error.refund.invalid_deposit_state": "Chỉ có thể yêu cầu hoàn cọc đối với tiền cọc đã thanh toán thành công.",
+  "error.refund.already_processed": "Yêu cầu hoàn tiền cọc này đã được xử lý trước đó.",
+  "error.refund.already_requested": "Tiền cọc này đang có một yêu cầu hoàn cọc chờ xử lý.",
+
+  "error.withdraw.not_found": "Không tìm thấy yêu cầu rút tiền.",
+  "error.withdraw.not_yours": "Bạn không có quyền truy cập yêu cầu rút tiền này.",
+  "error.withdraw.insufficient_balance": "Số tiền rút vượt quá số dư khả dụng hiện tại của bạn.",
+  "error.withdraw.already_processed": "Yêu cầu rút tiền này đã được xử lý trước đó.",
+  "error.withdraw.bank_details_required": "Vui lòng cung cấp đầy đủ thông tin tài khoản ngân hàng nhận tiền.",
 
   "error.validation.title": "Dữ liệu không hợp lệ.",
   "error.unexpected": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.",

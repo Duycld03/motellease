@@ -239,6 +239,24 @@ public static class MessageKeys
         public const string AlreadyProcessed = "error.maintenance.already_processed";
     }
 
+    public static class Refund
+    {
+        public const string NotFound = "error.refund.not_found";
+        public const string NotYours = "error.refund.not_yours";
+        public const string InvalidDepositState = "error.refund.invalid_deposit_state";
+        public const string AlreadyProcessed = "error.refund.already_processed";
+        public const string AlreadyRequested = "error.refund.already_requested";
+    }
+
+    public static class Withdraw
+    {
+        public const string NotFound = "error.withdraw.not_found";
+        public const string NotYours = "error.withdraw.not_yours";
+        public const string InsufficientBalance = "error.withdraw.insufficient_balance";
+        public const string AlreadyProcessed = "error.withdraw.already_processed";
+        public const string BankDetailsRequired = "error.withdraw.bank_details_required";
+    }
+
     public static class Validation
     {
         public const string Required = "validation.required";
