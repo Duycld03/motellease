@@ -52,9 +52,13 @@ middleware rather than separate SPAs.
   PostGIS spatial nearby searches (`ST_DWithin`, `ST_Distance`) with correct longitude-first
   geometries; bounding box map markers; detailed property views and vacant room lists; verified review
   queries; facility and province/district lookups; tenant saved listings management.
-  Covered by 128 integration tests that run against a real PostGIS container.
+- **Reviews, review replies & reports moderation group: done** — verified review submissions
+  enforcing Invariant §9.10 (lease requirement, 1 review per lease); automatic property rating and
+  review count recomputation; owner and assigned staff review replies; tenant violation reports
+  against listings or reviews; admin report inspection, resolution and dismissal.
+  Covered by 131 integration tests that run against a real PostGIS container.
 
-Next: reviews & replies submission, maintenance requests, work tasks, reports & moderation.
+Next: staff management & work tasks, maintenance requests, refunds & withdrawals.
 
 | Document | Contents |
 |---|---|
