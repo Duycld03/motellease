@@ -158,6 +158,181 @@ public sealed class LeaseFlowTests : IAsyncLifetime
         Assert.Equal("error.room.in_use", await deleted.ReadCodeAsync());
     }
 
+    [Fact]
+    public async Task Tenant_can_fetch_current_lease_and_owner_can_list_leases()
+    {
+        var held = await _app.PaidDepositAsync(_client);
+        var confirmResp = await ConfirmAsync(held);
+        var createdLease = await confirmResp.ReadAsync<LeaseResponse>();
+
+        // Tenant gets /me/current-lease
+        var currentResp = await _client.SendAsync(HttpMethod.Get, "/api/v1/me/current-lease", held.TenantToken);
+        Assert.Equal(HttpStatusCode.OK, currentResp.StatusCode);
+        var currentLease = await currentResp.ReadAsync<LeaseResponse>();
+        Assert.Equal(createdLease.Id, currentLease.Id);
+
+        // Owner lists leases
+        var listResp = await _client.SendAsync(
+            HttpMethod.Get,
+            $"/api/v1/leases?boardingHouseId={held.Listing.HouseId}",
+            held.Listing.OwnerToken);
+        Assert.Equal(HttpStatusCode.OK, listResp.StatusCode);
+        var paged = await listResp.ReadAsync<MotelLease.Application.Common.Contracts.PagedResponse<LeaseResponse>>();
+        Assert.Contains(paged.Items, l => l.Id == createdLease.Id);
+
+        // Room lease history
+        var historyResp = await _client.SendAsync(
+            HttpMethod.Get,
+            $"/api/v1/rooms/{held.Listing.RoomId}/lease-history",
+            held.Listing.OwnerToken);
+        Assert.Equal(HttpStatusCode.OK, historyResp.StatusCode);
+        var history = await historyResp.ReadAsync<IReadOnlyList<LeaseResponse>>();
+        Assert.Contains(history, l => l.Id == createdLease.Id);
+    }
+
+    [Fact]
+    public async Task Co_tenants_can_be_added_and_removed_with_occupancy_enforced()
+    {
+        var held = await _app.PaidDepositAsync(_client);
+        var confirmResp = await ConfirmAsync(held);
+        var lease = await confirmResp.ReadAsync<LeaseResponse>();
+
+        // By default house is Traditional / Single so MaxOccupants = 1.
+        // Adding a 2nd tenant should fail with RoomFullyOccupied
+        var addResp = await _client.SendAsync(
+            HttpMethod.Post,
+            $"/api/v1/leases/{lease.Id}/tenants",
+            held.Listing.OwnerToken,
+            new AddLeaseTenantRequest("Co-tenant One", "0912345678", "123456789012"));
+
+        Assert.Equal(HttpStatusCode.Conflict, addResp.StatusCode);
+        Assert.Equal("error.lease.room_fully_occupied", await addResp.ReadCodeAsync());
+
+        // Update house to DormStyle with RoomType MaxOccupants = 3
+        using (var scope = _app.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<MotelLeaseDbContext>();
+            var house = await db.BoardingHouses.FirstAsync(b => b.Id == held.Listing.HouseId);
+            house.Type = BoardingHouseType.DormStyle;
+            var roomType = await db.RoomTypes.FirstAsync(rt => rt.Id == held.Listing.RoomTypeId);
+            roomType.MaxOccupants = 3;
+            await db.SaveChangesAsync();
+        }
+
+        // Now add co-tenant should succeed
+        var addResp2 = await _client.SendAsync(
+            HttpMethod.Post,
+            $"/api/v1/leases/{lease.Id}/tenants",
+            held.Listing.OwnerToken,
+            new AddLeaseTenantRequest("Co-tenant One", "0912345678", "123456789012"));
+
+        Assert.Equal(HttpStatusCode.OK, addResp2.StatusCode);
+        var updatedLease = await addResp2.ReadAsync<LeaseResponse>();
+        Assert.Equal(2, updatedLease.Tenants.Count);
+        var coTenant = updatedLease.Tenants.First(t => !t.IsPrimary);
+        Assert.Equal("Co-tenant One", coTenant.FullName);
+        Assert.Null(coTenant.MovedOutAt);
+
+        // Remove primary tenant fails
+        var primaryTenant = updatedLease.Tenants.First(t => t.IsPrimary);
+        var removePrimaryResp = await _client.SendAsync(
+            HttpMethod.Delete,
+            $"/api/v1/leases/{lease.Id}/tenants/{primaryTenant.Id}",
+            held.Listing.OwnerToken);
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, removePrimaryResp.StatusCode);
+        Assert.Equal("error.lease.cannot_remove_primary_tenant", await removePrimaryResp.ReadCodeAsync());
+
+        // Remove co-tenant succeeds and sets MovedOutAt
+        var removeResp = await _client.SendAsync(
+            HttpMethod.Delete,
+            $"/api/v1/leases/{lease.Id}/tenants/{coTenant.Id}",
+            held.Listing.OwnerToken);
+        Assert.Equal(HttpStatusCode.OK, removeResp.StatusCode);
+        var leaseAfterRemove = await removeResp.ReadAsync<LeaseResponse>();
+        var removedCoTenant = leaseAfterRemove.Tenants.First(t => t.Id == coTenant.Id);
+        Assert.NotNull(removedCoTenant.MovedOutAt);
+    }
+
+    [Fact]
+    public async Task Lease_termination_preview_and_execution_updates_meters_and_refunds()
+    {
+        var held = await _app.PaidDepositAsync(_client);
+        var confirmResp = await ConfirmAsync(held);
+        var lease = await confirmResp.ReadAsync<LeaseResponse>();
+
+        // Preview termination
+        var previewResp = await _client.SendAsync(
+            HttpMethod.Get,
+            $"/api/v1/leases/{lease.Id}/termination-preview?finalElectricityReading=50&finalWaterReading=10&depositDeducted=200000",
+            held.Listing.OwnerToken);
+
+        Assert.Equal(HttpStatusCode.OK, previewResp.StatusCode);
+        var preview = await previewResp.ReadAsync<LeaseTerminationPreviewResponse>();
+        Assert.Equal(50, preview.FinalElectricityReading);
+        Assert.Equal(10, preview.FinalWaterReading);
+        Assert.Equal(200000, preview.DepositDeducted);
+        Assert.True(preview.DepositRefunded > 0);
+
+        // Terminate
+        var terminateResp = await _client.SendAsync(
+            HttpMethod.Post,
+            $"/api/v1/leases/{lease.Id}/terminate",
+            held.Listing.OwnerToken,
+            new TerminateLeaseRequest(50, 10, 200000, "Early termination by agreement"));
+
+        Assert.Equal(HttpStatusCode.OK, terminateResp.StatusCode);
+        var terminatedLease = await terminateResp.ReadAsync<LeaseResponse>();
+        Assert.Equal(LeaseStatus.Terminated, terminatedLease.Status);
+        Assert.Equal(50, terminatedLease.FinalElectricityReading);
+        Assert.Equal(10, terminatedLease.FinalWaterReading);
+        Assert.Equal(200000, terminatedLease.DepositDeducted);
+        Assert.Equal(preview.DepositRefunded, terminatedLease.DepositRefunded);
+
+        // Room is back to Available (§9.3)
+        Assert.Equal(RoomStatus.Available, await RoomStatusAsync(held.Listing.RoomId));
+
+        // Room meter readings advanced
+        using var scope = _app.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<MotelLeaseDbContext>();
+        var room = await db.Rooms.FirstAsync(r => r.Id == held.Listing.RoomId);
+        Assert.Equal(50, room.CurrentElectricityReading);
+        Assert.Equal(10, room.CurrentWaterReading);
+    }
+
+    [Fact]
+    public async Task Sweep_lease_expiry_updates_status_and_frees_ended_room()
+    {
+        var held = await _app.PaidDepositAsync(_client);
+        var confirmResp = await ConfirmAsync(held);
+        var lease = await confirmResp.ReadAsync<LeaseResponse>();
+
+        using (var scope = _app.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<MotelLeaseDbContext>();
+            var l = await db.Leases.FirstAsync(x => x.Id == lease.Id);
+            // Put end date in 15 days
+            l.EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(15));
+            await db.SaveChangesAsync();
+
+            var sweeper = scope.ServiceProvider.GetRequiredService<MotelLease.Application.Leases.SweepLeaseExpiryHandler>();
+            var count = await sweeper.HandleAsync();
+            Assert.True(count >= 1);
+
+            var updated = await db.Leases.FirstAsync(x => x.Id == lease.Id);
+            Assert.Equal(LeaseStatus.Expiring, updated.Status);
+
+            // Put end date and start date in the past
+            updated.StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-6));
+            updated.EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-1));
+            await db.SaveChangesAsync();
+
+            await sweeper.HandleAsync();
+            var ended = await db.Leases.Include(x => x.Room).FirstAsync(x => x.Id == lease.Id);
+            Assert.Equal(LeaseStatus.Ended, ended.Status);
+            Assert.Equal(RoomStatus.Available, ended.Room.Status);
+        }
+    }
+
     private Task<HttpResponseMessage> ConfirmAsync(HeldRoom held) =>
         _client.SendAsync(
             HttpMethod.Post,
@@ -183,3 +358,4 @@ public sealed class LeaseFlowTests : IAsyncLifetime
         return await database.Rooms.Where(r => r.Id == roomId).Select(r => r.Status).FirstAsync();
     }
 }
+
