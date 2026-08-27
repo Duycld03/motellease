@@ -48,6 +48,10 @@ public sealed class MotelLeaseAppFactory(
     IGoogleTokenVerifier? googleTokens = null,
     IImageStorage? imageStorage = null) : WebApplicationFactory<Program>
 {
+    /// <summary>The timed sweeps, unregistered so a tick cannot land inside a test.</summary>
+    private static readonly Type[] ScheduledJobs =
+        [typeof(AppointmentExpiryJob), typeof(DepositExpiryJob)];
+
     public RecordingEmailSender Emails { get; } = new();
 
     /// <summary>
@@ -100,7 +104,8 @@ public sealed class MotelLeaseAppFactory(
             // the schedule is dropped and the rule behind it is invoked directly instead.
             foreach (var descriptor in services
                          .Where(d => d.ServiceType == typeof(IHostedService)
-                                     && d.ImplementationType == typeof(AppointmentExpiryJob))
+                                     && d.ImplementationType is not null
+                                     && ScheduledJobs.Contains(d.ImplementationType))
                          .ToList())
             {
                 services.Remove(descriptor);
