@@ -22,6 +22,8 @@ builder.Services.AddRealtimeNotifications();
 // Background work is registered here and only here (docs/domain-rules.md §8).
 builder.Services.AddHostedService<AppointmentExpiryJob>();
 builder.Services.AddHostedService<DepositExpiryJob>();
+builder.Services.AddHostedService<BillReminderJob>();
+builder.Services.AddHostedService<LeaseExpiryJob>();
 
 builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>())
     // Enums travel as names in both directions. They are also stored as text
