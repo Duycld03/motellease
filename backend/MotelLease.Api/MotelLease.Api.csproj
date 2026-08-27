@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>b8fe81ea-c445-4828-b1eb-127ab91615a9</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Program is a top-level generated class, so WebApplicationFactory<Program> in the test
+         project cannot see it without this. -->
+    <InternalsVisibleTo Include="MotelLease.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MotelLease.Application\MotelLease.Application.csproj" />
+    <ProjectReference Include="..\MotelLease.Infrastructure\MotelLease.Infrastructure.csproj" />
+    <ProjectReference Include="..\MotelLease.Domain\MotelLease.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

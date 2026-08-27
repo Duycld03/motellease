@@ -1,0 +1,51 @@
+{
+  "error.auth.invalid_credentials": "Tên đăng nhập hoặc mật khẩu không đúng.",
+  "error.auth.account_locked": "Tài khoản đã bị khóa. Vui lòng liên hệ bộ phận hỗ trợ.",
+  "error.auth.email_taken": "Email này đã được sử dụng.",
+  "error.auth.username_taken": "Tên đăng nhập này đã được sử dụng.",
+  "error.auth.email_not_verified": "Email chưa được xác thực. Vui lòng xác thực mã OTP trước khi đăng ký.",
+  "error.auth.role_not_self_assignable": "Không thể tự đăng ký với vai trò này.",
+  "error.auth.refresh_token_invalid": "Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.",
+  "error.auth.refresh_token_reused": "Phiên đăng nhập đã được sử dụng lại nên toàn bộ phiên bị thu hồi vì lý do an toàn. Vui lòng đăng nhập lại.",
+  "error.auth.google_token_invalid": "Không xác thực được tài khoản Google.",
+  "error.auth.google_email_unverified": "Email của tài khoản Google này chưa được xác thực.",
+  "error.auth.password_not_set": "Tài khoản này đăng nhập bằng Google và chưa đặt mật khẩu. Vui lòng dùng chức năng quên mật khẩu để tạo mật khẩu mới.",
+  "error.auth.current_password_wrong": "Mật khẩu hiện tại không đúng.",
+  "error.auth.new_password_same": "Mật khẩu mới phải khác mật khẩu hiện tại.",
+
+  "error.otp.resend_too_soon": "Vui lòng đợi {0} giây trước khi gửi lại mã.",
+  "error.otp.not_found": "Mã xác thực không tồn tại hoặc đã hết hạn. Vui lòng gửi lại mã.",
+  "error.otp.mismatch": "Mã xác thực không đúng.",
+  "error.otp.too_many_attempts": "Bạn đã nhập sai quá nhiều lần. Vui lòng gửi lại mã mới.",
+
+  "error.account.not_found": "Không tìm thấy tài khoản.",
+  "error.account.session_not_found": "Không tìm thấy phiên đăng nhập này.",
+  "error.account.email_unchanged": "Email mới trùng với email hiện tại.",
+  "error.account.avatar_too_large": "Ảnh đại diện không được vượt quá {0} MB.",
+  "error.account.avatar_type_not_supported": "Định dạng ảnh không được hỗ trợ. Chỉ nhận: {0}.",
+  "error.account.language_not_supported": "Ngôn ngữ không được hỗ trợ. Chỉ nhận: {0}.",
+
+  "error.image.rejected": "Không xử lý được ảnh này. Vui lòng tải lên một tệp ảnh hợp lệ.",
+
+  "email.registration_otp.subject": "Mã xác thực đăng ký MotelLease",
+  "email.registration_otp.body": "<p>Mã xác thực đăng ký của bạn là <strong>{0}</strong>.</p><p>Mã có hiệu lực trong {1} phút. Nếu bạn không yêu cầu đăng ký, vui lòng bỏ qua email này.</p>",
+  "email.password_reset_otp.subject": "Mã đặt lại mật khẩu MotelLease",
+  "email.password_reset_otp.body": "<p>Mã đặt lại mật khẩu của bạn là <strong>{0}</strong>.</p><p>Mã có hiệu lực trong {1} phút. Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>",
+  "email.email_change_otp.subject": "Mã xác thực đổi email MotelLease",
+  "email.email_change_otp.body": "<p>Mã xác thực đổi email của bạn là <strong>{0}</strong>.</p><p>Mã có hiệu lực trong {1} phút. Nếu bạn không yêu cầu đổi email, vui lòng bỏ qua email này.</p>",
+
+  "validation.required": "Không được để trống.",
+  "validation.email_format": "Email không đúng định dạng.",
+  "validation.username_format": "Tên đăng nhập dài 3–64 ký tự, chỉ gồm chữ, số và các ký tự . _ -",
+  "validation.password_too_weak": "Mật khẩu phải dài từ 8 đến 128 ký tự và có cả chữ và số.",
+  "validation.phone_format": "Số điện thoại không đúng định dạng.",
+  "validation.otp_format": "Mã xác thực gồm 6 chữ số.",
+  "validation.too_long": "Giá trị quá dài.",
+  "validation.full_name_format": "Họ tên chỉ gồm chữ, dấu cách và các ký tự ' . -",
+
+  "error.validation.title": "Dữ liệu không hợp lệ.",
+  "error.unexpected": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.",
+  "error.unauthorized": "Bạn cần đăng nhập để thực hiện thao tác này.",
+  "error.forbidden": "Bạn không có quyền thực hiện thao tác này.",
+  "error.rate_limited": "Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau."
+}

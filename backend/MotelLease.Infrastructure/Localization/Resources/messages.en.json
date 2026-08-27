@@ -1,0 +1,51 @@
+{
+  "error.auth.invalid_credentials": "Incorrect username or password.",
+  "error.auth.account_locked": "This account is locked. Please contact support.",
+  "error.auth.email_taken": "This email address is already in use.",
+  "error.auth.username_taken": "This username is already taken.",
+  "error.auth.email_not_verified": "This email address is not verified yet. Verify the OTP before registering.",
+  "error.auth.role_not_self_assignable": "You cannot register with this role.",
+  "error.auth.refresh_token_invalid": "The session is invalid or has expired. Please sign in again.",
+  "error.auth.refresh_token_reused": "The session token was replayed, so every session was revoked as a precaution. Please sign in again.",
+  "error.auth.google_token_invalid": "The Google account could not be verified.",
+  "error.auth.google_email_unverified": "This Google account has an unverified email address.",
+  "error.auth.password_not_set": "This account signs in with Google and has no password yet. Use the forgot-password flow to set one.",
+  "error.auth.current_password_wrong": "The current password is incorrect.",
+  "error.auth.new_password_same": "The new password must differ from the current one.",
+
+  "error.otp.resend_too_soon": "Please wait {0} seconds before requesting another code.",
+  "error.otp.not_found": "The code does not exist or has expired. Please request a new one.",
+  "error.otp.mismatch": "The code is incorrect.",
+  "error.otp.too_many_attempts": "Too many incorrect attempts. Please request a new code.",
+
+  "error.account.not_found": "Account not found.",
+  "error.account.session_not_found": "Session not found.",
+  "error.account.email_unchanged": "The new email address matches the current one.",
+  "error.account.avatar_too_large": "The avatar must not exceed {0} MB.",
+  "error.account.avatar_type_not_supported": "Unsupported image format. Accepted: {0}.",
+  "error.account.language_not_supported": "Unsupported language. Accepted: {0}.",
+
+  "error.image.rejected": "The image could not be processed. Please upload a valid image file.",
+
+  "email.registration_otp.subject": "Your MotelLease registration code",
+  "email.registration_otp.body": "<p>Your registration code is <strong>{0}</strong>.</p><p>It is valid for {1} minutes. If you did not request an account, you can ignore this email.</p>",
+  "email.password_reset_otp.subject": "Your MotelLease password reset code",
+  "email.password_reset_otp.body": "<p>Your password reset code is <strong>{0}</strong>.</p><p>It is valid for {1} minutes. If you did not request a reset, you can ignore this email.</p>",
+  "email.email_change_otp.subject": "Your MotelLease email change code",
+  "email.email_change_otp.body": "<p>Your email change code is <strong>{0}</strong>.</p><p>It is valid for {1} minutes. If you did not request this change, you can ignore this email.</p>",
+
+  "validation.required": "This field is required.",
+  "validation.email_format": "This is not a valid email address.",
+  "validation.username_format": "The username must be 3–64 characters using letters, digits and . _ -",
+  "validation.password_too_weak": "The password must be 8–128 characters and contain both a letter and a digit.",
+  "validation.phone_format": "This is not a valid phone number.",
+  "validation.otp_format": "The code is six digits.",
+  "validation.too_long": "This value is too long.",
+  "validation.full_name_format": "The full name may only contain letters, spaces and ' . -",
+
+  "error.validation.title": "The request is invalid.",
+  "error.unexpected": "Something went wrong. Please try again later.",
+  "error.unauthorized": "You must sign in to do this.",
+  "error.forbidden": "You are not allowed to do this.",
+  "error.rate_limited": "Too many requests. Please try again later."
+}
