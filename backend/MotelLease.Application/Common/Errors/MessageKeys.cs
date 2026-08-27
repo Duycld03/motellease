@@ -264,6 +264,19 @@ public static class MessageKeys
         public const string AlreadyExists = "error.expense.already_exists";
     }
 
+    public static class Admin
+    {
+        public const string CannotLockSelf = "error.admin.cannot_lock_self";
+        public const string CannotDeleteSelf = "error.admin.cannot_delete_self";
+    }
+
+    public static class Facility
+    {
+        public const string NotFound = "error.facility.not_found";
+        public const string NameTaken = "error.facility.name_taken";
+        public const string InUse = "error.facility.in_use";
+    }
+
     public static class Validation
     {
         public const string Required = "validation.required";
