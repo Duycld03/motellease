@@ -572,36 +572,98 @@ export type Lease = LeaseResponse
 export type LeaseTenant = LeaseTenantResponse
 export type PaymentTransaction = PaymentTransactionResponse
 
-export interface PaymentBillItem {
+// Bill Contracts
+export interface RoomAdditionalFeeResponse {
   id: string
-  billId: string
-  title: string
-  amount: number
-  description?: string
+  roomId: string
+  paymentBillId?: string
+  feeName: string
+  feeAmount: number
+  month: number
+  year: number
+  createdAt: string
 }
 
-export interface PaymentBill {
+export interface CreateRoomAdditionalFeeRequest {
+  feeName: string
+  feeAmount: number
+  month: number
+  year: number
+}
+
+export interface UpdateRoomAdditionalFeeRequest {
+  feeName: string
+  feeAmount: number
+}
+
+export interface TenantBillSplitResponse {
+  tenantId: string
+  userId?: string
+  fullName: string
+  isPrimary: boolean
+  amount: number
+}
+
+export interface BillResponse {
   id: string
   leaseId: string
-  roomNumber?: string
-  boardingHouseName?: string
+  roomId: string
+  roomNumber: string
+  boardingHouseId: string
+  boardingHouseName: string
   month: number
   year: number
   rentAmount: number
-  electricityOldReading: number
-  electricityNewReading: number
+  electricityOld: number
+  electricityNew: number
+  electricityQty: number
+  electricityUnitPrice: number
   electricityAmount: number
-  waterOldReading: number
-  waterNewReading: number
+  waterOld: number
+  waterNew: number
+  waterQty: number
+  waterUnitPrice: number
   waterAmount: number
-  otherFeesAmount: number
+  additionalFeeTotal: number
   totalAmount: number
   status: BillStatus
-  issuedAt: string
-  dueDate: string
+  issuedAt?: string
+  dueDate?: string
   paidAt?: string
-  items?: PaymentBillItem[]
+  additionalFees: RoomAdditionalFeeResponse[]
+  tenantSplits: TenantBillSplitResponse[]
+  createdAt: string
 }
+
+export interface PreviewBillRequest {
+  roomId: string
+  month: number
+  year: number
+  electricityNew: number
+  waterNew: number
+}
+
+export interface CreateBillRequest {
+  roomId: string
+  month: number
+  year: number
+  electricityNew: number
+  waterNew: number
+  dueDate?: string
+  status?: BillStatus
+}
+
+export interface UpdateDraftBillRequest {
+  electricityNew: number
+  waterNew: number
+  dueDate?: string
+}
+
+export interface IssueDraftBillRequest {
+  dueDate: string
+}
+
+export type PaymentBill = BillResponse
 
 export interface PaymentTransaction {
   id: string
