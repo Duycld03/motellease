@@ -1,12 +1,8 @@
 using System.Net;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MotelLease.Application.Accounts.Contracts;
-using MotelLease.Application.Auth.Contracts;
 using MotelLease.Application.BoardingHouses.Contracts;
 using MotelLease.Application.Common.Abstractions;
 using MotelLease.Application.Common.Contracts;
@@ -26,13 +22,6 @@ namespace MotelLease.Tests.Integration;
 [Collection(PostgresCollection.Name)]
 public sealed class PropertyManagementTests : IAsyncLifetime
 {
-    private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web)
-    {
-        Converters = { new JsonStringEnumConverter() }
-    };
-
-    private const string Password = "Passw0rd123";
-
     private readonly PostgresFixture _postgres;
     private readonly RecordingImageStorage _images = new();
     private MotelLeaseAppFactory _app = null!;
@@ -99,14 +88,14 @@ public sealed class PropertyManagementTests : IAsyncLifetime
     {
         var owner = await RegisterAsync(UserRole.Owner);
         var houseId = await CreateHouseAsync(owner);
-        var staff = await AssignStaffAsync(houseId, await UserIdAsync(owner));
+        var staff = await _app.AssignStaffAsync(_client, houseId, await UserIdAsync(owner));
 
         var listed = await ListHousesAsync(staff.AccessToken);
 
         Assert.Equal(1, listed.Total);
         Assert.Equal(houseId, listed.Items[0].Id);
 
-        await UnassignStaffAsync(staff.UserId);
+        await _app.UnassignStaffAsync(staff.UserId);
 
         var afterRevoke = await SendAsync(
             HttpMethod.Get, $"/api/v1/my/boarding-houses/{houseId}", staff.AccessToken);
@@ -120,7 +109,7 @@ public sealed class PropertyManagementTests : IAsyncLifetime
     {
         var owner = await RegisterAsync(UserRole.Owner);
         var houseId = await CreateHouseAsync(owner);
-        var staff = await AssignStaffAsync(houseId, await UserIdAsync(owner));
+        var staff = await _app.AssignStaffAsync(_client, houseId, await UserIdAsync(owner));
 
         var edit = await SendAsync(
             HttpMethod.Put,
@@ -622,44 +611,8 @@ public sealed class PropertyManagementTests : IAsyncLifetime
         return await _client.SendAsync(request);
     }
 
-    private async Task<string> RegisterAsync(UserRole role)
-    {
-        var email = $"user-{Guid.NewGuid():N}@example.com";
-
-        await _client.PostAsJsonAsync(
-            "/api/v1/auth/register/send-otp", new SendRegistrationOtpRequest(email));
-
-        await _client.PostAsJsonAsync(
-            "/api/v1/auth/register/verify-otp",
-            new VerifyRegistrationOtpRequest(email, _app.Emails.LastCodeFor(email)));
-
-        var response = await _client.PostAsJsonAsync(
-            "/api/v1/auth/register",
-            new RegisterRequest(
-                Username: $"u{Guid.NewGuid():N}"[..16],
-                Email: email,
-                Password: Password,
-                FullName: "Nguyen Van A",
-                PhoneNumber: "0912345678",
-                Gender: Gender.Male,
-                Role: role,
-                PreferredLanguage: "vi"),
-            Json);
-
-        response.EnsureSuccessStatusCode();
-
-        return (await ReadAsync<AuthTokensResponse>(response)).AccessToken;
-    }
-
-    private async Task<string> LoginAsync(string email)
-    {
-        var response = await _client.PostAsJsonAsync(
-            "/api/v1/auth/login", new LoginRequest(email, Password));
-
-        response.EnsureSuccessStatusCode();
-
-        return (await ReadAsync<AuthTokensResponse>(response)).AccessToken;
-    }
+    private async Task<string> RegisterAsync(UserRole role) =>
+        await _client.RegisterAsync(_app.Emails, role);
 
     private async Task<Guid> UserIdAsync(string accessToken)
     {
@@ -669,72 +622,6 @@ public sealed class PropertyManagementTests : IAsyncLifetime
 
         return (await ReadAsync<ProfileResponse>(response)).Id;
     }
-
-    /// <summary>
-    /// Staff accounts are created by an owner through an endpoint that belongs to a later feature
-    /// group, so the rows are seeded here and the account then signs in through the real login.
-    /// </summary>
-    private async Task<StaffAccount> AssignStaffAsync(Guid boardingHouseId, Guid ownerUserId)
-    {
-        var email = $"staff-{Guid.NewGuid():N}@example.com";
-        Guid staffUserId;
-
-        using (var scope = _app.Services.CreateScope())
-        {
-            var database = scope.ServiceProvider.GetRequiredService<MotelLeaseDbContext>();
-            var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
-
-            var staff = new User
-            {
-                Username = email,
-                Email = email,
-                PasswordHash = passwordHasher.Hash(Password),
-                FullName = "Tran Thi B",
-                Role = UserRole.Staff,
-                EmailConfirmed = true
-            };
-
-            database.Users.Add(staff);
-
-            database.StaffProfiles.Add(new StaffProfile
-            {
-                UserId = staff.Id,
-                HireDate = DateOnly.FromDateTime(DateTime.UtcNow),
-                CreatedByUserId = ownerUserId
-            });
-
-            database.StaffAssignments.Add(new StaffAssignment
-            {
-                BoardingHouseId = boardingHouseId,
-                StaffUserId = staff.Id,
-                AssignedByUserId = ownerUserId,
-                AssignedAt = DateTimeOffset.UtcNow
-            });
-
-            await database.SaveChangesAsync();
-
-            staffUserId = staff.Id;
-        }
-
-        return new StaffAccount(staffUserId, await LoginAsync(email));
-    }
-
-    private async Task UnassignStaffAsync(Guid staffUserId)
-    {
-        using var scope = _app.Services.CreateScope();
-        var database = scope.ServiceProvider.GetRequiredService<MotelLeaseDbContext>();
-
-        foreach (var assignment in await database.StaffAssignments
-                     .Where(a => a.StaffUserId == staffUserId && a.UnassignedAt == null)
-                     .ToListAsync())
-        {
-            assignment.UnassignedAt = DateTimeOffset.UtcNow;
-        }
-
-        await database.SaveChangesAsync();
-    }
-
-    private sealed record StaffAccount(Guid UserId, string AccessToken);
 
     /// <summary>
     /// The lease flow is a later feature group, so an occupied room is produced by writing the
@@ -752,7 +639,7 @@ public sealed class PropertyManagementTests : IAsyncLifetime
         {
             Username = email,
             Email = email,
-            PasswordHash = passwordHasher.Hash(Password),
+            PasswordHash = passwordHasher.Hash(ApiRequests.Password),
             FullName = "Le Van C",
             Role = UserRole.Tenant,
             EmailConfirmed = true
@@ -796,30 +683,12 @@ public sealed class PropertyManagementTests : IAsyncLifetime
         HttpMethod method,
         string path,
         string accessToken,
-        object? body = null)
-    {
-        var request = new HttpRequestMessage(method, path)
-        {
-            Headers = { Authorization = new AuthenticationHeaderValue("Bearer", accessToken) }
-        };
+        object? body = null) =>
+        _client.SendAsync(method, path, accessToken, body);
 
-        if (body is not null)
-        {
-            request.Content = JsonContent.Create(body, options: Json);
-        }
+    private static Task<T> ReadAsync<T>(HttpResponseMessage response) =>
+        response.ReadAsync<T>();
 
-        return _client.SendAsync(request);
-    }
-
-    private static async Task<T> ReadAsync<T>(HttpResponseMessage response) =>
-        await response.Content.ReadFromJsonAsync<T>(Json)
-        ?? throw new InvalidOperationException($"Empty {typeof(T).Name} body.");
-
-    /// <summary>The message key behind a problem+json response.</summary>
-    private static async Task<string?> ReadCodeAsync(HttpResponseMessage response)
-    {
-        var problem = await response.Content.ReadFromJsonAsync<JsonElement>();
-
-        return problem.TryGetProperty("code", out var code) ? code.GetString() : null;
-    }
+    private static Task<string?> ReadCodeAsync(HttpResponseMessage response) =>
+        response.ReadCodeAsync();
 }
