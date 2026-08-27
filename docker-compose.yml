@@ -1,6 +1,6 @@
 services:
   db:
-    # PostGIS bắt buộc, không dùng postgres:17-alpine — xem docs/erd.md §8
+    # PostGIS is required — not postgres:17-alpine. See docs/erd.md §8.
     image: postgis/postgis:17-3.5
     container_name: motellease-db
     restart: unless-stopped

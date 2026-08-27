@@ -7,7 +7,7 @@ namespace MotelLease.Api.Errors;
 
 /// <summary>
 /// Turns an <see cref="AppException"/> into RFC 7807 problem+json in the request language.
-/// Handlers throw resource keys; the sentence is chosen here (docs/api-design.md, Quy ước).
+/// Handlers throw resource keys; the sentence is chosen here (docs/api-design.md, Conventions).
 /// </summary>
 public sealed class ExceptionHandlingMiddleware(
     RequestDelegate next,
