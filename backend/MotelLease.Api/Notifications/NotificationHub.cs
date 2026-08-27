@@ -39,7 +39,9 @@ public static class NotificationRealtimeSetup
 internal sealed class SubjectUserIdProvider : IUserIdProvider
 {
     public string? GetUserId(HubConnectionContext connection) =>
-        connection.User?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+        connection.User?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+        ?? connection.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+        ?? connection.User?.Identity?.Name;
 }
 
 internal sealed class SignalRNotificationRealtime(IHubContext<NotificationHub> hub)
