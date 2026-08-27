@@ -79,6 +79,11 @@
   "error.deposit.not_pending": "Yêu cầu đặt cọc này đã được trả lời.",
   "error.deposit.not_cancellable": "Chỉ yêu cầu đặt cọc chưa thanh toán mới có thể hủy.",
   "error.deposit.not_accepted": "Chỉ có thể xem trước hợp đồng sau khi yêu cầu đặt cọc được chấp nhận.",
+  "error.deposit.not_paid": "Chỉ có thể tạo hợp đồng sau khi tiền cọc đã được thanh toán.",
+
+  "error.lease.not_found": "Không tìm thấy hợp đồng thuê.",
+  "error.lease.room_already_leased": "Phòng này đã có hợp đồng thuê đang hiệu lực.",
+  "error.lease.room_fully_occupied": "Phòng này đã đủ tối đa {0} người ở.",
 
   "error.payment.not_found": "Không tìm thấy giao dịch thanh toán.",
   "error.payment.provider_not_available": "Cổng thanh toán này hiện không khả dụng.",

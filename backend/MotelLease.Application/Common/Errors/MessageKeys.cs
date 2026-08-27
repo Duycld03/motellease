@@ -124,6 +124,14 @@ public static class MessageKeys
         public const string NotPending = "error.deposit.not_pending";
         public const string NotCancellable = "error.deposit.not_cancellable";
         public const string NotAccepted = "error.deposit.not_accepted";
+        public const string NotPaid = "error.deposit.not_paid";
+    }
+
+    public static class Lease
+    {
+        public const string NotFound = "error.lease.not_found";
+        public const string RoomAlreadyLeased = "error.lease.room_already_leased";
+        public const string RoomFullyOccupied = "error.lease.room_fully_occupied";
     }
 
     public static class Payment

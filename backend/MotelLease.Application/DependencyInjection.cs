@@ -6,6 +6,7 @@ using MotelLease.Application.Auth;
 using MotelLease.Application.BoardingHouses;
 using MotelLease.Application.Common.Security;
 using MotelLease.Application.Deposits;
+using MotelLease.Application.Leases;
 using MotelLease.Application.Notifications;
 using MotelLease.Application.Payments;
 using MotelLease.Application.Rooms;
@@ -100,6 +101,8 @@ public static class DependencyInjection
         services.AddScoped<ReadPaymentReturnHandler>();
         services.AddScoped<ListPaymentsHandler>();
         services.AddScoped<GetPaymentHandler>();
+
+        services.AddScoped<ConfirmDepositLeaseHandler>();
 
         services.AddScoped<ListNotificationsHandler>();
         services.AddScoped<CountUnreadNotificationsHandler>();

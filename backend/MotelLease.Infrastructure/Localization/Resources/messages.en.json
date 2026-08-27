@@ -79,6 +79,11 @@
   "error.deposit.not_pending": "This deposit request has already been answered.",
   "error.deposit.not_cancellable": "Only a deposit request that has not been paid can be cancelled.",
   "error.deposit.not_accepted": "The contract can only be previewed once the deposit request has been accepted.",
+  "error.deposit.not_paid": "The lease can only be created once the deposit has been paid.",
+
+  "error.lease.not_found": "Lease not found.",
+  "error.lease.room_already_leased": "This room already has an active lease.",
+  "error.lease.room_fully_occupied": "This room already houses the maximum of {0} tenant(s).",
 
   "error.payment.not_found": "Payment transaction not found.",
   "error.payment.provider_not_available": "This payment provider is not available.",
