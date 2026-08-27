@@ -157,6 +157,9 @@
   "validation.longitude_range": "Kinh độ phải nằm trong khoảng -180 đến 180.",
   "validation.out_of_range": "Giá trị nằm ngoài khoảng cho phép.",
 
+  "error.saved_listing.not_found": "Không tìm thấy tin đã lưu.",
+  "error.saved_listing.already_saved": "Nhà trọ này đã có trong danh sách đã lưu.",
+
   "error.validation.title": "Dữ liệu không hợp lệ.",
   "error.unexpected": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.",
   "error.unauthorized": "Bạn cần đăng nhập để thực hiện thao tác này.",
