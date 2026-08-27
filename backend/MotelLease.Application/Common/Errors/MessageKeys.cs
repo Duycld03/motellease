@@ -195,6 +195,12 @@ public static class MessageKeys
         public const string NotFound = "error.notification.not_found";
     }
 
+    public static class SavedListing
+    {
+        public const string NotFound = "error.saved_listing.not_found";
+        public const string AlreadySaved = "error.saved_listing.already_saved";
+    }
+
     public static class Validation
     {
         public const string Required = "validation.required";

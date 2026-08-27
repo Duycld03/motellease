@@ -5,6 +5,7 @@ using MotelLease.Application.Appointments;
 using MotelLease.Application.Auth;
 using MotelLease.Application.Bills;
 using MotelLease.Application.BoardingHouses;
+using MotelLease.Application.Catalogue;
 using MotelLease.Application.Common.Security;
 using MotelLease.Application.Deposits;
 using MotelLease.Application.Extensions;
@@ -13,6 +14,7 @@ using MotelLease.Application.Notifications;
 using MotelLease.Application.Payments;
 using MotelLease.Application.Rooms;
 using MotelLease.Application.RoomTypes;
+using MotelLease.Application.SavedListings;
 
 namespace MotelLease.Application;
 
@@ -141,6 +143,20 @@ public static class DependencyInjection
         services.AddScoped<CountUnreadNotificationsHandler>();
         services.AddScoped<MarkNotificationReadHandler>();
         services.AddScoped<MarkAllNotificationsReadHandler>();
+
+        services.AddScoped<SearchBoardingHousesHandler>();
+        services.AddScoped<GetNearbyBoardingHousesHandler>();
+        services.AddScoped<GetMapBoardingHousesHandler>();
+        services.AddScoped<GetBoardingHouseDetailHandler>();
+        services.AddScoped<GetBoardingHouseVacantRoomsHandler>();
+        services.AddScoped<GetBoardingHouseReviewsHandler>();
+        services.AddScoped<ListFacilitiesHandler>();
+        services.AddScoped<ListProvincesHandler>();
+        services.AddScoped<ListDistrictsHandler>();
+
+        services.AddScoped<ListSavedListingsHandler>();
+        services.AddScoped<SaveListingHandler>();
+        services.AddScoped<RemoveSavedListingHandler>();
 
         return services;
     }

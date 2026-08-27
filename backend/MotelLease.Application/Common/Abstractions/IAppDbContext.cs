@@ -22,6 +22,8 @@ public interface IAppDbContext
     DbSet<RoomType> RoomTypes { get; }
     DbSet<Room> Rooms { get; }
     DbSet<Image> Images { get; }
+    DbSet<SavedListing> SavedListings { get; }
+    DbSet<Review> Reviews { get; }
 
     DbSet<Deposit> Deposits { get; }
     DbSet<Lease> Leases { get; }
