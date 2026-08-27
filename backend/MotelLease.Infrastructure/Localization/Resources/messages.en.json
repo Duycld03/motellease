@@ -205,6 +205,13 @@
   "error.expense.not_yours": "You can only manage expenses for your own properties.",
   "error.expense.already_exists": "An expense record for this month and year already exists.",
 
+  "error.admin.cannot_lock_self": "You cannot lock your own admin account.",
+  "error.admin.cannot_delete_self": "You cannot delete your own admin account.",
+
+  "error.facility.not_found": "Facility not found.",
+  "error.facility.name_taken": "A facility with this name already exists.",
+  "error.facility.in_use": "Cannot delete facility because it is assigned to one or more boarding houses.",
+
   "error.validation.title": "The request is invalid.",
   "error.unexpected": "Something went wrong. Please try again later.",
   "error.unauthorized": "You must sign in to do this.",

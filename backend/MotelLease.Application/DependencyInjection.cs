@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using MotelLease.Application.Accounts;
+using MotelLease.Application.Admin;
 using MotelLease.Application.Appointments;
 using MotelLease.Application.Auth;
 using MotelLease.Application.Bills;
@@ -228,6 +229,35 @@ public static class DependencyInjection
         services.AddScoped<GetOccupancyStatsHandler>();
         services.AddScoped<GetProfitStatsHandler>();
         services.AddScoped<GetDashboardSummaryHandler>();
+
+        services.AddScoped<AuditLogger>();
+        services.AddScoped<AdminListAccountsHandler>();
+        services.AddScoped<AdminCreateAccountHandler>();
+        services.AddScoped<AdminGetAccountHandler>();
+        services.AddScoped<AdminUpdateAccountHandler>();
+        services.AddScoped<AdminDeleteAccountHandler>();
+        services.AddScoped<AdminRestoreAccountHandler>();
+        services.AddScoped<AdminLockAccountHandler>();
+        services.AddScoped<AdminUnlockAccountHandler>();
+
+        services.AddScoped<AdminListBoardingHousesHandler>();
+        services.AddScoped<AdminApproveBoardingHouseHandler>();
+        services.AddScoped<AdminRejectBoardingHouseHandler>();
+        services.AddScoped<AdminDeleteBoardingHouseHandler>();
+        services.AddScoped<AdminRestoreBoardingHouseHandler>();
+
+        services.AddScoped<AdminListFacilitiesHandler>();
+        services.AddScoped<AdminCreateFacilityHandler>();
+        services.AddScoped<AdminGetFacilityHandler>();
+        services.AddScoped<AdminUpdateFacilityHandler>();
+        services.AddScoped<AdminDeleteFacilityHandler>();
+
+        services.AddScoped<AdminListReviewsHandler>();
+        services.AddScoped<AdminDeleteReviewHandler>();
+        services.AddScoped<AdminRestoreReviewHandler>();
+
+        services.AddScoped<AdminListAuditLogsHandler>();
+        services.AddScoped<AdminGetStatsSummaryHandler>();
 
         return services;
     }
