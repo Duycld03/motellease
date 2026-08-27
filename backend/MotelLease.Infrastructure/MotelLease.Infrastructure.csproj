@@ -28,6 +28,7 @@
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.22.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="10.0.3" />
+    <PackageReference Include="QuestPDF" Version="2025.1.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,8 +36,7 @@
          they ship inside the assembly rather than as files next to it. WithCulture=false is
          required: MSBuild would otherwise read ".en"/".vi" as a culture and move each file
          into a satellite assembly, where GetManifestResourceStream never finds it. -->
-    <EmbeddedResource Include="Localization/Resources/messages.*.json" WithCulture="false"
-                      LogicalName="MotelLease.Infrastructure.Localization.Resources.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Localization/Resources/messages.*.json" WithCulture="false" LogicalName="MotelLease.Infrastructure.Localization.Resources.%(Filename)%(Extension)" />
   </ItemGroup>
 
   <PropertyGroup>

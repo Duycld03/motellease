@@ -46,6 +46,7 @@ public static class DependencyInjection
         AddPayments(services, configuration);
 
         services.AddSingleton<ILocalizer, JsonLocalizer>();
+        services.AddSingleton<IBillPdfGenerator, Documents.QuestPdfBillGenerator>();
 
         return services;
     }
