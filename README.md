@@ -62,9 +62,13 @@ middleware rather than separate SPAs.
   timestamp; tenant room maintenance requests with category, photos, and auto-dispatching
   `MaintenanceReported` notifications; maintenance request acceptance with automatic linked `WorkTask`
   generation, resolution and rejection.
-  Covered by 134 integration tests that run against a real PostGIS container.
+- **Deposit refunds & owner withdrawals group: done** — tenant deposit refund requests with deposit
+  state machine integration (`Paid` -> `Refunding` -> `Refunded`/`Paid`); owner withdrawal requests
+  strictly enforcing Invariant §9.11 (available balance guard) with balance reservation, frozen bank
+  details snapshot, admin approval, and admin rejection restoring available balance.
+  Covered by 136 integration tests that run against a real PostGIS container.
 
-Next: refunds & owner withdrawals, expenses & statistics, admin platform management.
+Next: expenses & statistics/analytics, admin platform management & audit logs.
 
 | Document | Contents |
 |---|---|
