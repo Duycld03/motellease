@@ -201,14 +201,22 @@
                   <p v-if="rm.description" class="text-xs text-slate-500 mt-1 line-clamp-1">{{ rm.description }}</p>
                 </div>
 
-                <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                <div class="pt-2 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-2">
                   <BaseButton
-                    variant="primary"
+                    variant="outline"
                     size="sm"
                     class="w-full !py-1.5 !text-xs"
                     @click="openAppointmentModal(rm)"
                   >
-                    📅 Đặt lịch xem phòng này
+                    📅 Xem phòng
+                  </BaseButton>
+                  <BaseButton
+                    variant="primary"
+                    size="sm"
+                    class="w-full !py-1.5 !text-xs"
+                    @click="openDepositModal(rm)"
+                  >
+                    🔒 Cọc giữ phòng
                   </BaseButton>
                 </div>
               </div>
@@ -384,6 +392,70 @@
         </div>
       </form>
     </BaseModal>
+
+    <!-- MODAL: Request Deposit (Đặt cọc giữ phòng) -->
+    <BaseModal
+      v-model="isDepositModalOpen"
+      :title="`Yêu cầu Đặt cọc giữ Phòng ${selectedRoom?.roomNumber}`"
+      max-width="lg"
+    >
+      <form @submit.prevent="handleSubmitDeposit" class="space-y-4">
+        <div v-if="selectedRoom" class="p-4 bg-primary-50 dark:bg-primary-950/40 rounded-xl border border-primary-200 dark:border-primary-800 text-xs space-y-2">
+          <div class="flex items-center justify-between font-bold text-primary-900 dark:text-primary-200">
+            <span>Phòng {{ selectedRoom.roomNumber }} - {{ selectedRoom.roomTypeName }}</span>
+            <span class="text-sm text-primary-700 dark:text-primary-300">{{ formatCurrency(selectedRoom.price) }}/tháng</span>
+          </div>
+          <div class="flex items-center justify-between text-slate-600 dark:text-slate-400 text-[11px] pt-1 border-t border-primary-200/60 dark:border-primary-800/60">
+            <span>Tiền cọc giữ chỗ (1 tháng tiền phòng):</span>
+            <span class="font-bold text-slate-900 dark:text-white">{{ formatCurrency(selectedRoom.price) }}</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              Ngày dự kiến chuyển vào <span class="text-red-500">*</span>
+            </label>
+            <input
+              v-model="depositForm.requestedStartDate"
+              type="date"
+              class="input-field !text-xs !py-2"
+              required
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              Thời hạn hợp đồng mong muốn <span class="text-red-500">*</span>
+            </label>
+            <select v-model="depositForm.requestedTermMonths" class="input-field !text-xs !py-2" required>
+              <option :value="3">3 tháng</option>
+              <option :value="6">6 tháng</option>
+              <option :value="12">12 tháng (1 năm)</option>
+              <option :value="24">24 tháng (2 năm)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="p-3 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-200 dark:border-amber-800 text-[11px] text-amber-800 dark:text-amber-300 space-y-1">
+          <p class="font-bold">📌 Quy trình đặt cọc an toàn:</p>
+          <ul class="list-disc list-inside space-y-0.5 text-amber-700 dark:text-amber-400">
+            <li>Sau khi gửi yêu cầu, chủ nhà sẽ duyệt và giữ phòng cho bạn trong <strong>24 giờ</strong>.</li>
+            <li>Khi chủ nhà duyệt, bạn có thể <strong>xem trước dự thảo hợp đồng</strong> và thanh toán cọc qua <strong>MoMo / VNPay</strong>.</li>
+            <li>Số tiền cọc sẽ được chuyển thành khoản cọc hợp đồng chính thức khi nhận phòng.</li>
+          </ul>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <BaseButton variant="outline" size="sm" type="button" @click="isDepositModalOpen = false">
+            {{ $t('common.cancel') }}
+          </BaseButton>
+          <BaseButton variant="primary" size="sm" type="submit" :loading="isSubmittingDeposit">
+            Gửi yêu cầu đặt cọc
+          </BaseButton>
+        </div>
+      </form>
+    </BaseModal>
   </div>
 </template>
 
@@ -510,6 +582,54 @@ const handleSubmitAppointment = async () => {
     toast.error(err.message || 'Không thể đặt lịch hẹn. Vui lòng thử lại.')
   } finally {
     isBookingAppointment.value = false
+  }
+}
+
+// Deposit Booking (Đặt cọc giữ phòng)
+const isDepositModalOpen = ref(false)
+const isSubmittingDeposit = ref(false)
+
+const depositForm = reactive({
+  requestedStartDate: '',
+  requestedTermMonths: 6,
+})
+
+const openDepositModal = (rm: PublicVacantRoomResponse) => {
+  if (!isAuthenticated.value) {
+    toast.info('Vui lòng đăng nhập tài khoản Người thuê để đặt cọc giữ phòng.')
+    navigateTo('/auth/login')
+    return
+  }
+  if (!isTenant.value) {
+    toast.warning('Chỉ tài khoản Người thuê (Tenant) mới có thể tạo yêu cầu đặt cọc.')
+    return
+  }
+
+  selectedRoom.value = rm
+  // Pre-fill tomorrow as default start date
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  depositForm.requestedStartDate = tomorrow.toISOString().slice(0, 10)
+  depositForm.requestedTermMonths = 6
+  isDepositModalOpen.value = true
+}
+
+const handleSubmitDeposit = async () => {
+  if (!selectedRoom.value || !depositForm.requestedStartDate) return
+  isSubmittingDeposit.value = true
+  try {
+    await post('/deposits', {
+      roomId: selectedRoom.value.id,
+      requestedStartDate: depositForm.requestedStartDate,
+      requestedTermMonths: Number(depositForm.requestedTermMonths),
+    })
+    toast.success('Gửi yêu cầu đặt cọc giữ phòng thành công! Chủ nhà sẽ xem xét và phản hồi cho bạn trong thời gian sớm nhất.')
+    isDepositModalOpen.value = false
+    navigateTo('/tenant/deposits')
+  } catch (err: any) {
+    toast.error(err.message || 'Không thể gửi yêu cầu đặt cọc. Vui lòng thử lại.')
+  } finally {
+    isSubmittingDeposit.value = false
   }
 }
 

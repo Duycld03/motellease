@@ -11,50 +11,50 @@
         </NuxtLink>
         <NuxtLink
           to="/tenant/leases"
-          class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors whitespace-nowrap"
-          active-class="!text-primary-700 !bg-primary-50 font-semibold"
+          class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors whitespace-nowrap"
+          active-class="!text-primary-700 dark:!text-primary-400 !bg-primary-50 dark:!bg-primary-950/50 font-semibold"
         >
           {{ $t('nav.myLeases') }}
         </NuxtLink>
         <NuxtLink
           to="/tenant/deposits"
-          class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors whitespace-nowrap"
-          active-class="!text-primary-700 !bg-primary-50 font-semibold"
+          class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors whitespace-nowrap"
+          active-class="!text-primary-700 dark:!text-primary-400 !bg-primary-50 dark:!bg-primary-950/50 font-semibold"
         >
           {{ $t('nav.myDeposits') }}
         </NuxtLink>
         <NuxtLink
           to="/tenant/appointments"
-          class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors whitespace-nowrap"
-          active-class="!text-primary-700 !bg-primary-50 font-semibold"
+          class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors whitespace-nowrap"
+          active-class="!text-primary-700 dark:!text-primary-400 !bg-primary-50 dark:!bg-primary-950/50 font-semibold"
         >
           {{ $t('nav.myAppointments') }}
         </NuxtLink>
         <NuxtLink
           to="/tenant/bills"
-          class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors whitespace-nowrap"
-          active-class="!text-primary-700 !bg-primary-50 font-semibold"
+          class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors whitespace-nowrap"
+          active-class="!text-primary-700 dark:!text-primary-400 !bg-primary-50 dark:!bg-primary-950/50 font-semibold"
         >
           {{ $t('nav.myBills') }}
         </NuxtLink>
         <NuxtLink
           to="/tenant/maintenance"
-          class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors whitespace-nowrap"
-          active-class="!text-primary-700 !bg-primary-50 font-semibold"
+          class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors whitespace-nowrap"
+          active-class="!text-primary-700 dark:!text-primary-400 !bg-primary-50 dark:!bg-primary-950/50 font-semibold"
         >
           {{ $t('nav.myMaintenance') }}
         </NuxtLink>
         <NuxtLink
           to="/tenant/saved"
-          class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors whitespace-nowrap"
-          active-class="!text-primary-700 !bg-primary-50 font-semibold"
+          class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors whitespace-nowrap"
+          active-class="!text-primary-700 dark:!text-primary-400 !bg-primary-50 dark:!bg-primary-950/50 font-semibold"
         >
           {{ $t('nav.savedListings') }}
         </NuxtLink>
         <NuxtLink
           to="/tenant/profile"
-          class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors whitespace-nowrap"
-          active-class="!text-primary-700 !bg-primary-50 font-semibold"
+          class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors whitespace-nowrap"
+          active-class="!text-primary-700 dark:!text-primary-400 !bg-primary-50 dark:!bg-primary-950/50 font-semibold"
         >
           {{ $t('nav.profile') }}
         </NuxtLink>

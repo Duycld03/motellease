@@ -381,57 +381,125 @@ export interface SavedListingResponse {
   savedAt: string
 }
 
+// Deposits Contracts
+export interface DepositResponse {
+  id: string
+  roomId: string
+  roomNumber: string
+  boardingHouseId: string
+  boardingHouseName: string
+  tenantUserId: string
+  tenantFullName: string
+  tenantPhoneNumber?: string
+  amount: number
+  status: DepositStatus
+  requestedStartDate: string
+  requestedTermMonths: number
+  expiresAt?: string
+  reasonForCancel?: string
+  handledByUserId?: string
+  createdAt: string
+}
+
+export interface RequestDepositRequest {
+  roomId: string
+  requestedStartDate: string
+  requestedTermMonths: number
+}
+
+export interface RejectDepositRequest {
+  reason: string
+}
+
+export interface CancelDepositRequest {
+  reason?: string
+}
+
+export interface DepositContractPreviewResponse {
+  depositId: string
+  boardingHouseName: string
+  addressLine: string
+  ward: string
+  district: string
+  province: string
+  roomNumber: string
+  tenantFullName: string
+  tenantPhoneNumber?: string
+  monthlyRent: number
+  depositHeld: number
+  termMonths: number
+  startDate: string
+  endDate: string
+}
+
+// Payment Contracts
+export interface StartPaymentRequest {
+  provider: PaymentProvider
+}
+
+export interface PaymentCheckoutResponse {
+  transactionId: string
+  providerOrderId: string
+  provider: PaymentProvider
+  amount: number
+  expiresAt: string
+  paymentUrl: string
+}
+
+export interface PaymentTransactionResponse {
+  id: string
+  userId: string
+  purpose: PaymentPurpose
+  provider: PaymentProvider
+  providerOrderId: string
+  providerTxnId?: string
+  amount: number
+  status: PaymentStatus
+  signatureVerified: boolean
+  depositId?: string
+  paymentBillId?: string
+  refundRequestId?: string
+  initiatedAt: string
+  completedAt?: string
+}
+
+// Lease Contracts
+export interface LeaseTenantResponse {
+  id: string
+  tenantUserId?: string
+  fullName: string
+  phoneNumber: string
+  idCardNumber?: string
+  isPrimary: boolean
+}
+
+export interface LeaseResponse {
+  id: string
+  roomId: string
+  roomNumber: string
+  boardingHouseId: string
+  boardingHouseName: string
+  monthlyRent: number
+  depositHeld: number
+  startDate: string
+  endDate: string
+  status: LeaseStatus
+  endedAt?: string
+  endReason?: string
+  tenants: LeaseTenantResponse[]
+  createdAt: string
+}
+
 // Aliases for compatibility
 export type BoardingHouse = PublicBoardingHouseCardResponse
 export type RoomType = RoomTypeResponse
 export type Room = RoomResponse
 export type Facility = FacilityResponse
 export type Appointment = AppointmentResponse
-
-export interface Deposit {
-  id: string
-  boardingHouseId: string
-  boardingHouseName?: string
-  roomId: string
-  roomNumber?: string
-  tenantId: string
-  tenantName?: string
-  amount: number
-  status: DepositStatus
-  expiresAt?: string
-  paidAt?: string
-  paymentTransactionId?: string
-  createdAt: string
-}
-
-export interface LeaseTenant {
-  id: string
-  leaseId: string
-  tenantId?: string
-  fullName: string
-  phoneNumber: string
-  idCardNumber: string
-  isPrimary: boolean
-}
-
-export interface Lease {
-  id: string
-  boardingHouseId: string
-  boardingHouseName?: string
-  roomId: string
-  roomNumber?: string
-  tenantId: string
-  tenantName?: string
-  startDate: string
-  endDate: string
-  monthlyRent: number
-  depositHeld: number
-  status: LeaseStatus
-  endedAt?: string
-  endReason?: string
-  tenants: LeaseTenant[]
-  createdAt: string
-}
+export type Deposit = DepositResponse
+export type Lease = LeaseResponse
+export type LeaseTenant = LeaseTenantResponse
+export type PaymentTransaction = PaymentTransactionResponse
 
 export interface PaymentBillItem {
   id: string
