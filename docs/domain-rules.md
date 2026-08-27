@@ -149,3 +149,20 @@ All registered explicitly in `Program.cs`, none inside an entity file.
     per `(UserId, LeaseId)`.
 11. An owner cannot withdraw more than `OwnerProfile.AvailableBalance`.
 12. Staff can read and write only data of boarding houses they hold a live `StaffAssignment` for.
+
+## 10. Listing and room management
+
+- A listing is submitted for review only from `Draft` or `Rejected`, and only once it has at least
+  one room: an empty listing gives an admin nothing to decide on. Resubmitting clears
+  `RejectionReason`, which belonged to the rejection it explained.
+- `Room.Status` is set by hand only between `Available` and `Maintenance`
+  (`Domain/Rooms/RoomStatusPolicy.cs`). `Reserved` and `Occupied` are derived from deposit and
+  lease rows per §9.3, so accepting them here would create a second source of truth.
+- `RoomType.MaxOccupants` above 1 is accepted only for a `DormStyle` house (§1), and cannot be
+  lowered below what a room of that type currently houses.
+- Deleting a boarding house or a room is refused while an `Active`/`Expiring` lease or an
+  `Accepted`/`Paid` deposit points at it. The delete is soft, and soft-deleting a house marks its
+  rooms and room types too — the query filter is per entity and does not follow the parent.
+- Exactly one image of a listing is primary while it has any: the first upload becomes the cover,
+  and deleting the cover promotes the next one.
+
