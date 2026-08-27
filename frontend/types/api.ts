@@ -76,13 +76,13 @@ export interface SessionInfo {
 export interface ProvinceResponse {
   code: string
   name: string
-  fullName: string
+  fullName?: string
 }
 
 export interface DistrictResponse {
   code: string
   name: string
-  fullName: string
+  fullName?: string
   provinceCode: string
 }
 
@@ -223,26 +223,170 @@ export interface UpdateMeterReadingsRequest {
   waterReading: number
 }
 
+// Public Catalogue Responses
+export interface PublicBoardingHouseCardResponse {
+  id: string
+  name: string
+  type: BoardingHouseType
+  addressLine: string
+  ward: string
+  district: string
+  province: string
+  latitude: number
+  longitude: number
+  rating: number
+  reviewCount: number
+  minPrice?: number
+  maxPrice?: number
+  primaryImageUrl?: string
+  totalRoomsCount: number
+  availableRoomsCount: number
+  facilities: FacilityResponse[]
+  createdAt: string
+}
+
+export interface BoardingHouseNearbyResponse extends PublicBoardingHouseCardResponse {
+  distanceMeters: number
+}
+
+export interface BoardingHouseMapMarkerResponse {
+  id: string
+  name: string
+  latitude: number
+  longitude: number
+  minPrice?: number
+  maxPrice?: number
+  primaryImageUrl?: string
+  addressLine: string
+  rating: number
+  reviewCount: number
+}
+
+export interface PublicOwnerInfoResponse {
+  id: string
+  fullName: string
+  phoneNumber?: string
+  avatarUrl?: string
+}
+
+export interface PublicRoomTypeResponse {
+  id: string
+  typeName: string
+  price: number
+  roomSizeM2: number
+  maxOccupants: number
+  description?: string
+  totalRoomsCount: number
+  availableRoomsCount: number
+  facilities: FacilityResponse[]
+  images: ImageResponse[]
+}
+
+export interface PublicBoardingHouseDetailResponse {
+  id: string
+  name: string
+  description?: string
+  type: BoardingHouseType
+  addressLine: string
+  ward: string
+  district: string
+  province: string
+  latitude: number
+  longitude: number
+  electricityUnitPrice: number
+  waterUnitPrice: number
+  rating: number
+  reviewCount: number
+  totalRoomsCount: number
+  availableRoomsCount: number
+  owner: PublicOwnerInfoResponse
+  images: ImageResponse[]
+  roomTypes: PublicRoomTypeResponse[]
+  createdAt: string
+}
+
+export interface PublicVacantRoomResponse {
+  id: string
+  roomNumber: string
+  roomTypeId: string
+  roomTypeName: string
+  price: number
+  roomSizeM2: number
+  maxOccupants: number
+  description?: string
+}
+
+export interface PublicReviewReplyResponse {
+  id: string
+  userId: string
+  userFullName: string
+  userAvatarUrl?: string
+  content: string
+  createdAt: string
+}
+
+export interface PublicReviewResponse {
+  id: string
+  userId: string
+  userFullName: string
+  userAvatarUrl?: string
+  rating: number
+  content: string
+  isVerified: boolean
+  createdAt: string
+  replies: PublicReviewReplyResponse[]
+}
+
+// Appointments Contracts
+export interface AppointmentResponse {
+  id: string
+  roomId: string
+  roomNumber: string
+  boardingHouseId: string
+  boardingHouseName: string
+  tenantUserId: string
+  tenantFullName: string
+  tenantPhoneNumber?: string
+  appointmentDate: string
+  status: RequestStatus
+  note?: string
+  reasonForCancel?: string
+  handledByUserId?: string
+  createdAt: string
+}
+
+export interface BookAppointmentRequest {
+  roomId: string
+  appointmentDate: string
+  note?: string
+}
+
+export interface RejectAppointmentRequest {
+  reason: string
+}
+
+export interface CancelAppointmentRequest {
+  reason?: string
+}
+
+// Saved Listings
+export interface SaveListingRequest {
+  boardingHouseId: string
+}
+
+export interface SavedListingResponse {
+  id: string
+  boardingHouseId: string
+  boardingHouse: PublicBoardingHouseCardResponse
+  savedAt: string
+}
+
 // Aliases for compatibility
-export type BoardingHouse = BoardingHouseDetailResponse
+export type BoardingHouse = PublicBoardingHouseCardResponse
 export type RoomType = RoomTypeResponse
 export type Room = RoomResponse
 export type Facility = FacilityResponse
-
-export interface Appointment {
-  id: string
-  boardingHouseId: string
-  boardingHouseName?: string
-  tenantId: string
-  tenantName?: string
-  tenantPhone?: string
-  tenantEmail?: string
-  scheduledAt: string
-  status: RequestStatus
-  notes?: string
-  rejectionReason?: string
-  createdAt: string
-}
+export type Appointment = AppointmentResponse
 
 export interface Deposit {
   id: string

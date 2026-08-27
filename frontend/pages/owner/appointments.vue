@@ -2,8 +2,8 @@
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-xl font-bold text-slate-900 dark:text-white">Lịch hẹn dẫn khách xem phòng</h1>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tiếp nhận và dẫn khách xem phòng tại khu trọ bạn phụ trách</p>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('nav.appointments') }}</h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Quản lý và tiếp nhận các yêu cầu hẹn xem phòng từ khách thuê</p>
       </div>
     </div>
 
@@ -41,10 +41,10 @@
     <!-- Empty state -->
     <div v-else-if="items.length === 0" class="py-16 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
       <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">Không có yêu cầu hẹn xem phòng nào</p>
-      <p class="text-xs text-slate-400 mt-1">Khi khách thuê đặt lịch xem phòng tại khu trọ được gán cho bạn, thông tin sẽ hiển thị tại đây.</p>
+      <p class="text-xs text-slate-400 mt-1">Khi khách thuê đặt lịch xem phòng trên website, thông tin sẽ hiển thị tại đây.</p>
     </div>
 
-    <!-- Appointments grid -->
+    <!-- Appointments table / cards -->
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="apt in items"
@@ -65,7 +65,7 @@
               <a
                 v-if="apt.tenantPhoneNumber"
                 :href="`tel:${apt.tenantPhoneNumber}`"
-                class="text-xs font-semibold text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1"
+                class="text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-1"
               >
                 📞 {{ apt.tenantPhoneNumber }}
               </a>
@@ -81,8 +81,8 @@
           </div>
 
           <!-- Appointment Date -->
-          <div class="p-3 bg-sky-50/50 dark:bg-sky-950/30 rounded-xl border border-sky-100 dark:border-sky-900 space-y-0.5">
-            <span class="text-[10px] text-sky-700 dark:text-sky-400 font-semibold block">Thời gian xem</span>
+          <div class="p-3 bg-primary-50/50 dark:bg-primary-950/30 rounded-xl border border-primary-100 dark:border-primary-900 space-y-0.5">
+            <span class="text-[10px] text-primary-700 dark:text-primary-400 font-semibold block">Thời gian xem</span>
             <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">
               📅 {{ formatDate(apt.appointmentDate, { dateStyle: 'full', timeStyle: 'short' }) }}
             </span>
@@ -112,7 +112,7 @@
           <BaseButton
             variant="primary"
             size="sm"
-            class="!text-xs !py-1.5 !bg-sky-600 hover:!bg-sky-700"
+            class="!text-xs !py-1.5"
             @click="handleApprove(apt.id)"
           >
             ✓ Duyệt hẹn
@@ -140,7 +140,7 @@
             v-model="rejectReason"
             rows="3"
             class="input-field !text-xs !py-2"
-            placeholder="VD: Nhân viên bận vào khung giờ này, hẹn khách khung giờ khác..."
+            placeholder="VD: Khung giờ này chủ nhà bận, hẹn khách vào chiều mai..."
             required
           />
         </div>
@@ -166,7 +166,7 @@ import StatusBadge from '~/components/status/StatusBadge.vue'
 import type { AppointmentResponse, PagedResult } from '~/types/api'
 
 definePageMeta({
-  layout: 'staff',
+  layout: 'owner',
 })
 
 const { get, put } = useApi()
