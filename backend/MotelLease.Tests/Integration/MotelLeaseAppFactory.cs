@@ -95,6 +95,15 @@ public sealed class MotelLeaseAppFactory(
         builder.UseSetting("Cloudinary:ApiKey", string.Empty);
         builder.UseSetting("Cloudinary:ApiSecret", string.Empty);
 
+        // The real VNPay gateway runs against a fixed test secret rather than being substituted: the
+        // signature is the whole authentication story of an IPN callback, so a test that stubbed it
+        // out would assert nothing about the rule it is there to prove (docs/domain-rules.md §9.8).
+        // The tests sign their own callbacks with the same secret, independently of this code.
+        builder.UseSetting("VnPay:TmnCode", VnPayTestMerchant.TmnCode);
+        builder.UseSetting("VnPay:HashSecret", VnPayTestMerchant.HashSecret);
+        builder.UseSetting("App:ApiBaseUrl", "http://localhost");
+        builder.UseSetting("App:WebBaseUrl", "http://localhost:3000");
+
         builder.ConfigureServices(services =>
         {
             services.AddSingleton<ILoggerProvider>(Logs);
