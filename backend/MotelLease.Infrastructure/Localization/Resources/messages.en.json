@@ -157,6 +157,9 @@
   "validation.longitude_range": "The longitude must be between -180 and 180.",
   "validation.out_of_range": "This value is out of the accepted range.",
 
+  "error.saved_listing.not_found": "Saved listing not found.",
+  "error.saved_listing.already_saved": "This boarding house is already saved.",
+
   "error.validation.title": "The request is invalid.",
   "error.unexpected": "Something went wrong. Please try again later.",
   "error.unauthorized": "You must sign in to do this.",
