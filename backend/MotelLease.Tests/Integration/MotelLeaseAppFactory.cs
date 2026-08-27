@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Globalization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,16 @@ namespace MotelLease.Tests.Integration;
 /// connection string and the email sender, because the OTP a test needs to read only exists
 /// inside a message.
 /// </summary>
-public sealed class MotelLeaseAppFactory(string connectionString) : WebApplicationFactory<Program>
+/// <param name="authPermitLimit">
+/// Requests allowed per window on the authentication policy. Every request in a run arrives from
+/// the same (absent) address and therefore shares one partition, so the default is wide enough
+/// that flow tests never trip it. <see cref="RateLimitTests"/> passes a small value instead.
+/// </param>
+/// <param name="otpPermitLimit">The same, for the OTP policy.</param>
+public sealed class MotelLeaseAppFactory(
+    string connectionString,
+    int authPermitLimit = 10_000,
+    int otpPermitLimit = 10_000) : WebApplicationFactory<Program>
 {
     public RecordingEmailSender Emails { get; } = new();
 
@@ -29,10 +39,12 @@ public sealed class MotelLeaseAppFactory(string connectionString) : WebApplicati
         builder.UseSetting("Jwt:Issuer", "motellease-tests");
         builder.UseSetting("Jwt:Audience", "motellease-tests");
 
-        // Every request in the suite arrives from the same (absent) address, so the shared
-        // per-IP window would reject later tests. The limiter has its own test.
-        builder.UseSetting("RateLimiting:Authentication:PermitLimit", "10000");
-        builder.UseSetting("RateLimiting:Otp:PermitLimit", "10000");
+        builder.UseSetting(
+            "RateLimiting:Authentication:PermitLimit",
+            authPermitLimit.ToString(CultureInfo.InvariantCulture));
+        builder.UseSetting(
+            "RateLimiting:Otp:PermitLimit",
+            otpPermitLimit.ToString(CultureInfo.InvariantCulture));
 
         builder.ConfigureServices(services =>
         {
