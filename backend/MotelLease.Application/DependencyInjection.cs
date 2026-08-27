@@ -80,6 +80,11 @@ public static class DependencyInjection
         services.AddScoped<CancelAppointmentHandler>();
         services.AddScoped<ExpirePastAppointmentsHandler>();
 
+        services.AddScoped<ListNotificationsHandler>();
+        services.AddScoped<CountUnreadNotificationsHandler>();
+        services.AddScoped<MarkNotificationReadHandler>();
+        services.AddScoped<MarkAllNotificationsReadHandler>();
+
         return services;
     }
 }

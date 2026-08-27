@@ -287,6 +287,8 @@ public sealed class AnswerAppointmentHandler(
 
         await database.SaveChangesAsync(cancellationToken);
 
+        await notifications.DeliverAsync(cancellationToken);
+
         return await AppointmentRules.LoadAsync(database, appointment.Id, cancellationToken);
     }
 }

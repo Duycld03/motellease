@@ -68,6 +68,11 @@
   "error.appointment.not_pending": "This viewing appointment has already been answered.",
   "error.appointment.not_cancellable": "Only a pending or accepted viewing appointment can be cancelled.",
 
+  "error.notification.not_found": "Notification not found.",
+
+  "notification.AppointmentHandled.title": "Your viewing request has been answered",
+  "notification.AppointmentHandled.body": "The viewing you requested for room {roomNumber} at {boardingHouseName} has been answered. Open it for the details.",
+
   "validation.required": "This field is required.",
   "validation.email_format": "This is not a valid email address.",
   "validation.username_format": "The username must be 3–64 characters using letters, digits and . _ -",
