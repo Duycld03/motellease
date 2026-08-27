@@ -9,6 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MotelLease.Api.Jobs;
 using MotelLease.Application.Common.Abstractions;
+using MotelLease.Application.Notifications;
+using MotelLease.Application.Notifications.Contracts;
 using MotelLease.Infrastructure.Persistence;
 
 namespace MotelLease.Tests.Integration;
@@ -47,6 +49,12 @@ public sealed class MotelLeaseAppFactory(
     IImageStorage? imageStorage = null) : WebApplicationFactory<Program>
 {
     public RecordingEmailSender Emails { get; } = new();
+
+    /// <summary>
+    /// Stands in for the SignalR hub. A real WebSocket client would only prove that the transport
+    /// works; what the tests are about is which recipient gets told what, and in whose language.
+    /// </summary>
+    public RecordingNotificationRealtime Realtime { get; } = new();
 
     /// <summary>
     /// Log entries the app produced. Some guards are only observable here: refusing Google
@@ -100,6 +108,9 @@ public sealed class MotelLeaseAppFactory(
 
             services.RemoveAll<IEmailSender>();
             services.AddSingleton<IEmailSender>(Emails);
+
+            services.RemoveAll<INotificationRealtime>();
+            services.AddSingleton<INotificationRealtime>(Realtime);
 
             if (googleTokens is not null)
             {
@@ -157,6 +168,25 @@ public sealed class RecordingEmailSender : IEmailSender
 
     public bool AnySentTo(string email) =>
         _sent.Any(m => string.Equals(m.ToEmail, email, StringComparison.OrdinalIgnoreCase));
+}
+
+/// <summary>Keeps every realtime push, so a test can assert who was told and what they were told.</summary>
+public sealed class RecordingNotificationRealtime : INotificationRealtime
+{
+    private readonly ConcurrentQueue<(Guid UserId, NotificationResponse Notification)> _pushed = new();
+
+    public Task PushAsync(
+        Guid userId,
+        NotificationResponse notification,
+        CancellationToken cancellationToken = default)
+    {
+        _pushed.Enqueue((userId, notification));
+
+        return Task.CompletedTask;
+    }
+
+    public IReadOnlyList<NotificationResponse> PushedTo(Guid userId) =>
+        [.. _pushed.Where(p => p.UserId == userId).Select(p => p.Notification)];
 }
 
 /// <summary>

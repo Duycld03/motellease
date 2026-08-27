@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MotelLease.Application.Common.Abstractions;
+using MotelLease.Application.Notifications;
 using MotelLease.Domain.Entities;
 using MotelLease.Domain.Enums;
 using MotelLease.Infrastructure.Persistence;
@@ -91,6 +92,34 @@ internal static class TestSeed
         house.ListingStatus = ListingStatus.Published;
 
         await database.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Sends a notification the way a feature does — through the dispatcher, so the keys and the
+    /// realtime push are the real ones — without having to drive a whole flow to produce one.
+    /// </summary>
+    internal static async Task<Guid> NotifyAsync(
+        this MotelLeaseAppFactory app,
+        Guid userId,
+        string roomNumber)
+    {
+        using var scope = app.Services.CreateScope();
+        var database = scope.ServiceProvider.GetRequiredService<MotelLeaseDbContext>();
+        var dispatcher = scope.ServiceProvider.GetRequiredService<NotificationDispatcher>();
+
+        dispatcher.Queue(
+            userId,
+            NotificationType.AppointmentHandled,
+            new { roomNumber, boardingHouseName = "Nha tro Ben Thanh" },
+            linkUrl: $"/appointments/{roomNumber}");
+
+        await database.SaveChangesAsync();
+        await dispatcher.DeliverAsync();
+
+        return await database.Notifications
+            .Where(n => n.UserId == userId && n.LinkUrl == $"/appointments/{roomNumber}")
+            .Select(n => n.Id)
+            .SingleAsync();
     }
 }
 
