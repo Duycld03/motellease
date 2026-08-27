@@ -47,9 +47,14 @@ middleware rather than separate SPAs.
   approval/rejection; room additional fees, bill preview and creation with meter readings advance,
   tenant bill splitting exact to 1 VND, draft bill lifecycle, PDF bill generation (QuestPDF), and
   automated background sweeps for lease expiry and bill reminders.
-  Covered by 124 integration tests that run against a real PostGIS container.
+- **Public search, catalogue & saved listings group: done** — public catalogue search with rich
+  filters (keyword, province/district, price range, facilities, house type, min rating, sorting);
+  PostGIS spatial nearby searches (`ST_DWithin`, `ST_Distance`) with correct longitude-first
+  geometries; bounding box map markers; detailed property views and vacant room lists; verified review
+  queries; facility and province/district lookups; tenant saved listings management.
+  Covered by 128 integration tests that run against a real PostGIS container.
 
-Next: public search and catalogue with PostGIS, saved listings, and service reviews.
+Next: reviews & replies submission, maintenance requests, work tasks, reports & moderation.
 
 | Document | Contents |
 |---|---|
