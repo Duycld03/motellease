@@ -19,6 +19,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="10.0.11" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.11" />
+    <!-- MoMo has to be asked for a payment URL over HTTP; the factory is what keeps the handler
+         pool shared and the DNS entries fresh behind a singleton gateway. -->
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.11" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.11" />
     <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.11" />

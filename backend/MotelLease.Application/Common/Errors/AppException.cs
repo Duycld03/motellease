@@ -2,7 +2,7 @@ namespace MotelLease.Application.Common.Errors;
 
 /// <summary>
 /// Carries a resource key, not a sentence: the Api layer renders it in the request
-/// language and returns RFC 7807 problem+json (docs/api-design.md, Quy ước).
+/// language and returns RFC 7807 problem+json (docs/api-design.md, Conventions).
 /// </summary>
 public abstract class AppException(string messageKey, params object[] arguments) : Exception(messageKey)
 {

@@ -17,6 +17,23 @@ public interface IAppDbContext
     DbSet<StaffAssignment> StaffAssignments { get; }
     DbSet<AuditLog> AuditLogs { get; }
 
+    DbSet<BoardingHouse> BoardingHouses { get; }
+    DbSet<Facility> Facilities { get; }
+    DbSet<RoomType> RoomTypes { get; }
+    DbSet<Room> Rooms { get; }
+    DbSet<Image> Images { get; }
+
+    DbSet<Deposit> Deposits { get; }
+    DbSet<Lease> Leases { get; }
+    DbSet<LeaseTenant> LeaseTenants { get; }
+
+    DbSet<PaymentTransaction> PaymentTransactions { get; }
+    DbSet<PaymentBill> PaymentBills { get; }
+    DbSet<RefundRequest> RefundRequests { get; }
+
+    DbSet<Appointment> Appointments { get; }
+    DbSet<Notification> Notifications { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>

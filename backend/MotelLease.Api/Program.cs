@@ -3,6 +3,8 @@ using Microsoft.OpenApi;
 using System.Text.Json.Serialization;
 using MotelLease.Api.Errors;
 using MotelLease.Api.Extensions;
+using MotelLease.Api.Jobs;
+using MotelLease.Api.Notifications;
 using MotelLease.Api.RateLimiting;
 using MotelLease.Api.Validation;
 using MotelLease.Application;
@@ -15,6 +17,11 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddApiAuthentication();
 builder.Services.AddApiRateLimiting(builder.Configuration);
+builder.Services.AddRealtimeNotifications();
+
+// Background work is registered here and only here (docs/domain-rules.md §8).
+builder.Services.AddHostedService<AppointmentExpiryJob>();
+builder.Services.AddHostedService<DepositExpiryJob>();
 
 builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>())
     // Enums travel as names in both directions. They are also stored as text
@@ -77,6 +84,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<NotificationHub>(NotificationRealtimeSetup.HubPath);
 
 // Liveness probe. Real readiness (including a database round-trip) comes with the health
 // check work in step 3.
