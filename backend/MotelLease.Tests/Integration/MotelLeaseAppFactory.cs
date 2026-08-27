@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MotelLease.Api.Jobs;
 using MotelLease.Application.Common.Abstractions;
 using MotelLease.Infrastructure.Persistence;
 
@@ -85,6 +86,17 @@ public sealed class MotelLeaseAppFactory(
         builder.ConfigureServices(services =>
         {
             services.AddSingleton<ILoggerProvider>(Logs);
+
+            // The background sweeps run on their own clock and rewrite rows. Left registered,
+            // a test's outcome would depend on whether a tick happened to land inside it, so
+            // the schedule is dropped and the rule behind it is invoked directly instead.
+            foreach (var descriptor in services
+                         .Where(d => d.ServiceType == typeof(IHostedService)
+                                     && d.ImplementationType == typeof(AppointmentExpiryJob))
+                         .ToList())
+            {
+                services.Remove(descriptor);
+            }
 
             services.RemoveAll<IEmailSender>();
             services.AddSingleton<IEmailSender>(Emails);
