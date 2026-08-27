@@ -6,6 +6,7 @@ using MotelLease.Application.Common.Abstractions;
 using MotelLease.Infrastructure.Caching;
 using MotelLease.Infrastructure.Email;
 using MotelLease.Infrastructure.Localization;
+using MotelLease.Infrastructure.Payments;
 using MotelLease.Infrastructure.Persistence;
 using MotelLease.Infrastructure.Security;
 using MotelLease.Infrastructure.Storage;
@@ -42,6 +43,7 @@ public static class DependencyInjection
         AddOtp(services, configuration);
         AddEmail(services, configuration);
         AddStorage(services, configuration);
+        AddPayments(services, configuration);
 
         services.AddSingleton<ILocalizer, JsonLocalizer>();
 
@@ -118,6 +120,29 @@ public static class DependencyInjection
         else
         {
             services.AddSingleton<IImageStorage, UnconfiguredImageStorage>();
+        }
+    }
+
+    private static void AddPayments(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOptions<AppUrlOptions>()
+            .Bind(configuration.GetSection(AppUrlOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        var section = configuration.GetSection(VnPayOptions.SectionName);
+
+        services.AddOptions<VnPayOptions>()
+            .Bind(section)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        // Registered only when there is a merchant code and a secret to sign with. Unregistered, a
+        // checkout is refused with "provider not available" instead of building a URL the gateway
+        // would reject — and no branch of the payment code can run unsigned.
+        if ((section.Get<VnPayOptions>() ?? new VnPayOptions()).IsConfigured)
+        {
+            services.AddSingleton<IPaymentGateway, VnPayGateway>();
         }
     }
 }

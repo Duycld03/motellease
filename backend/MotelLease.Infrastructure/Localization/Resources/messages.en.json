@@ -80,6 +80,13 @@
   "error.deposit.not_cancellable": "Only a deposit request that has not been paid can be cancelled.",
   "error.deposit.not_accepted": "The contract can only be previewed once the deposit request has been accepted.",
 
+  "error.payment.not_found": "Payment transaction not found.",
+  "error.payment.provider_not_available": "This payment provider is not available.",
+  "error.payment.deposit_not_awaiting_payment": "This deposit request is not waiting for a payment.",
+  "error.payment.deadline_passed": "The payment deadline for this deposit request has passed.",
+  "payment.deposit.description": "Deposit for room {0} at {1}",
+  "refund.reason.paid_after_deadline": "The payment arrived after the room had already been released.",
+
   "notification.AppointmentHandled.title": "Your viewing request has been answered",
   "notification.AppointmentHandled.body": "The viewing you requested for room {roomNumber} at {boardingHouseName} has been answered. Open it for the details.",
 
@@ -91,6 +98,8 @@
   "notification.DepositRejected.body": "The deposit request for room {roomNumber} at {boardingHouseName} was declined. Open it for the reason given.",
   "notification.DepositExpired.title": "Your deposit request has expired",
   "notification.DepositExpired.body": "The payment deadline for room {roomNumber} at {boardingHouseName} has passed, so the room is available again.",
+  "notification.PaymentSucceeded.title": "Payment received",
+  "notification.PaymentSucceeded.body": "The payment of {amount} for room {roomNumber} at {boardingHouseName} went through.",
 
   "validation.required": "This field is required.",
   "validation.email_format": "This is not a valid email address.",

@@ -126,6 +126,25 @@ public static class MessageKeys
         public const string NotAccepted = "error.deposit.not_accepted";
     }
 
+    public static class Payment
+    {
+        public const string NotFound = "error.payment.not_found";
+        public const string ProviderNotAvailable = "error.payment.provider_not_available";
+        public const string DepositNotAwaitingPayment = "error.payment.deposit_not_awaiting_payment";
+        public const string DeadlinePassed = "error.payment.deadline_passed";
+
+        /// <summary>Shown on the gateway's own page, so it is resolved in the payer's language.</summary>
+        public const string DepositDescription = "payment.deposit.description";
+
+        /// <summary>
+        /// Stored in RefundRequest.Reason when a payment lands after the room was released. The
+        /// column normally holds what a tenant typed, so an automatic one carries a key instead of
+        /// a sentence in whichever language the callback happened to arrive in.
+        /// </summary>
+        public const string RefundReasonPaidAfterDeadline =
+            "refund.reason.paid_after_deadline";
+    }
+
     public static class Notification
     {
         public const string NotFound = "error.notification.not_found";
