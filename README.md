@@ -67,3 +67,25 @@ dotnet run
 
 Swagger UI is at `/swagger` in Development. `dotnet test` starts its own throwaway PostGIS
 container, so the integration suite needs Docker but not a running local database.
+
+### Receiving a payment callback locally
+
+A gateway confirms a payment by calling this API from its own servers, and it cannot reach
+`localhost`. Nothing else in the flow needs a tunnel: creating the payment URL, the redirect out to
+the sandbox and the browser's return all work without one — but the deposit or bill only reaches
+`Paid` when the IPN callback arrives.
+
+Copy `.env.example` to `.env`, fill in the two ngrok values, then:
+
+```bash
+docker compose --profile tunnel up -d    # publishes the API at your ngrok dev domain
+cd backend/MotelLease.Api
+ASPNETCORE_URLS=http://0.0.0.0:5004 \
+  App__ApiBaseUrl=https://<your-domain>.ngrok-free.app \
+  dotnet run
+```
+
+`ASPNETCORE_URLS` matters: the default binding is `localhost` only, which the tunnel container
+cannot reach. `App__ApiBaseUrl` is what the callback URLs are built from — MoMo is told where to
+call back in each request, while VNPay's IPN URL is registered once in its merchant portal.
+Inspect what a gateway actually sent at `http://localhost:4040`.
