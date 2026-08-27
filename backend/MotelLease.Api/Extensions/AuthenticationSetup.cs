@@ -122,6 +122,21 @@ internal sealed class ConfigureJwtBearerOptions(IOptions<JwtOptions> jwtOptions)
 
         options.Events = new JwtBearerEvents
         {
+            // A browser WebSocket cannot set an Authorization header, so SignalR falls back to
+            // ?access_token=. Accepted on the hub paths only: a query string ends up in access
+            // logs and referrers, which is the wrong place for a credential, and no ordinary
+            // endpoint has a reason to need it.
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Path.StartsWithSegments("/hubs")
+                    && context.Request.Query.TryGetValue("access_token", out var token))
+                {
+                    context.Token = token;
+                }
+
+                return Task.CompletedTask;
+            },
+
             // Without this a rejected token yields an empty 401 body; every other failure in
             // the API is problem+json, so this one is too.
             OnChallenge = async context =>

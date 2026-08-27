@@ -68,6 +68,11 @@
   "error.appointment.not_pending": "Lịch xem phòng này đã được trả lời.",
   "error.appointment.not_cancellable": "Chỉ lịch xem phòng đang chờ hoặc đã được chấp nhận mới có thể hủy.",
 
+  "error.notification.not_found": "Không tìm thấy thông báo.",
+
+  "notification.AppointmentHandled.title": "Yêu cầu xem phòng của bạn đã được trả lời",
+  "notification.AppointmentHandled.body": "Yêu cầu xem phòng {roomNumber} tại {boardingHouseName} đã được trả lời. Mở thông báo để xem chi tiết.",
+
   "validation.required": "Không được để trống.",
   "validation.email_format": "Email không đúng định dạng.",
   "validation.username_format": "Tên đăng nhập dài 3–64 ký tự, chỉ gồm chữ, số và các ký tự . _ -",

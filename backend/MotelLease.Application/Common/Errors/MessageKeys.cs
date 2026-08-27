@@ -113,6 +113,11 @@ public static class MessageKeys
         public const string NotCancellable = "error.appointment.not_cancellable";
     }
 
+    public static class Notification
+    {
+        public const string NotFound = "error.notification.not_found";
+    }
+
     public static class Validation
     {
         public const string Required = "validation.required";
