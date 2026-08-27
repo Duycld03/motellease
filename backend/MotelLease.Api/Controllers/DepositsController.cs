@@ -5,6 +5,8 @@ using MotelLease.Application.Common.Contracts;
 using MotelLease.Application.Common.Security;
 using MotelLease.Application.Deposits;
 using MotelLease.Application.Deposits.Contracts;
+using MotelLease.Application.Payments;
+using MotelLease.Application.Payments.Contracts;
 using MotelLease.Domain.Enums;
 
 namespace MotelLease.Api.Controllers;
@@ -13,9 +15,8 @@ namespace MotelLease.Api.Controllers;
 /// Deposit requests: a tenant asks to hold a room, the owner or assigned staff answer, and an
 /// accepted request holds the room until its payment deadline (docs/api-design.md).
 ///
-/// Paying for one is not here. Money state may only change through a verified server-to-server
-/// callback (CLAUDE.md, Hard prohibitions), so checkout and the lease that follows a paid deposit
-/// ship with the payment group.
+/// Checkout opens a payment attempt only. Money state moves in one place and it is not here — see
+/// <see cref="PaymentsController"/> for the IPN callback that confirms it.
 /// </summary>
 [ApiController]
 [Route("api/v1/deposits")]
@@ -92,4 +93,22 @@ public sealed class DepositsController : ControllerBase
         [FromServices] PreviewDepositContractHandler handler,
         CancellationToken cancellationToken) =>
         Ok(await handler.HandleAsync(id, cancellationToken));
+
+    /// <summary>
+    /// Opens a payment attempt and returns the gateway URL. Nothing is paid by calling this: the
+    /// deposit only becomes Paid when the IPN callback confirms it (docs/domain-rules.md §9.8).
+    /// </summary>
+    [HttpPost("{id:guid}/checkout")]
+    [Authorize(Policy = AuthPolicies.RequireTenant)]
+    [ProducesResponseType(typeof(PaymentCheckoutResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PaymentCheckoutResponse>> Checkout(
+        Guid id,
+        StartPaymentRequest request,
+        [FromServices] StartDepositPaymentHandler handler,
+        CancellationToken cancellationToken) =>
+        Ok(await handler.HandleAsync(
+            id,
+            request,
+            HttpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1",
+            cancellationToken));
 }

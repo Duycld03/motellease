@@ -26,6 +26,9 @@ public interface IAppDbContext
     DbSet<Deposit> Deposits { get; }
     DbSet<Lease> Leases { get; }
 
+    DbSet<PaymentTransaction> PaymentTransactions { get; }
+    DbSet<RefundRequest> RefundRequests { get; }
+
     DbSet<Appointment> Appointments { get; }
     DbSet<Notification> Notifications { get; }
 

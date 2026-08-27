@@ -80,6 +80,13 @@
   "error.deposit.not_cancellable": "Chỉ yêu cầu đặt cọc chưa thanh toán mới có thể hủy.",
   "error.deposit.not_accepted": "Chỉ có thể xem trước hợp đồng sau khi yêu cầu đặt cọc được chấp nhận.",
 
+  "error.payment.not_found": "Không tìm thấy giao dịch thanh toán.",
+  "error.payment.provider_not_available": "Cổng thanh toán này hiện không khả dụng.",
+  "error.payment.deposit_not_awaiting_payment": "Yêu cầu đặt cọc này không ở trạng thái chờ thanh toán.",
+  "error.payment.deadline_passed": "Đã quá hạn thanh toán cho yêu cầu đặt cọc này.",
+  "payment.deposit.description": "Tien coc phong {0} tai {1}",
+  "refund.reason.paid_after_deadline": "Khoản thanh toán đến sau khi phòng đã được mở lại cho người khác.",
+
   "notification.AppointmentHandled.title": "Yêu cầu xem phòng của bạn đã được trả lời",
   "notification.AppointmentHandled.body": "Yêu cầu xem phòng {roomNumber} tại {boardingHouseName} đã được trả lời. Mở thông báo để xem chi tiết.",
 
@@ -91,6 +98,8 @@
   "notification.DepositRejected.body": "Yêu cầu đặt cọc phòng {roomNumber} tại {boardingHouseName} đã bị từ chối. Mở thông báo để xem lý do.",
   "notification.DepositExpired.title": "Yêu cầu đặt cọc của bạn đã hết hạn",
   "notification.DepositExpired.body": "Đã quá hạn thanh toán cho phòng {roomNumber} tại {boardingHouseName}, phòng đã được mở lại cho người khác.",
+  "notification.PaymentSucceeded.title": "Đã nhận được thanh toán",
+  "notification.PaymentSucceeded.body": "Khoản thanh toán {amount} cho phòng {roomNumber} tại {boardingHouseName} đã thành công.",
 
   "validation.required": "Không được để trống.",
   "validation.email_format": "Email không đúng định dạng.",

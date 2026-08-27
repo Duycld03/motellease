@@ -1,0 +1,176 @@
+using Microsoft.EntityFrameworkCore;
+using MotelLease.Application.Common.Abstractions;
+using MotelLease.Application.Common.Errors;
+using MotelLease.Application.Notifications;
+using MotelLease.Application.Payments.Contracts;
+using MotelLease.Domain.Entities;
+using MotelLease.Domain.Enums;
+
+namespace MotelLease.Application.Payments;
+
+/// <summary>
+/// The IPN callback, and the only place in the application that moves money state
+/// (docs/domain-rules.md §9.7, §9.8). A browser return URL never reaches this code: the user controls
+/// the URL they land on, so only a server-to-server callback carrying a signature made with our own
+/// secret is allowed to mark anything paid.
+///
+/// Everything happens inside one transaction and the whole thing is idempotent — a gateway retries an
+/// IPN until it is acknowledged, so the second delivery of a payment must change nothing at all.
+/// </summary>
+public sealed class ConfirmPaymentHandler(
+    IAppDbContext database,
+    PaymentGateways gateways,
+    NotificationDispatcher notifications,
+    TimeProvider time)
+{
+    public async Task<GatewayAcknowledgement> HandleAsync(
+        PaymentProvider provider,
+        IReadOnlyDictionary<string, string> fields,
+        CancellationToken cancellationToken = default)
+    {
+        var callback = gateways.For(provider).ReadCallback(fields);
+
+        // Checked before anything is read from the database: an unsigned payload proves nothing
+        // about who sent it, so it does not get to name a row.
+        if (!callback.SignatureVerified)
+        {
+            return GatewayAcknowledgement.InvalidSignature;
+        }
+
+        if (string.IsNullOrWhiteSpace(callback.OrderId))
+        {
+            return GatewayAcknowledgement.OrderNotFound;
+        }
+
+        await using var scope = await database.BeginTransactionAsync(cancellationToken);
+
+        var transaction = await database.PaymentTransactions.FirstOrDefaultAsync(
+            t => t.ProviderOrderId == callback.OrderId, cancellationToken);
+
+        if (transaction is null)
+        {
+            return GatewayAcknowledgement.OrderNotFound;
+        }
+
+        // The replay guard. The unique index on ProviderTxnId is the authority (§9.7); this check
+        // exists so a retry is acknowledged rather than answered with a constraint violation.
+        if (transaction.Status is PaymentStatus.Succeeded or PaymentStatus.Failed
+            || await IsTxnIdRecordedAsync(callback.ProviderTxnId, transaction.Id, cancellationToken))
+        {
+            return GatewayAcknowledgement.AlreadyConfirmed;
+        }
+
+        // A payment for a different amount than the one agreed is not this payment.
+        if (callback.Amount != transaction.Amount)
+        {
+            return GatewayAcknowledgement.InvalidAmount;
+        }
+
+        transaction.RawCallbackPayload = callback.RawPayload;
+        transaction.SignatureVerified = true;
+        transaction.ProviderTxnId = callback.ProviderTxnId;
+        transaction.CompletedAt = time.GetUtcNow();
+        transaction.Status = callback.Succeeded ? PaymentStatus.Succeeded : PaymentStatus.Failed;
+
+        if (callback.Succeeded)
+        {
+            await CreditAsync(transaction, cancellationToken);
+        }
+
+        await database.SaveChangesAsync(cancellationToken);
+
+        await scope.CommitAsync(cancellationToken);
+
+        // After the commit, so nothing is announced that could still roll back.
+        await notifications.DeliverAsync(cancellationToken);
+
+        return GatewayAcknowledgement.Confirmed;
+    }
+
+    /// <summary>
+    /// Applies a successful payment to whatever it was for. Each purpose is one branch, and a purpose
+    /// with nothing to credit yet is left alone rather than guessed at.
+    /// </summary>
+    private async Task CreditAsync(
+        PaymentTransaction transaction,
+        CancellationToken cancellationToken)
+    {
+        if (transaction.Purpose != PaymentPurpose.Deposit || transaction.DepositId is null)
+        {
+            return;
+        }
+
+        var deposit = await database.Deposits.FirstAsync(
+            d => d.Id == transaction.DepositId, cancellationToken);
+
+        // The money arrived after the room stopped being held — the sweep released it, or the tenant
+        // withdrew. The payment is real and stays recorded as such; what is owed back is a refund,
+        // opened here so it cannot be quietly forgotten.
+        if (deposit.Status != DepositStatus.Accepted)
+        {
+            database.RefundRequests.Add(new RefundRequest
+            {
+                DepositId = deposit.Id,
+                UserId = deposit.UserId,
+                Amount = transaction.Amount,
+                Status = RequestStatus.Pending,
+                Reason = MessageKeys.Payment.RefundReasonPaidAfterDeadline
+            });
+
+            return;
+        }
+
+        deposit.Status = DepositStatus.Paid;
+
+        await NotifyPaidAsync(deposit, transaction, cancellationToken);
+    }
+
+    /// <summary>
+    /// Both sides are told (docs/domain-rules.md §7): the tenant that the money went through, and the
+    /// owner that the room is now paid for and waiting on a contract.
+    /// </summary>
+    private async Task NotifyPaidAsync(
+        Deposit deposit,
+        PaymentTransaction transaction,
+        CancellationToken cancellationToken)
+    {
+        var label = await database.Rooms
+            .IgnoreQueryFilters()
+            .Where(r => r.Id == deposit.RoomId)
+            .Select(r => new
+            {
+                r.RoomNumber,
+                HouseName = r.BoardingHouse.Name,
+                r.BoardingHouse.OwnerUserId
+            })
+            .FirstAsync(cancellationToken);
+
+        var payload = new
+        {
+            depositId = deposit.Id,
+            transactionId = transaction.Id,
+            roomNumber = label.RoomNumber,
+            boardingHouseName = label.HouseName,
+            amount = transaction.Amount,
+            provider = transaction.Provider.ToString()
+        };
+
+        foreach (var recipient in new[] { deposit.UserId, label.OwnerUserId }.Distinct())
+        {
+            notifications.Queue(
+                recipient,
+                NotificationType.PaymentSucceeded,
+                payload,
+                linkUrl: $"/deposits/{deposit.Id}");
+        }
+    }
+
+    private async Task<bool> IsTxnIdRecordedAsync(
+        string? providerTxnId,
+        Guid exceptTransactionId,
+        CancellationToken cancellationToken) =>
+        !string.IsNullOrWhiteSpace(providerTxnId)
+        && await database.PaymentTransactions.AnyAsync(
+            t => t.ProviderTxnId == providerTxnId && t.Id != exceptTransactionId,
+            cancellationToken);
+}
