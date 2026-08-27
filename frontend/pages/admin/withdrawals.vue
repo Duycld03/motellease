@@ -1,24 +1,238 @@
 <template>
   <div class="space-y-6">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-xl font-bold text-slate-900">Duyệt yêu cầu rút tiền</h1>
-        <p class="text-xs text-slate-500 mt-1">Kiểm tra và duyệt chuyển khoản số dư cho chủ nhà trọ</p>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white">Duyệt Yêu cầu Rút tiền</h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          Xem xét và phê duyệt các lệnh rút số dư khả dụng về tài khoản ngân hàng của Chủ nhà trọ
+        </p>
       </div>
+      <BaseButton variant="outline" size="sm" @click="fetchWithdrawals">
+        🔄 Làm mới
+      </BaseButton>
     </div>
 
-    <BaseCard>
-      <div class="py-12 text-center text-slate-400 text-xs">
-        <p>{{ $t('common.noData') }}</p>
-      </div>
-    </BaseCard>
+    <!-- Filter Status Tabs -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+      <button
+        type="button"
+        :class="[
+          'px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all',
+          filterStatus === ''
+            ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm'
+            : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800',
+        ]"
+        @click="filterStatus = ''"
+      >
+        Tất cả ({{ requests.length }})
+      </button>
+      <button
+        v-for="st in ['Pending', 'Accepted', 'Rejected']"
+        :key="st"
+        type="button"
+        :class="[
+          'px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all',
+          filterStatus === st
+            ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm'
+            : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800',
+        ]"
+        @click="filterStatus = st"
+      >
+        {{ $t(`enums.RequestStatus.${st}`) }}
+      </button>
+    </div>
+
+    <!-- Requests Table -->
+    <div v-if="isLoading" class="py-16 text-center">
+      <LoadingSpinner size="md" />
+    </div>
+
+    <div v-else-if="filteredRequests.length === 0" class="p-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
+      <p class="font-medium text-slate-500 dark:text-slate-400">Không có yêu cầu rút tiền nào.</p>
+    </div>
+
+    <div v-else class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-x-auto">
+      <table class="w-full text-left text-xs">
+        <thead>
+          <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
+            <th class="pb-3 font-semibold">Chủ nhà trọ</th>
+            <th class="pb-3 font-semibold">Số tiền yêu cầu</th>
+            <th class="pb-3 font-semibold">Thông tin Ngân hàng</th>
+            <th class="pb-3 font-semibold">Trạng thái</th>
+            <th class="pb-3 font-semibold">Thời gian tạo</th>
+            <th class="pb-3 font-semibold text-right">Hành động</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+          <tr
+            v-for="r in filteredRequests"
+            :key="r.id"
+            class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
+          >
+            <td class="py-3 font-bold text-slate-900 dark:text-white">
+              {{ r.ownerFullName }}
+            </td>
+            <td class="py-3 font-extrabold text-emerald-600 dark:text-emerald-400 text-sm">
+              {{ formatCurrency(r.amount) }}
+            </td>
+            <td class="py-3 text-slate-700 dark:text-slate-300">
+              <div class="font-bold">{{ r.bankName }}</div>
+              <div class="text-[11px] text-slate-500 font-mono">STK: {{ r.bankAccountNumber }}</div>
+              <div class="text-[11px] text-slate-500 uppercase font-semibold">{{ r.bankAccountHolder }}</div>
+            </td>
+            <td class="py-3">
+              <StatusBadge type="RequestStatus" :status="r.status" />
+              <div v-if="r.rejectReason" class="text-[10px] text-red-500 mt-1 max-w-xs truncate">
+                Lý do: {{ r.rejectReason }}
+              </div>
+            </td>
+            <td class="py-3 text-slate-500 dark:text-slate-400">
+              {{ formatRelativeTime(r.createdAt) }}
+            </td>
+            <td class="py-3 text-right">
+              <div v-if="r.status === 'Pending'" class="flex items-center justify-end gap-2">
+                <BaseButton
+                  variant="outline"
+                  size="sm"
+                  class="text-red-600 hover:text-red-700 !text-xs !py-1"
+                  @click="openRejectModal(r)"
+                >
+                  ✕ Từ chối
+                </BaseButton>
+                <BaseButton
+                  variant="primary"
+                  size="sm"
+                  class="!text-xs !py-1"
+                  :loading="isApprovingId === r.id"
+                  @click="handleApprove(r.id)"
+                >
+                  ✓ Duyệt lệnh
+                </BaseButton>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- MODAL: Reject Withdrawal -->
+    <BaseModal
+      v-model="isRejectModalOpen"
+      title="Từ chối Yêu cầu Rút tiền"
+      max-width="md"
+    >
+      <form @submit.prevent="handleConfirmReject" class="space-y-4">
+        <p class="text-xs text-slate-600 dark:text-slate-400">
+          Nhập lý do từ chối yêu cầu rút số tiền <strong>{{ formatCurrency(selectedReq?.amount || 0) }}</strong> của chủ nhà <strong>{{ selectedReq?.ownerFullName }}</strong>:
+        </p>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Lý do từ chối (Tùy chọn)
+          </label>
+          <textarea
+            v-model="rejectReason"
+            rows="3"
+            class="input-field !text-xs !py-2"
+            placeholder="VD: Sai thông tin số tài khoản hoặc tên chủ thẻ..."
+          />
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <BaseButton variant="outline" size="sm" type="button" @click="isRejectModalOpen = false">
+            {{ $t('common.cancel') }}
+          </BaseButton>
+          <BaseButton variant="danger" size="sm" type="submit" :loading="isRejecting">
+            Xác nhận từ chối
+          </BaseButton>
+        </div>
+      </form>
+    </BaseModal>
   </div>
 </template>
 
 <script setup lang="ts">
-import BaseCard from '~/components/common/BaseCard.vue'
+import BaseButton from '~/components/common/BaseButton.vue'
+import BaseModal from '~/components/common/BaseModal.vue'
+import LoadingSpinner from '~/components/common/LoadingSpinner.vue'
+import StatusBadge from '~/components/status/StatusBadge.vue'
+import type { PagedResult, WithdrawRequestResponse } from '~/types/api'
 
 definePageMeta({
   layout: 'admin',
+})
+
+const { get, put } = useApi()
+const { formatCurrency, formatRelativeTime } = useFormat()
+const toast = useToast()
+
+const isLoading = ref(true)
+const requests = ref<WithdrawRequestResponse[]>([])
+const filterStatus = ref('')
+
+const filteredRequests = computed(() => {
+  if (!filterStatus.value) return requests.value
+  return requests.value.filter((r) => r.status === filterStatus.value)
+})
+
+const fetchWithdrawals = async () => {
+  isLoading.value = true
+  try {
+    const data = await get<PagedResult<WithdrawRequestResponse>>('/withdraw-requests', { pageSize: 100 })
+    requests.value = data.items || []
+  } catch {
+    requests.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Approve
+const isApprovingId = ref<string | null>(null)
+const handleApprove = async (id: string) => {
+  if (!confirm('Xác nhận bạn đã chuyển khoản thành công và muốn duyệt yêu cầu rút tiền này?')) return
+  isApprovingId.value = id
+  try {
+    await put(`/withdraw-requests/${id}/approve`, {})
+    toast.success('Duyệt yêu cầu rút tiền thành công!')
+    await fetchWithdrawals()
+  } catch (err: any) {
+    toast.error(err.message || 'Không thể duyệt yêu cầu rút tiền.')
+  } finally {
+    isApprovingId.value = null
+  }
+}
+
+// Reject
+const isRejectModalOpen = ref(false)
+const selectedReq = ref<WithdrawRequestResponse | null>(null)
+const rejectReason = ref('')
+const isRejecting = ref(false)
+
+const openRejectModal = (r: WithdrawRequestResponse) => {
+  selectedReq.value = r
+  rejectReason.value = ''
+  isRejectModalOpen.value = true
+}
+
+const handleConfirmReject = async () => {
+  if (!selectedReq.value) return
+  isRejecting.value = true
+  try {
+    await put(`/withdraw-requests/${selectedReq.value.id}/reject`, {
+      reason: rejectReason.value || undefined,
+    })
+    toast.success('Đã từ chối yêu cầu rút tiền.')
+    isRejectModalOpen.value = false
+    await fetchWithdrawals()
+  } catch (err: any) {
+    toast.error(err.message || 'Không thể từ chối yêu cầu.')
+  } finally {
+    isRejecting.value = false
+  }
+}
+
+onMounted(() => {
+  fetchWithdrawals()
 })
 </script>

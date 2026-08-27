@@ -677,22 +677,42 @@ export interface PaymentTransaction {
   createdAt: string
 }
 
-export interface MaintenanceRequest {
+// Maintenance Contracts
+export interface CreateMaintenanceRequest {
+  leaseId: string
+  category: MaintenanceCategory
+  description: string
+  imageUrls?: string[]
+}
+
+export interface AcceptMaintenanceRequest {
+  assignToStaffUserId?: string
+  taskTitle?: string
+  dueDate?: string
+}
+
+export interface RejectMaintenanceRequest {
+  reason?: string
+}
+
+export interface MaintenanceRequestResponse {
   id: string
+  leaseId: string
   roomId: string
-  roomNumber?: string
+  roomNumber: string
   boardingHouseId: string
-  boardingHouseName?: string
-  tenantId: string
-  tenantName?: string
+  boardingHouseName: string
+  reportedByUserId: string
+  reporterFullName: string
   category: MaintenanceCategory
   description: string
   status: MaintenanceStatus
+  taskId?: string
   images: ImageResponse[]
-  rejectionReason?: string
-  resolvedAt?: string
   createdAt: string
 }
+
+export type MaintenanceRequest = MaintenanceRequestResponse
 
 // Staff Contracts
 export interface CreateStaffRequest {
@@ -967,27 +987,158 @@ export interface Review {
   createdAt: string
 }
 
-export interface Report {
-  id: string
-  reporterId: string
-  reporterName?: string
+// Reports Contracts
+export interface CreateReportRequest {
   targetType: ReportTargetType
   targetId: string
   reason: string
+  details?: string
+}
+
+export interface ResolveReportRequest {
+  resolution?: string
+}
+
+export interface DismissReportRequest {
+  resolution?: string
+}
+
+export interface ReportResponse {
+  id: string
+  reporterUserId: string
+  reporterFullName: string
+  targetType: ReportTargetType
+  targetId: string
+  reason: string
+  details?: string
   status: ReportStatus
-  adminNotes?: string
+  processedByUserId?: string
+  processedByFullName?: string
+  processedAt?: string
+  resolution?: string
   createdAt: string
 }
 
-export interface AuditLog {
+export type Report = ReportResponse
+
+// Admin Accounts Contracts
+export interface AdminCreateAccountRequest {
+  email: string
+  username: string
+  password: string
+  fullName: string
+  phoneNumber?: string
+  gender: Gender
+  role: UserRole
+}
+
+export interface AdminUpdateAccountRequest {
+  fullName: string
+  phoneNumber?: string
+  gender: Gender
+  role: UserRole
+}
+
+export interface AdminLockAccountRequest {
+  reason?: string
+}
+
+export interface AdminAccountSummaryResponse {
   id: string
-  actorId: string
-  actorName?: string
-  action: string
-  targetResource: string
-  targetId: string
-  details?: string
+  email: string
+  username: string
+  fullName: string
+  phoneNumber?: string
+  gender: Gender
+  avatarUrl?: string
+  role: UserRole
+  emailConfirmed: boolean
+  isLocked: boolean
+  lockedReason?: string
+  isDeleted: boolean
   createdAt: string
+}
+
+export interface AdminAccountDetailResponse extends AdminAccountSummaryResponse {
+  boardingHousesCount: number
+  activeLeasesCount: number
+  availableBalance?: number
+}
+
+// Admin Boarding Houses
+export interface AdminBoardingHouseResponse {
+  id: string
+  name: string
+  addressLine: string
+  province: string
+  district: string
+  ward: string
+  ownerUserId: string
+  ownerFullName: string
+  ownerEmail: string
+  listingStatus: ListingStatus
+  rejectionReason?: string
+  isDeleted: boolean
+  roomsCount: number
+  rating: number
+  reviewCount: number
+  createdAt: string
+}
+
+// Facility Catalog
+export interface CreateFacilityRequest {
+  name: string
+  codeName?: string
+  iconKey?: string
+  description?: string
+}
+
+export interface UpdateFacilityRequest {
+  name: string
+  codeName?: string
+  iconKey?: string
+  description?: string
+}
+
+export interface FacilityDetailResponse {
+  id: string
+  name: string
+  codeName: string
+  iconKey?: string
+  description?: string
+  inUseByRoomTypesCount: number
+  createdAt: string
+}
+
+// Audit Logs & Platform Stats
+export interface AuditLogResponse {
+  id: string
+  actorUserId: string
+  actorFullName?: string
+  action: string
+  entityType: string
+  entityId?: string
+  beforeJson?: string
+  afterJson?: string
+  ipAddress?: string
+  createdAt: string
+}
+
+export type AuditLog = AuditLogResponse
+
+export interface AdminPlatformStatsResponse {
+  totalUsers: number
+  usersByRole: Record<string, number>
+  totalBoardingHouses: number
+  housesByStatus: Record<string, number>
+  totalRooms: number
+  roomsByStatus: Record<string, number>
+  activeLeases: number
+  totalTransactions: number
+  totalTransactionVolume: number
+  pendingReports: number
+  pendingWithdrawals: number
+  pendingListingReviews: number
 }
 
 export interface InAppNotification {
