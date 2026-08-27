@@ -70,8 +70,27 @@
 
   "error.notification.not_found": "Notification not found.",
 
+  "error.deposit.not_found": "Deposit request not found.",
+  "error.deposit.not_yours": "This deposit request belongs to someone else.",
+  "error.deposit.start_date_in_past": "Pick a move-in date that is not in the past.",
+  "error.deposit.listing_not_published": "This listing is not published, so no room can be held yet.",
+  "error.deposit.room_not_available": "This room is no longer available to hold.",
+  "error.deposit.already_requested": "You already have a live deposit request for this room.",
+  "error.deposit.not_pending": "This deposit request has already been answered.",
+  "error.deposit.not_cancellable": "Only a deposit request that has not been paid can be cancelled.",
+  "error.deposit.not_accepted": "The contract can only be previewed once the deposit request has been accepted.",
+
   "notification.AppointmentHandled.title": "Your viewing request has been answered",
   "notification.AppointmentHandled.body": "The viewing you requested for room {roomNumber} at {boardingHouseName} has been answered. Open it for the details.",
+
+  "notification.DepositRequested.title": "New deposit request",
+  "notification.DepositRequested.body": "Room {roomNumber} at {boardingHouseName} has a new deposit request for {requestedTermMonths} month(s). Open it to answer.",
+  "notification.DepositAccepted.title": "Your deposit request has been accepted",
+  "notification.DepositAccepted.body": "Room {roomNumber} at {boardingHouseName} is being held for you. Pay the deposit before the deadline to keep it.",
+  "notification.DepositRejected.title": "Your deposit request was declined",
+  "notification.DepositRejected.body": "The deposit request for room {roomNumber} at {boardingHouseName} was declined. Open it for the reason given.",
+  "notification.DepositExpired.title": "Your deposit request has expired",
+  "notification.DepositExpired.body": "The payment deadline for room {roomNumber} at {boardingHouseName} has passed, so the room is available again.",
 
   "validation.required": "This field is required.",
   "validation.email_format": "This is not a valid email address.",

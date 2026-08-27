@@ -20,4 +20,17 @@ public static class RoomStatusPolicy
     /// </summary>
     public static bool CanBeChangedFrom(RoomStatus current) =>
         current is RoomStatus.Available or RoomStatus.Maintenance;
+
+    /// <summary>
+    /// The status implied by the rows that commit a room (docs/domain-rules.md §9.3). A lease wins
+    /// over a deposit: somebody living there outranks somebody holding it. The caller supplies the
+    /// two facts so the rule stays free of I/O and can be tested without a database.
+    /// </summary>
+    public static RoomStatus DeriveFromCommitments(bool hasLiveLease, bool hasHoldingDeposit) =>
+        (hasLiveLease, hasHoldingDeposit) switch
+        {
+            (true, _) => RoomStatus.Occupied,
+            (false, true) => RoomStatus.Reserved,
+            _ => RoomStatus.Available
+        };
 }

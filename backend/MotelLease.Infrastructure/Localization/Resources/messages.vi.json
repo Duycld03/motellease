@@ -70,8 +70,27 @@
 
   "error.notification.not_found": "Không tìm thấy thông báo.",
 
+  "error.deposit.not_found": "Không tìm thấy yêu cầu đặt cọc.",
+  "error.deposit.not_yours": "Yêu cầu đặt cọc này thuộc về người khác.",
+  "error.deposit.start_date_in_past": "Vui lòng chọn ngày nhận phòng không nằm trong quá khứ.",
+  "error.deposit.listing_not_published": "Tin đăng chưa được công bố nên chưa thể giữ phòng.",
+  "error.deposit.room_not_available": "Phòng này không còn trống để giữ.",
+  "error.deposit.already_requested": "Bạn đã có một yêu cầu đặt cọc còn hiệu lực cho phòng này.",
+  "error.deposit.not_pending": "Yêu cầu đặt cọc này đã được trả lời.",
+  "error.deposit.not_cancellable": "Chỉ yêu cầu đặt cọc chưa thanh toán mới có thể hủy.",
+  "error.deposit.not_accepted": "Chỉ có thể xem trước hợp đồng sau khi yêu cầu đặt cọc được chấp nhận.",
+
   "notification.AppointmentHandled.title": "Yêu cầu xem phòng của bạn đã được trả lời",
   "notification.AppointmentHandled.body": "Yêu cầu xem phòng {roomNumber} tại {boardingHouseName} đã được trả lời. Mở thông báo để xem chi tiết.",
+
+  "notification.DepositRequested.title": "Có yêu cầu đặt cọc mới",
+  "notification.DepositRequested.body": "Phòng {roomNumber} tại {boardingHouseName} có yêu cầu đặt cọc mới với thời hạn {requestedTermMonths} tháng. Mở thông báo để trả lời.",
+  "notification.DepositAccepted.title": "Yêu cầu đặt cọc của bạn đã được chấp nhận",
+  "notification.DepositAccepted.body": "Phòng {roomNumber} tại {boardingHouseName} đang được giữ cho bạn. Hãy thanh toán tiền cọc trước hạn để giữ phòng.",
+  "notification.DepositRejected.title": "Yêu cầu đặt cọc của bạn bị từ chối",
+  "notification.DepositRejected.body": "Yêu cầu đặt cọc phòng {roomNumber} tại {boardingHouseName} đã bị từ chối. Mở thông báo để xem lý do.",
+  "notification.DepositExpired.title": "Yêu cầu đặt cọc của bạn đã hết hạn",
+  "notification.DepositExpired.body": "Đã quá hạn thanh toán cho phòng {roomNumber} tại {boardingHouseName}, phòng đã được mở lại cho người khác.",
 
   "validation.required": "Không được để trống.",
   "validation.email_format": "Email không đúng định dạng.",

@@ -5,6 +5,7 @@ using MotelLease.Application.Appointments;
 using MotelLease.Application.Auth;
 using MotelLease.Application.BoardingHouses;
 using MotelLease.Application.Common.Security;
+using MotelLease.Application.Deposits;
 using MotelLease.Application.Notifications;
 using MotelLease.Application.Rooms;
 using MotelLease.Application.RoomTypes;
@@ -79,6 +80,16 @@ public static class DependencyInjection
         services.AddScoped<AnswerAppointmentHandler>();
         services.AddScoped<CancelAppointmentHandler>();
         services.AddScoped<ExpirePastAppointmentsHandler>();
+
+        services.AddSingleton(DepositPaymentWindow.Default);
+
+        services.AddScoped<ListDepositsHandler>();
+        services.AddScoped<GetDepositHandler>();
+        services.AddScoped<RequestDepositHandler>();
+        services.AddScoped<AnswerDepositHandler>();
+        services.AddScoped<CancelDepositHandler>();
+        services.AddScoped<PreviewDepositContractHandler>();
+        services.AddScoped<ExpireOverdueDepositsHandler>();
 
         services.AddScoped<ListNotificationsHandler>();
         services.AddScoped<CountUnreadNotificationsHandler>();

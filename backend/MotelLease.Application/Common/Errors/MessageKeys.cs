@@ -113,6 +113,19 @@ public static class MessageKeys
         public const string NotCancellable = "error.appointment.not_cancellable";
     }
 
+    public static class Deposit
+    {
+        public const string NotFound = "error.deposit.not_found";
+        public const string NotYours = "error.deposit.not_yours";
+        public const string StartDateInPast = "error.deposit.start_date_in_past";
+        public const string ListingNotPublished = "error.deposit.listing_not_published";
+        public const string RoomNotAvailable = "error.deposit.room_not_available";
+        public const string AlreadyRequested = "error.deposit.already_requested";
+        public const string NotPending = "error.deposit.not_pending";
+        public const string NotCancellable = "error.deposit.not_cancellable";
+        public const string NotAccepted = "error.deposit.not_accepted";
+    }
+
     public static class Notification
     {
         public const string NotFound = "error.notification.not_found";
