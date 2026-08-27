@@ -42,9 +42,14 @@ middleware rather than separate SPAs.
   utility prices; viewing appointments with auto-expiry background sweep; in-app and SignalR
   realtime notifications; room deposits; end-to-end deposit and monthly bill payments via VNPay &
   MoMo with idempotent IPN confirmation; deposit-to-lease transition.
-  Covered by 113 integration tests that run against a real PostGIS container.
+- **Lease lifecycle & billing group: done** — full rental contract lifecycle, co-tenant management
+  with occupancy enforcement, early termination and settlement, tenant extension requests with owner
+  approval/rejection; room additional fees, bill preview and creation with meter readings advance,
+  tenant bill splitting exact to 1 VND, draft bill lifecycle, PDF bill generation (QuestPDF), and
+  automated background sweeps for lease expiry and bill reminders.
+  Covered by 124 integration tests that run against a real PostGIS container.
 
-Next: public search and catalogue with PostGIS, saved listings, and full lease/billing lifecycle.
+Next: public search and catalogue with PostGIS, saved listings, and service reviews.
 
 | Document | Contents |
 |---|---|
