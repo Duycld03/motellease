@@ -1,12 +1,12 @@
 \set ON_ERROR_STOP off
-\echo '=== 1) gen_random_uuid() có cần pgcrypto? ==='
+\echo '=== 1) does gen_random_uuid() need pgcrypto? ==='
 SELECT gen_random_uuid() AS uuid_without_pgcrypto;
 
 \echo '=== 2) CREATE EXTENSION postgis ==='
 CREATE EXTENSION IF NOT EXISTS postgis;
 SELECT PostGIS_Lib_Version() AS postgis_version;
 
-\echo '=== 3) computed column geography STORED tu Latitude/Longitude ==='
+\echo '=== 3) STORED geography computed column from Latitude/Longitude ==='
 CREATE TABLE "BoardingHouses" (
   "Id"        uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "Name"      text NOT NULL,
@@ -20,10 +20,10 @@ CREATE TABLE "BoardingHouses" (
   "IsDeleted" boolean NOT NULL DEFAULT false
 );
 
-\echo '=== 4) index GiST tren Location ==='
+\echo '=== 4) GiST index on Location ==='
 CREATE INDEX "IX_BoardingHouses_Location" ON "BoardingHouses" USING GIST ("Location");
 
-\echo '=== 5) seed: 5000 diem quanh 2 neo (BK Ha Noi, BK TPHCM) ==='
+\echo '=== 5) seed: 5000 points around 2 anchors (HUST Hanoi, HCMUT) ==='
 INSERT INTO "BoardingHouses" ("Name", "Latitude", "Longitude")
 SELECT
   'BH-' || g,
@@ -39,33 +39,33 @@ FROM (
 ) s;
 ANALYZE "BoardingHouses";
 
-\echo '=== 6) Location duoc sinh tu dong? (khong insert cot nay) ==='
+\echo '=== 6) is Location generated automatically? (never inserted) ==='
 SELECT "Name", "Latitude", "Longitude", ST_AsText("Location") AS wkt
 FROM "BoardingHouses" ORDER BY "Name" LIMIT 2;
 
-\echo '=== 7) ST_DWithin 3km quanh BK Ha Noi: co dung index GiST? ==='
+\echo '=== 7) ST_DWithin 3km around HUST: is the GiST index used? ==='
 EXPLAIN (ANALYZE, BUFFERS, COSTS OFF)
 SELECT "Id" FROM "BoardingHouses"
 WHERE ST_DWithin("Location",
       ST_SetSRID(ST_MakePoint(105.8435, 21.0045), 4326)::geography, 3000);
 
-\echo '=== 8) so ket qua + khoang cach min/max (phai <= 3000m) ==='
+\echo '=== 8) hit count + min/max distance (must be <= 3000m) ==='
 SELECT COUNT(*) AS hits,
        ROUND(MIN(ST_Distance("Location", ST_SetSRID(ST_MakePoint(105.8435,21.0045),4326)::geography))) AS min_m,
        ROUND(MAX(ST_Distance("Location", ST_SetSRID(ST_MakePoint(105.8435,21.0045),4326)::geography))) AS max_m
 FROM "BoardingHouses"
 WHERE ST_DWithin("Location", ST_SetSRID(ST_MakePoint(105.8435,21.0045),4326)::geography, 3000);
 
-\echo '=== 9) UPDATE lat/lon -> Location tu cap nhat? ==='
+\echo '=== 9) UPDATE lat/lon -> does Location follow? ==='
 UPDATE "BoardingHouses" SET "Latitude" = 21.0045, "Longitude" = 105.8435
 WHERE "Name" = 'BH-2';
 SELECT "Name", ST_AsText("Location") AS wkt FROM "BoardingHouses" WHERE "Name" = 'BH-2';
 
-\echo '=== 10) ghi truc tiep vao computed column -> phai loi ==='
+\echo '=== 10) writing straight to the computed column -> must fail ==='
 UPDATE "BoardingHouses" SET "Location" = ST_SetSRID(ST_MakePoint(0,0),4326)::geography
 WHERE "Name" = 'BH-2';
 
-\echo '=== 11) partial unique index tren bang co xoa mem ==='
+\echo '=== 11) partial unique index on a soft-deletable table ==='
 CREATE TABLE "Rooms" (
   "Id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "BoardingHouseId" uuid NOT NULL,
@@ -78,16 +78,16 @@ CREATE UNIQUE INDEX "UX_Rooms_BH_Number"
 
 INSERT INTO "Rooms" ("BoardingHouseId","RoomNumber","Status")
 VALUES ('11111111-1111-1111-1111-111111111111','101','Available');
-\echo '--- trung so phong khi chua xoa -> phai loi ---'
+\echo '--- duplicate room number while the original is live -> must fail ---'
 INSERT INTO "Rooms" ("BoardingHouseId","RoomNumber","Status")
 VALUES ('11111111-1111-1111-1111-111111111111','101','Available');
-\echo '--- xoa mem roi tao lai cung so phong -> phai OK ---'
+\echo '--- soft-delete, then reuse the same room number -> must succeed ---'
 UPDATE "Rooms" SET "IsDeleted" = true WHERE "RoomNumber" = '101';
 INSERT INTO "Rooms" ("BoardingHouseId","RoomNumber","Status")
 VALUES ('11111111-1111-1111-1111-111111111111','101','Available');
 SELECT COUNT(*) AS rooms_101 FROM "Rooms" WHERE "RoomNumber" = '101';
 
-\echo '=== 12) partial unique: 1 Lease Active / phong ==='
+\echo '=== 12) partial unique: one Active Lease per room ==='
 CREATE TABLE "Leases" (
   "Id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "RoomId" uuid NOT NULL,
@@ -97,10 +97,10 @@ CREATE UNIQUE INDEX "UX_Leases_ActivePerRoom"
   ON "Leases" ("RoomId") WHERE "Status" = 'Active';
 INSERT INTO "Leases" ("RoomId","Status") VALUES ('22222222-2222-2222-2222-222222222222','Active');
 INSERT INTO "Leases" ("RoomId","Status") VALUES ('22222222-2222-2222-2222-222222222222','Ended');
-\echo '--- Lease Active thu 2 cung phong -> phai loi ---'
+\echo '--- a second Active Lease on the same room -> must fail ---'
 INSERT INTO "Leases" ("RoomId","Status") VALUES ('22222222-2222-2222-2222-222222222222','Active');
 
-\echo '=== 13) materialized view + REFRESH CONCURRENTLY can unique index ==='
+\echo '=== 13) materialized view + REFRESH CONCURRENTLY needs a unique index ==='
 CREATE MATERIALIZED VIEW vw_test AS
 SELECT "BoardingHouseId", COUNT(*) AS total FROM "Rooms" GROUP BY "BoardingHouseId";
 CREATE UNIQUE INDEX ON vw_test ("BoardingHouseId");

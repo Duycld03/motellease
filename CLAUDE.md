@@ -11,9 +11,12 @@ Read `docs/` before writing code. The specs there are the source of truth.
 
 ## Language
 
-- Code, identifiers, comments, commit messages, PR descriptions, README: **English**.
-- Files under `docs/`: **Vietnamese**. Do not translate them.
-- User-facing strings: never hardcoded. Resource keys resolved through i18n (`vi` default, `en`).
+- Everything written for developers is **English**: code, identifiers, comments, commit messages,
+  PR descriptions, README, and the specs under `docs/`.
+- Vietnamese appears only in two places: i18n resource values (`vi` alongside `en`) and Vietnamese
+  proper nouns such as place names.
+- User-facing strings are never hardcoded. They are resource keys resolved through i18n
+  (`vi` default, `en`).
 
 ## Layering
 

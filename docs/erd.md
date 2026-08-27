@@ -1,10 +1,10 @@
-# MotelLease — Lược đồ dữ liệu (PostgreSQL 17 + PostGIS)
+# MotelLease — Data model (PostgreSQL 17 + PostGIS)
 
-> 29 bảng. Quy ước: PK là `Id uuid` (`gen_random_uuid()`), tiền là `decimal(18,2)`,
-> thời điểm là `timestamptz`, xóa mềm là `IsDeleted boolean` + EF global query filter.
-> Mọi bảng có `CreatedAt`/`UpdatedAt` trừ bảng nối và `AuditLogs`.
+> 29 tables. Conventions: primary key is `Id uuid` (`gen_random_uuid()`), money is
+> `decimal(18,2)`, instants are `timestamptz`, soft delete is `IsDeleted boolean` plus an EF
+> global query filter. Every table has `CreatedAt`/`UpdatedAt` except join tables and `AuditLogs`.
 
-## Sơ đồ quan hệ chính
+## Main relationships
 
 ```
 User ─1:1─ OwnerProfile / StaffProfile
@@ -27,7 +27,7 @@ PaymentTransaction ─n:1─ Deposit | PaymentBill | RefundRequest
 Image (polymorphic) → BoardingHouse | RoomType | Room | Review | Report | MaintenanceRequest
 ```
 
-## 1. Người dùng & phiên
+## 1. Users and sessions
 
 **Users**
 `Id` · `Username` unique · `Email` unique · `PasswordHash` · `FullName` · `PhoneNumber` ·
@@ -45,22 +45,22 @@ Index: `Email`, `Username`, `SocialId`, `(Role, IsDeleted)`
 `ReplacedByTokenId` · `UserAgent` · `IpAddress`
 Index: `TokenHash` unique, `(UserId, RevokedAt)`
 
-## 2. Nhà trọ, phòng, tiện ích
+## 2. Boarding houses, rooms, facilities
 
 **BoardingHouses**
 `Id` · `OwnerUserId` FK · `Name` · `Description` ·
 `Type` enum(Traditional, MiniHouse, DormStyle) ·
 `AddressLine` · `Ward` · `District` · `Province` ·
 `Latitude` decimal(9,6) · `Longitude` decimal(9,6) ·
-`Location geography(Point,4326)` **computed STORED** từ Longitude/Latitude ·
+`Location geography(Point,4326)` **computed STORED** from Longitude/Latitude ·
 `ElectricityUnitPrice` · `WaterUnitPrice` ·
 `ListingStatus` enum(Draft, PendingReview, Published, Rejected) · `RejectionReason` ·
 `Rating` decimal(2,1) cache · `ReviewCount` int cache · `IsDeleted`
-Index: GiST trên `Location`, `(ListingStatus, IsDeleted)`, `(Province, District)`, `OwnerUserId`
+Index: GiST on `Location`, `(ListingStatus, IsDeleted)`, `(Province, District)`, `OwnerUserId`
 
-Không có cột cache: `priceRange` tính từ `RoomTypes`, `totalRooms`/`availableRooms` tính từ
-`vw_room_occupancy`, số lượt lưu tin đếm từ `SavedListings`. Staff phụ trách nằm ở
-`StaffAssignments` chứ không phải một cột trên bảng này, vì một nhà trọ có nhiều staff.
+No cached aggregates beyond rating: the price range is derived from `RoomTypes`, room counts from
+`vw_room_occupancy`, and save counts from `SavedListings`. Staff coverage lives in
+`StaffAssignments` rather than a column here, because one boarding house has several staff.
 
 **StaffAssignments** — `Id` · `BoardingHouseId` · `StaffUserId` · `AssignedByUserId` ·
 `AssignedAt` · `UnassignedAt`
@@ -78,8 +78,8 @@ Index: unique partial `(BoardingHouseId, StaffUserId) WHERE UnassignedAt IS NULL
 `Description` · `CurrentElectricityReading` · `CurrentWaterReading` · `IsDeleted`
 Index: unique `(BoardingHouseId, RoomNumber) WHERE IsDeleted = false`, `(BoardingHouseId, Status)`
 
-Phòng chỉ giữ chỉ số hiện tại (đồng hồ đang chạy). Chỉ số đầu kỳ của một hóa đơn nằm ở
-`PaymentBills.ElectricityOld`/`WaterOld`, không lặp lại trên `Rooms`.
+A room keeps only the current meter reading. The opening reading of a bill lives in
+`PaymentBills.ElectricityOld`/`WaterOld` and is not duplicated on `Rooms`.
 
 **Images** (polymorphic) — `Id` · `OwnerType` enum(BoardingHouse, RoomType, Room, Review, Report, MaintenanceRequest) ·
 `OwnerId` uuid · `Url` · `PublicId` (Cloudinary) · `IsPrimary` · `SortOrder`
@@ -88,7 +88,7 @@ Index: `(OwnerType, OwnerId)`, unique partial `(OwnerType, OwnerId) WHERE IsPrim
 **SavedListings** — `Id` · `UserId` · `BoardingHouseId`
 Index: unique `(UserId, BoardingHouseId)`
 
-## 3. Xem phòng → cọc → hợp đồng
+## 3. Viewing → deposit → lease
 
 **Appointments** — `Id` · `UserId` · `RoomId` · `AppointmentDate` timestamptz ·
 `Status` enum RequestStatus · `Note` · `ReasonForCancel` · `HandledByUserId`
@@ -96,28 +96,28 @@ Index: `(RoomId, AppointmentDate)`, `(UserId, Status)`
 
 **Deposits** — `Id` · `UserId` · `RoomId` · `Amount` ·
 `Status` enum(Pending, Accepted, Paid, Completed, Rejected, Expired, Refunding, Refunded) ·
-`RequestedStartDate` · `RequestedTermMonths` int · `ExpiresAt` (hạn phải thanh toán sau khi được duyệt) ·
+`RequestedStartDate` · `RequestedTermMonths` int · `ExpiresAt` (payment deadline once accepted) ·
 `ReasonForCancel` · `HandledByUserId`
 Index: `(RoomId, Status)`, `(UserId, Status)`, partial `(RoomId) WHERE Status IN ('Accepted','Paid')`
 
-Kỳ hạn, ngày bắt đầu và ngày kết thúc thuộc `Leases`; ở đây chỉ là *yêu cầu* giữ chỗ.
+Term, start date and end date belong to `Leases`; this table is only the *request* to hold a room.
 
 **Leases** — `Id` · `RoomId` · `DepositId` (nullable, unique) · `PrimaryTenantUserId` ·
 `StartDate` date · `EndDate` date · `TermMonths` int ·
-`MonthlyRent` (giá chốt tại thời điểm ký, không đọc từ `RoomTypes`) ·
+`MonthlyRent` (frozen at signing, never read from `RoomTypes` afterwards) ·
 `DepositHeld` · `Status` enum(Active, Expiring, Ended, Terminated) ·
 `EndedAt` · `EndReason` · `FinalElectricityReading` · `FinalWaterReading` ·
 `DepositDeducted` · `DepositRefunded` · `CreatedByUserId`
 Index: partial unique `(RoomId) WHERE Status = 'Active'`, `(PrimaryTenantUserId, Status)`, `(EndDate, Status)`
 
-**LeaseTenants** — `Id` · `LeaseId` · `UserId` (nullable — người ở cùng không cần có tài khoản) ·
+**LeaseTenants** — `Id` · `LeaseId` · `UserId` (nullable — a co-tenant needs no account) ·
 `FullName` · `PhoneNumber` · `IdCardNumber` · `IsPrimary` · `MovedInAt` · `MovedOutAt`
 Index: `(LeaseId)`, partial `(LeaseId) WHERE MovedOutAt IS NULL`
 
 **ExtensionRequests** — `Id` · `LeaseId` · `RequestedByUserId` · `CurrentEndDate` ·
 `RequestedEndDate` · `Status` enum RequestStatus · `TenantNote` · `OwnerNote` · `HandledByUserId`
 
-## 4. Hóa đơn & tiền
+## 4. Bills and money
 
 **PaymentBills** — `Id` · `LeaseId` · `RoomId` · `Month` int · `Year` int ·
 `RentAmount` ·
@@ -127,23 +127,24 @@ Index: `(LeaseId)`, partial `(LeaseId) WHERE MovedOutAt IS NULL`
 `Status` enum(Draft, Issued, Overdue, Paid, Cancelled) · `IssuedAt` · `DueDate` · `PaidAt`
 Index: unique `(RoomId, Month, Year)`, `(Status, DueDate)`, `(LeaseId, Year, Month)`
 
-`Qty` và các `Amount` là cột lưu (chốt tại thời điểm phát hành), không computed —
-đơn giá có thể đổi về sau, hóa đơn cũ không được đổi theo.
+The `Qty` and `Amount` columns are stored, not computed: they are frozen when the bill is issued.
+Unit prices can change later, and an already-issued bill must not change with them.
 
-**RoomAdditionalFees** — `Id` · `RoomId` · `PaymentBillId` (nullable đến khi hóa đơn phát hành) ·
+**RoomAdditionalFees** — `Id` · `RoomId` · `PaymentBillId` (null until the bill is issued) ·
 `FeeName` · `FeeAmount` · `Month` · `Year`
 
 **PaymentTransactions** — `Id` · `UserId` ·
 `Purpose` enum(Deposit, Rent, Refund) ·
-`DepositId` / `PaymentBillId` / `RefundRequestId` (đúng một cái not null — CHECK constraint) ·
+`DepositId` / `PaymentBillId` / `RefundRequestId` (exactly one is not null — CHECK constraint) ·
 `Provider` enum(MoMo, VNPay) ·
-`ProviderOrderId` **unique** (mã đơn ta sinh ra) ·
-`ProviderTxnId` **unique nullable** (mã giao dịch phía cổng trả về — chống ghi trùng khi IPN gọi lại) ·
+`ProviderOrderId` **unique** (the order id we generate) ·
+`ProviderTxnId` **unique nullable** (the gateway's transaction id — what stops a repeated IPN
+call from being recorded twice) ·
 `Amount` · `Status` enum(Initiated, Pending, Succeeded, Failed, Refunded) ·
 `RawCallbackPayload jsonb` · `SignatureVerified` bool · `InitiatedAt` · `CompletedAt`
 Index: unique `ProviderOrderId`, unique partial `ProviderTxnId WHERE ProviderTxnId IS NOT NULL`, `(Status, InitiatedAt)`
 
-Đây là bảng duy nhất được phép chuyển trạng thái tiền, và chỉ từ endpoint IPN.
+This is the only table allowed to move money state, and only from an IPN endpoint.
 
 **RefundRequests** — `Id` · `DepositId` · `LeaseId` (nullable) · `UserId` · `Amount` ·
 `Status` enum RequestStatus · `Reason` · `ProcessedByUserId` · `ProcessedAt` · `RejectReason`
@@ -159,15 +160,15 @@ Index: `(OwnerUserId, Status)`, `(Status, CreatedAt)`
 `OtherExpenses jsonb` (`[{feeName, feeAmount}]`) · `OtherExpensesTotal` · `TotalExpense`
 Index: unique `(BoardingHouseId, Month, Year)`
 
-`OtherExpenses` giữ dạng `jsonb` thay vì bảng con: chỉ dùng để hiển thị và cộng tổng,
-không bao giờ query theo `feeName`.
+`OtherExpenses` stays `jsonb` rather than becoming a child table: it is only displayed and summed,
+never queried by `feeName`.
 
-## 5. Đánh giá, báo cáo, vận hành
+## 5. Reviews, reports, operations
 
 **Reviews** — `Id` · `UserId` · `BoardingHouseId` ·
-`LeaseId` (nullable — not null nghĩa là **đánh giá đã xác minh**) ·
-`ParentReviewId` (nullable — trả lời của chủ trọ) ·
-`Content` · `Rating` smallint CHECK 1..5 (null khi là reply) · `IsDeleted`
+`LeaseId` (nullable — not null means a **verified** review) ·
+`ParentReviewId` (nullable — the owner's reply) ·
+`Content` · `Rating` smallint CHECK 1..5 (null on a reply) · `IsDeleted`
 Index: `(BoardingHouseId, IsDeleted)`, `ParentReviewId`, unique partial `(UserId, LeaseId) WHERE ParentReviewId IS NULL`
 
 **Reports** — `Id` · `ReporterUserId` · `TargetType` enum(Review, BoardingHouse) · `TargetId` uuid ·
@@ -180,70 +181,67 @@ Index: `(TargetType, TargetId)`, `(Status, CreatedAt)`
 `Status` enum(Open, InProgress, Resolved, Rejected) · `TaskId` (nullable)
 Index: `(RoomId, Status)`, `(LeaseId)`
 
-**Tasks** — `Id` · `BoardingHouseId` (để owner xem được việc theo từng nhà trọ) ·
+**Tasks** — `Id` · `BoardingHouseId` (so an owner can list work per property) ·
 `CreatedByUserId` · `AssignedToUserId` · `MaintenanceRequestId` (nullable) ·
 `Title` · `Details` · `Priority` enum(Low, Medium, High) ·
 `Status` enum(InProgress, Completed, Cancelled) · `DueDate` · `CompletedAt`
 Index: `(BoardingHouseId, Status)`, `(AssignedToUserId, Status)`, `(DueDate, Status)`
 
-## 6. Thông báo & nhật ký
+## 6. Notifications and audit log
 
-**Notifications** — `Id` · `UserId` · `Type` enum (xem `domain-rules.md` §7) ·
-`TitleKey` · `BodyKey` (khóa i18n, **không lưu câu tiếng Việt sẵn**) ·
-`PayloadJson jsonb` (tham số điền vào câu: tên phòng, số tiền…) ·
+**Notifications** — `Id` · `UserId` · `Type` enum (see `domain-rules.md` §7) ·
+`TitleKey` · `BodyKey` (i18n keys, **never a pre-rendered sentence**) ·
+`PayloadJson jsonb` (values to interpolate: room number, amount, …) ·
 `LinkUrl` · `IsRead` · `ReadAt`
 Index: `(UserId, IsRead, CreatedAt DESC)`
 
-Lưu khóa i18n thay vì câu hoàn chỉnh để người dùng đổi ngôn ngữ thì thông báo cũ
-cũng đổi theo — nếu lưu sẵn tiếng Việt thì không dịch lại được.
+Keys rather than sentences, so that switching language also re-renders notifications already on
+file. A stored sentence cannot be translated after the fact.
 
-**AuditLogs** — `Id` · `ActorUserId` · `Action` (vd `Account.Lock`, `Review.Delete`, `Withdraw.Approve`) ·
+**AuditLogs** — `Id` · `ActorUserId` · `Action` (e.g. `Account.Lock`, `Review.Delete`, `Withdraw.Approve`) ·
 `EntityType` · `EntityId` · `BeforeJson jsonb` · `AfterJson jsonb` · `IpAddress` · `CreatedAt`
 Index: `(EntityType, EntityId, CreatedAt DESC)`, `(ActorUserId, CreatedAt DESC)`
-Không có `UpdatedAt`, không sửa, không xóa (append-only).
+No `UpdatedAt`; append-only, never edited or deleted.
 
-## 7. View
+## 7. Views
 
-**vw_monthly_revenue** (materialized) — doanh thu suy ra từ hóa đơn, không lưu bảng tổng hợp
+**vw_monthly_revenue** (materialized) — revenue derived from bills, not stored in a summary table
 `BoardingHouseId, Year, Month, TotalRevenue, TransactionCount, PaidBillCount`
-Nguồn: `PaymentBills` `Status='Paid'` join `Leases` join `Rooms`.
-Refresh: background job sau mỗi lần hóa đơn chuyển sang `Paid`, và hằng đêm.
-Index: unique `(BoardingHouseId, Year, Month)` (cần cho `REFRESH ... CONCURRENTLY`).
+Source: `PaymentBills` with `Status='Paid'` joined to `Leases` and `Rooms`.
+Refresh: a background job after every bill that turns `Paid`, plus nightly.
+Index: unique `(BoardingHouseId, Year, Month)` (required by `REFRESH ... CONCURRENTLY`).
 
-**vw_room_occupancy** (materialized) — số phòng theo trạng thái, suy ra từ `Rooms`
+**vw_room_occupancy** (materialized) — room counts by status, derived from `Rooms`
 `BoardingHouseId, TotalRooms, AvailableRooms, ReservedRooms, OccupiedRooms, MaintenanceRooms, MinPrice, MaxPrice`
-`MinPrice`/`MaxPrice` là khoảng giá hiển thị trên trang danh sách.
+`MinPrice`/`MaxPrice` is the price range shown on the listing page.
 
-## 8. Ghi chú migration
+## 8. Migration notes
 
-> Toàn bộ mục này đã **kiểm chứng thật** trên `postgis/postgis:17-3.5`
-> (PostgreSQL 17.5, PostGIS 3.5.2) — xem `docs/verification/erd-check.sql`.
+> Everything in this section was **verified against a live database** on
+> `postgis/postgis:17-3.5` (PostgreSQL 17.5, PostGIS 3.5.2) — see `docs/verification/erd-check.sql`.
 
-1. Migration đầu tiên bật extension trước mọi bảng: `modelBuilder.HasPostgresExtension("postgis")`.
-   **Không cần `pgcrypto`**: `gen_random_uuid()` đã nằm trong core PostgreSQL từ bản 13,
-   đã test chạy được khi chưa cài extension nào.
-2. `BoardingHouses.Location` khai bằng
+1. The first migration enables the extension before any table:
+   `modelBuilder.HasPostgresExtension("postgis")`. **`pgcrypto` is not needed**:
+   `gen_random_uuid()` has been in core PostgreSQL since 13, and was confirmed to work with no
+   extension installed.
+2. `BoardingHouses.Location` is declared with
    `.HasComputedColumnSql("ST_SetSRID(ST_MakePoint(\"Longitude\", \"Latitude\"), 4326)::geography", stored: true)`
-   → seed chỉ cần nhập `Latitude`/`Longitude`, xem `seed-plan.md`. Đã kiểm:
-   - `ST_MakePoint` nhận trực tiếp cột `decimal(9,6)`, **không cần cast** sang `double precision`
-   - Sửa `Latitude`/`Longitude` thì `Location` tự cập nhật theo
-   - Ghi thẳng vào `Location` bị PostgreSQL từ chối
-     (`column "Location" can only be updated to DEFAULT`) → property này phải map
-     `.ValueGeneratedOnAddOrUpdate()` và không bao giờ nằm trong `INSERT`/`UPDATE` của EF
-   - `ST_DWithin` trên 5.000 bản ghi dùng **Bitmap Index Scan** trên index GiST
-     (`Location && _st_expand(...)`), không seq scan
-3. Enum: lưu dạng `text` + `HasConversion<string>()` thay vì PG enum type — đổi/thêm giá trị
-   không cần migration `ALTER TYPE`.
-4. Xóa mềm: `IsDeleted` + `HasQueryFilter(e => !e.IsDeleted)`. Mọi unique index trên bảng
-   có xóa mềm phải là **partial index** `WHERE "IsDeleted" = false`. Đã kiểm: trùng số phòng
-   khi chưa xóa thì bị chặn, xóa mềm rồi tạo lại cùng số phòng thì được.
-5. Partial unique `WHERE "Status" = 'Active'` chặn được lease Active thứ hai trên cùng phòng,
-   trong khi vẫn cho phép nhiều lease `Ended` — đã kiểm.
-6. `REFRESH MATERIALIZED VIEW CONCURRENTLY` yêu cầu view có **unique index**; thiếu là
-   lệnh refresh fail. Đã kiểm với `vw_test`.
-7. Tiền: `decimal(18,2)`. Không dùng `float`/`double` ở bất kỳ cột tiền nào.
-
-
-
-
-
+   so seeding only needs `Latitude`/`Longitude` — see `seed-plan.md`. Verified:
+   - `ST_MakePoint` accepts the `decimal(9,6)` columns directly, with **no cast** to `double precision`
+   - Updating `Latitude`/`Longitude` updates `Location` automatically
+   - Writing to `Location` is rejected by PostgreSQL
+     (`column "Location" can only be updated to DEFAULT`), so the property must be mapped
+     `.ValueGeneratedOnAddOrUpdate()` and must never appear in an EF `INSERT`/`UPDATE`
+   - `ST_DWithin` over 5,000 rows uses a **Bitmap Index Scan** on the GiST index
+     (`Location && _st_expand(...)`), not a sequential scan
+3. Enums are stored as `text` with `HasConversion<string>()` rather than PostgreSQL enum types, so
+   adding or renaming a value needs no `ALTER TYPE` migration.
+4. Soft delete is `IsDeleted` + `HasQueryFilter(e => !e.IsDeleted)`. Every unique index on a
+   soft-deletable table must be a **partial index** `WHERE "IsDeleted" = false`. Verified: a
+   duplicate room number is rejected while the original is live, and accepted once the original
+   is soft-deleted.
+5. Partial unique `WHERE "Status" = 'Active'` blocks a second active lease on the same room while
+   still allowing many `Ended` ones — verified.
+6. `REFRESH MATERIALIZED VIEW CONCURRENTLY` requires the view to have a **unique index**; without
+   one the refresh fails. Verified with `vw_test`.
+7. Money is `decimal(18,2)`. No `float`/`double` on any monetary column.

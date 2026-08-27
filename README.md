@@ -50,7 +50,8 @@ Next: listings and rooms, then search.
 | [docs/api-design.md](docs/api-design.md) | ~150 resource-oriented endpoints with policy-based authorization |
 | [docs/seed-plan.md](docs/seed-plan.md) | Demo data: coordinate anchors, volumes, consistency rules |
 
-Specs are written in Vietnamese. Code, comments, commit messages and this README are in English.
+Specs, code, comments and commit messages are all in English. Vietnamese appears only in the i18n
+resource files, where `vi` is the default user-facing language and `en` the alternative.
 
 ## Local development
 
