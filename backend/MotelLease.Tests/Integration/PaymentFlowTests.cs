@@ -49,9 +49,9 @@ public sealed class PaymentFlowTests : IAsyncLifetime
     [Fact]
     public async Task Checkout_opens_an_attempt_and_pays_for_nothing_by_itself()
     {
-        var held = await AcceptedDepositAsync();
+        var held = await _app.AcceptedDepositAsync(_client);
 
-        var checkout = await CheckoutAsync(held);
+        var checkout = await _client.CheckoutAsync(held);
 
         Assert.Equal(PaymentProvider.VNPay, checkout.Provider);
         Assert.Equal(ListingSetup.MonthlyRent, checkout.Amount);
@@ -74,8 +74,8 @@ public sealed class PaymentFlowTests : IAsyncLifetime
     [Fact]
     public async Task Only_the_ipn_marks_a_deposit_paid()
     {
-        var held = await AcceptedDepositAsync();
-        var checkout = await CheckoutAsync(held);
+        var held = await _app.AcceptedDepositAsync(_client);
+        var checkout = await _client.CheckoutAsync(held);
 
         // The browser comes back first, carrying a valid signature and a success code. It must not
         // be enough: the user controls this URL.
@@ -113,8 +113,8 @@ public sealed class PaymentFlowTests : IAsyncLifetime
     [Fact]
     public async Task A_replayed_ipn_changes_nothing()
     {
-        var held = await AcceptedDepositAsync();
-        var checkout = await CheckoutAsync(held);
+        var held = await _app.AcceptedDepositAsync(_client);
+        var checkout = await _client.CheckoutAsync(held);
 
         var first = await IpnAsync(Callback(checkout));
         var settled = await TransactionAsync(checkout.TransactionId);
@@ -137,8 +137,8 @@ public sealed class PaymentFlowTests : IAsyncLifetime
     [Fact]
     public async Task An_unsigned_ipn_moves_nothing()
     {
-        var held = await AcceptedDepositAsync();
-        var checkout = await CheckoutAsync(held);
+        var held = await _app.AcceptedDepositAsync(_client);
+        var checkout = await _client.CheckoutAsync(held);
 
         var acknowledgement = await IpnAsync(VnPayTestMerchant.TamperedIpnQuery(
             checkout.ProviderOrderId, checkout.Amount, TransactionNo(checkout)));
@@ -151,8 +151,8 @@ public sealed class PaymentFlowTests : IAsyncLifetime
     [Fact]
     public async Task An_ipn_for_another_amount_is_refused()
     {
-        var held = await AcceptedDepositAsync();
-        var checkout = await CheckoutAsync(held);
+        var held = await _app.AcceptedDepositAsync(_client);
+        var checkout = await _client.CheckoutAsync(held);
 
         var acknowledgement = await IpnAsync(VnPayTestMerchant.IpnQuery(
             checkout.ProviderOrderId, checkout.Amount - 1_000_000m, TransactionNo(checkout)));
@@ -174,8 +174,8 @@ public sealed class PaymentFlowTests : IAsyncLifetime
     [Fact]
     public async Task A_failed_payment_leaves_the_deposit_waiting()
     {
-        var held = await AcceptedDepositAsync();
-        var checkout = await CheckoutAsync(held);
+        var held = await _app.AcceptedDepositAsync(_client);
+        var checkout = await _client.CheckoutAsync(held);
 
         var acknowledgement = await IpnAsync(VnPayTestMerchant.IpnQuery(
             checkout.ProviderOrderId,
@@ -192,8 +192,8 @@ public sealed class PaymentFlowTests : IAsyncLifetime
     [Fact]
     public async Task A_payment_that_arrives_after_the_room_was_released_opens_a_refund()
     {
-        var held = await AcceptedDepositAsync();
-        var checkout = await CheckoutAsync(held);
+        var held = await _app.AcceptedDepositAsync(_client);
+        var checkout = await _client.CheckoutAsync(held);
 
         await ReleaseByDeadlineAsync(held.Deposit.Id);
 
@@ -226,7 +226,7 @@ public sealed class PaymentFlowTests : IAsyncLifetime
         var listing = await _app.PublishedListingAsync(_client);
         var tenant = await _client.RegisterAsync(_app.Emails, UserRole.Tenant);
 
-        var pending = await RequestDepositAsync(tenant, listing.RoomId);
+        var pending = await _client.RequestDepositAsync(tenant, listing.RoomId);
 
         var response = await PostCheckoutAsync(tenant, pending.Id);
 
@@ -238,7 +238,7 @@ public sealed class PaymentFlowTests : IAsyncLifetime
     [Fact]
     public async Task Somebody_elses_deposit_cannot_be_paid()
     {
-        var held = await AcceptedDepositAsync();
+        var held = await _app.AcceptedDepositAsync(_client);
         var stranger = await _client.RegisterAsync(_app.Emails, UserRole.Tenant);
 
         var response = await PostCheckoutAsync(stranger, held.Deposit.Id);
@@ -250,8 +250,8 @@ public sealed class PaymentFlowTests : IAsyncLifetime
     [Fact]
     public async Task Each_side_sees_the_payments_that_concern_them()
     {
-        var held = await AcceptedDepositAsync();
-        var checkout = await CheckoutAsync(held);
+        var held = await _app.AcceptedDepositAsync(_client);
+        var checkout = await _client.CheckoutAsync(held);
         var outsider = await _client.RegisterAsync(_app.Emails, UserRole.Owner);
 
         var tenantView = await ListAsync(held.TenantToken, "/api/v1/payments");
@@ -269,58 +269,6 @@ public sealed class PaymentFlowTests : IAsyncLifetime
             HttpMethod.Get, $"/api/v1/payments/{checkout.TransactionId}", outsider);
 
         Assert.Equal(HttpStatusCode.NotFound, byStranger.StatusCode);
-    }
-
-    private sealed record HeldRoom(
-        Listing Listing,
-        string TenantToken,
-        Guid TenantUserId,
-        Guid OwnerUserId,
-        DepositResponse Deposit);
-
-    /// <summary>A published room with an accepted deposit on it: the state a payment starts from.</summary>
-    private async Task<HeldRoom> AcceptedDepositAsync()
-    {
-        var listing = await _app.PublishedListingAsync(_client);
-        var tenant = await _client.RegisterAsync(_app.Emails, UserRole.Tenant);
-        var requested = await RequestDepositAsync(tenant, listing.RoomId);
-
-        var approved = await _client.SendAsync(
-            HttpMethod.Put, $"/api/v1/deposits/{requested.Id}/approve", listing.OwnerToken);
-
-        approved.EnsureSuccessStatusCode();
-
-        return new HeldRoom(
-            listing,
-            tenant,
-            requested.TenantUserId,
-            await _client.UserIdAsync(listing.OwnerToken),
-            await approved.ReadAsync<DepositResponse>());
-    }
-
-    private async Task<DepositResponse> RequestDepositAsync(string tenantToken, Guid roomId)
-    {
-        var response = await _client.SendAsync(
-            HttpMethod.Post,
-            "/api/v1/deposits",
-            tenantToken,
-            new RequestDepositRequest(
-                roomId,
-                DateOnly.FromDateTime(DateTime.UtcNow).AddDays(3),
-                RequestedTermMonths: 12));
-
-        response.EnsureSuccessStatusCode();
-
-        return await response.ReadAsync<DepositResponse>();
-    }
-
-    private async Task<PaymentCheckoutResponse> CheckoutAsync(HeldRoom held)
-    {
-        var response = await PostCheckoutAsync(held.TenantToken, held.Deposit.Id);
-
-        response.EnsureSuccessStatusCode();
-
-        return await response.ReadAsync<PaymentCheckoutResponse>();
     }
 
     private Task<HttpResponseMessage> PostCheckoutAsync(string tenantToken, Guid depositId) =>
