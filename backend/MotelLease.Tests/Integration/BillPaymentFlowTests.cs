@@ -179,7 +179,7 @@ public sealed class BillPaymentFlowTests : IAsyncLifetime
             tenantToken,
             new StartPaymentRequest(PaymentProvider.VNPay));
 
-    private async Task<GatewayAcknowledgement> IpnAsync(PaymentCheckoutResponse checkout)
+    private async Task<VnPayAcknowledgement> IpnAsync(PaymentCheckoutResponse checkout)
     {
         var query = VnPayTestMerchant.IpnQuery(
             checkout.ProviderOrderId, checkout.Amount, checkout.ProviderOrderId[^12..]);
@@ -188,7 +188,7 @@ public sealed class BillPaymentFlowTests : IAsyncLifetime
 
         response.EnsureSuccessStatusCode();
 
-        return await response.ReadAsync<GatewayAcknowledgement>();
+        return await response.ReadAsync<VnPayAcknowledgement>();
     }
 
     private async Task<Domain.Entities.PaymentBill> BillAsync(Guid billId)

@@ -286,13 +286,13 @@ public sealed class PaymentFlowTests : IAsyncLifetime
         VnPayTestMerchant.IpnQuery(
             checkout.ProviderOrderId, checkout.Amount, TransactionNo(checkout));
 
-    private async Task<GatewayAcknowledgement> IpnAsync(string query)
+    private async Task<VnPayAcknowledgement> IpnAsync(string query)
     {
         var response = await _client.GetAsync($"/api/v1/payments/vnpay/ipn{query}");
 
         response.EnsureSuccessStatusCode();
 
-        return await response.ReadAsync<GatewayAcknowledgement>();
+        return await response.ReadAsync<VnPayAcknowledgement>();
     }
 
     private async Task<PagedResponse<PaymentTransactionResponse>> ListAsync(

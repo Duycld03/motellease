@@ -1,5 +1,8 @@
 using System.Collections.Concurrent;
 using System.Globalization;
+using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +14,7 @@ using MotelLease.Api.Jobs;
 using MotelLease.Application.Common.Abstractions;
 using MotelLease.Application.Notifications;
 using MotelLease.Application.Notifications.Contracts;
+using MotelLease.Infrastructure.Payments;
 using MotelLease.Infrastructure.Persistence;
 
 namespace MotelLease.Tests.Integration;
@@ -67,6 +71,13 @@ public sealed class MotelLeaseAppFactory(
     /// </summary>
     public RecordingLoggerProvider Logs { get; } = new();
 
+    /// <summary>
+    /// Stands in for MoMo's create-payment endpoint, which is a real HTTP call to MoMo and the one
+    /// part of that gateway a test cannot make. Keeps the request body so a test can assert what was
+    /// sent, and what was signed.
+    /// </summary>
+    public RecordingMoMoApi MoMoApi { get; } = new();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Development");
@@ -104,6 +115,13 @@ public sealed class MotelLeaseAppFactory(
         builder.UseSetting("App:ApiBaseUrl", "http://localhost");
         builder.UseSetting("App:WebBaseUrl", "http://localhost:3000");
 
+        // MoMo, on the same terms. Its create call is the one part that cannot run for real in a
+        // test — it is an HTTP request to MoMo — so only that call is substituted; the signing and
+        // the callback reading are the shipped code.
+        builder.UseSetting("MoMo:PartnerCode", MoMoTestMerchant.PartnerCode);
+        builder.UseSetting("MoMo:AccessKey", MoMoTestMerchant.AccessKey);
+        builder.UseSetting("MoMo:SecretKey", MoMoTestMerchant.SecretKey);
+
         builder.ConfigureServices(services =>
         {
             services.AddSingleton<ILoggerProvider>(Logs);
@@ -125,6 +143,9 @@ public sealed class MotelLeaseAppFactory(
 
             services.RemoveAll<INotificationRealtime>();
             services.AddSingleton<INotificationRealtime>(Realtime);
+
+            services.AddHttpClient(MoMoGateway.HttpClientName)
+                .ConfigurePrimaryHttpMessageHandler(() => MoMoApi);
 
             if (googleTokens is not null)
             {
@@ -182,6 +203,45 @@ public sealed class RecordingEmailSender : IEmailSender
 
     public bool AnySentTo(string email) =>
         _sent.Any(m => string.Equals(m.ToEmail, email, StringComparison.OrdinalIgnoreCase));
+}
+
+/// <summary>
+/// MoMo's create-payment endpoint. Answers with a payment URL the way MoMo does, and remembers the
+/// request so a test can check the fields and the signature that went out.
+/// </summary>
+public sealed class RecordingMoMoApi : HttpMessageHandler
+{
+    private string? _lastRequest;
+
+    /// <summary>Set to a non-zero code to make MoMo refuse to open the payment.</summary>
+    public int ResultCode { get; set; }
+
+    public string PayUrl { get; set; } = "https://test-payment.momo.vn/pay/hosted-payment-page";
+
+    public JsonElement LastRequest => JsonDocument
+        .Parse(_lastRequest ?? throw new InvalidOperationException("MoMo was never called."))
+        .RootElement;
+
+    public bool WasCalled => _lastRequest is not null;
+
+    protected override async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
+    {
+        _lastRequest = request.Content is null
+            ? "{}"
+            : await request.Content.ReadAsStringAsync(cancellationToken);
+
+        return new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(new
+            {
+                resultCode = ResultCode,
+                message = ResultCode == 0 ? "Successful." : "Refused.",
+                payUrl = ResultCode == 0 ? PayUrl : string.Empty
+            })
+        };
+    }
 }
 
 /// <summary>Keeps every realtime push, so a test can assert who was told and what they were told.</summary>
