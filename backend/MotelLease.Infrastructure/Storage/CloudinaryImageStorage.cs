@@ -1,7 +1,9 @@
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MotelLease.Application.Common.Abstractions;
+using MotelLease.Application.Common.Errors;
 
 namespace MotelLease.Infrastructure.Storage;
 
@@ -29,10 +31,14 @@ public sealed class CloudinaryImageStorage : IImageStorage
 {
     private readonly Cloudinary _cloudinary;
     private readonly CloudinaryOptions _options;
+    private readonly ILogger<CloudinaryImageStorage> _logger;
 
-    public CloudinaryImageStorage(IOptions<CloudinaryOptions> options)
+    public CloudinaryImageStorage(
+        IOptions<CloudinaryOptions> options,
+        ILogger<CloudinaryImageStorage> logger)
     {
         _options = options.Value;
+        _logger = logger;
         _cloudinary = new Cloudinary(
             new Account(_options.CloudName, _options.ApiKey, _options.ApiSecret))
         {
@@ -59,8 +65,12 @@ public sealed class CloudinaryImageStorage : IImageStorage
 
         if (result.Error is not null)
         {
-            throw new InvalidOperationException(
-                $"Cloudinary upload failed: {result.Error.Message}");
+            // The caller sent bytes Cloudinary will not accept — a text file renamed to .png
+            // passes the content-type check but fails here. That is the client's mistake, so it
+            // must not surface as a 500.
+            _logger.LogWarning(
+                "Cloudinary rejected an upload: {Error}", result.Error.Message);
+            throw new BusinessRuleException(MessageKeys.Image.Rejected);
         }
 
         return new StoredImage(

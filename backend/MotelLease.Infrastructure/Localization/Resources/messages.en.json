@@ -25,6 +25,8 @@
   "error.account.avatar_type_not_supported": "Unsupported image format. Accepted: {0}.",
   "error.account.language_not_supported": "Unsupported language. Accepted: {0}.",
 
+  "error.image.rejected": "The image could not be processed. Please upload a valid image file.",
+
   "email.registration_otp.subject": "Your MotelLease registration code",
   "email.registration_otp.body": "<p>Your registration code is <strong>{0}</strong>.</p><p>It is valid for {1} minutes. If you did not request an account, you can ignore this email.</p>",
   "email.password_reset_otp.subject": "Your MotelLease password reset code",

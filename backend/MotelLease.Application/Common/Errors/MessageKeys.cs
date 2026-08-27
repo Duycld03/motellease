@@ -51,6 +51,11 @@ public static class MessageKeys
         public const string LanguageNotSupported = "error.account.language_not_supported";
     }
 
+    public static class Image
+    {
+        public const string Rejected = "error.image.rejected";
+    }
+
     public static class Email
     {
         public const string RegistrationOtpSubject = "email.registration_otp.subject";
