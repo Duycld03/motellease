@@ -61,11 +61,11 @@
       </div>
 
       <!-- Advanced Filter Row: Price, Sort, Nearby & Facility Pills -->
-      <div class="pt-3 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 items-center">
+      <div class="pt-3 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
         <!-- Price Range Select -->
         <div>
-          <label class="block text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-1">Khoảng giá thuê</label>
-          <select v-model="selectedPriceRange" class="input-field !text-xs !py-1.5" @change="onPriceRangeChange">
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Khoảng giá thuê</label>
+          <select v-model="selectedPriceRange" class="input-field !text-xs !py-2 h-[38px]" @change="onPriceRangeChange">
             <option value="all">Tất cả mức giá</option>
             <option value="under_2m">Dưới 2 triệu</option>
             <option value="2m_4m">2 triệu - 4 triệu</option>
@@ -76,8 +76,8 @@
 
         <!-- Sort -->
         <div>
-          <label class="block text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-1">Sắp xếp theo</label>
-          <select v-model="filters.sort" class="input-field !text-xs !py-1.5" @change="fetchResults">
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Sắp xếp theo</label>
+          <select v-model="filters.sort" class="input-field !text-xs !py-2 h-[38px]" @change="fetchResults">
             <option value="newest">Mới nhất</option>
             <option value="rating">Đánh giá cao nhất</option>
             <option value="price_asc">Giá tăng dần</option>
@@ -87,31 +87,34 @@
 
         <!-- Geolocation "Near Me" button -->
         <div>
-          <label class="block text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-1">Vị trí của bạn</label>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Vị trí của bạn</label>
           <button
             type="button"
             :class="[
-              'w-full py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 border transition-colors',
+              'w-full h-[38px] px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 border transition-colors',
               isNearbyActive
                 ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300'
-                : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700',
+                : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800',
             ]"
             :disabled="isLocating"
             @click="toggleNearMe"
           >
             <span>📍</span>
-            <span>{{ isLocating ? 'Đang xác định vị trí...' : isNearbyActive ? 'Đang tìm gần tôi (5km)' : 'Tìm trọ gần tôi' }}</span>
+            <span>{{ isLocating ? 'Đang định vị...' : isNearbyActive ? 'Đang tìm gần tôi (5km)' : 'Tìm trọ gần tôi' }}</span>
           </button>
         </div>
 
         <!-- Search Action Buttons -->
-        <div class="flex items-end gap-2 pt-4 sm:pt-0">
-          <BaseButton variant="primary" size="sm" class="flex-1 !py-1.5 !text-xs" @click="fetchResults">
-            {{ $t('common.search') }}
-          </BaseButton>
-          <BaseButton variant="outline" size="sm" class="!py-1.5 !text-xs" @click="resetFilters">
-            {{ $t('common.reset') }}
-          </BaseButton>
+        <div>
+          <label class="block text-xs font-semibold text-transparent select-none mb-1">Thao tác</label>
+          <div class="flex items-center gap-2">
+            <BaseButton variant="primary" size="sm" class="flex-1 h-[38px] !text-xs !py-0" @click="fetchResults">
+              {{ $t('common.search') }}
+            </BaseButton>
+            <BaseButton variant="outline" size="sm" class="h-[38px] px-4 !text-xs !py-0" @click="resetFilters">
+              {{ $t('common.reset') }}
+            </BaseButton>
+          </div>
         </div>
       </div>
 

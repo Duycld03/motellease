@@ -58,13 +58,13 @@ const sizeClasses = computed(() => {
 const variantClasses = computed(() => {
   switch (props.variant) {
     case 'secondary':
-      return 'bg-slate-100 text-slate-800 hover:bg-slate-200 focus:ring-slate-400 border border-slate-200'
+      return 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 focus:ring-slate-400 border border-slate-200 dark:border-slate-700'
     case 'outline':
-      return 'bg-white text-slate-700 hover:bg-slate-50 focus:ring-primary-500 border border-slate-300'
+      return 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 focus:ring-primary-500 border border-slate-300 dark:border-slate-700'
     case 'danger':
-      return 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500'
+      return 'bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-600 focus:ring-red-500'
     case 'ghost':
-      return 'bg-transparent shadow-none text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus:ring-slate-300'
+      return 'bg-transparent shadow-none text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 focus:ring-slate-300'
     default:
       return 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500'
   }
