@@ -5,6 +5,8 @@ using MotelLease.Application.Common.Contracts;
 using MotelLease.Application.Common.Security;
 using MotelLease.Application.Deposits;
 using MotelLease.Application.Deposits.Contracts;
+using MotelLease.Application.Leases;
+using MotelLease.Application.Leases.Contracts;
 using MotelLease.Application.Payments;
 using MotelLease.Application.Payments.Contracts;
 using MotelLease.Domain.Enums;
@@ -111,4 +113,21 @@ public sealed class DepositsController : ControllerBase
             request,
             HttpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1",
             cancellationToken));
+
+    /// <summary>
+    /// Turns a paid deposit into the lease it was paying for. Answered by the owner or assigned
+    /// staff, because signing the contract is their side of the transaction.
+    /// </summary>
+    [HttpPost("{id:guid}/confirm-lease")]
+    [Authorize(Policy = AuthPolicies.RequireStaffOrOwner)]
+    [ProducesResponseType(typeof(LeaseResponse), StatusCodes.Status201Created)]
+    public async Task<ActionResult<LeaseResponse>> ConfirmLease(
+        Guid id,
+        [FromServices] ConfirmDepositLeaseHandler handler,
+        CancellationToken cancellationToken)
+    {
+        var lease = await handler.HandleAsync(id, cancellationToken);
+
+        return Created($"/api/v1/leases/{lease.Id}", lease);
+    }
 }
