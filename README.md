@@ -66,9 +66,14 @@ middleware rather than separate SPAs.
   state machine integration (`Paid` -> `Refunding` -> `Refunded`/`Paid`); owner withdrawal requests
   strictly enforcing Invariant §9.11 (available balance guard) with balance reservation, frozen bank
   details snapshot, admin approval, and admin rejection restoring available balance.
-  Covered by 136 integration tests that run against a real PostGIS container.
+- **Owner expenses & statistics / analytics group: done** — boarding house monthly utility tracking
+  (electricity, water) and miscellaneous expenses (`OtherExpenses` jsonb) with automated totals computation
+  and duplicate prevention; owner analytics suite including 12-month revenue breakdown by month and property,
+  revenue years lookup, comprehensive occupancy metrics (total, occupied, reserved, vacant, occupancy rate %),
+  monthly profit analytics (`NetProfit = Revenue - Expenses`), and dashboard summary cards.
+  Covered by 138 integration tests that run against a real PostGIS container.
 
-Next: expenses & statistics/analytics, admin platform management & audit logs.
+Next: admin platform management & audit logs, notifications SignalR hub & image uploading.
 
 | Document | Contents |
 |---|---|
