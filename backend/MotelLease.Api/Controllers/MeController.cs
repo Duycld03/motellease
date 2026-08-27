@@ -111,4 +111,22 @@ public sealed class MeController : ControllerBase
 
         return NoContent();
     }
+
+    /// <summary>Returns the current active or expiring lease for the logged-in tenant.</summary>
+    [HttpGet("current-lease")]
+    [ProducesResponseType(typeof(MotelLease.Application.Leases.Contracts.LeaseResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> GetCurrentLease(
+        [FromServices] MotelLease.Application.Leases.GetCurrentLeaseHandler handler,
+        CancellationToken cancellationToken)
+    {
+        var lease = await handler.HandleAsync(cancellationToken);
+        if (lease == null)
+        {
+            return NoContent();
+        }
+
+        return Ok(lease);
+    }
 }
+

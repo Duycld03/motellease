@@ -3,9 +3,11 @@ using Microsoft.Extensions.DependencyInjection;
 using MotelLease.Application.Accounts;
 using MotelLease.Application.Appointments;
 using MotelLease.Application.Auth;
+using MotelLease.Application.Bills;
 using MotelLease.Application.BoardingHouses;
 using MotelLease.Application.Common.Security;
 using MotelLease.Application.Deposits;
+using MotelLease.Application.Extensions;
 using MotelLease.Application.Leases;
 using MotelLease.Application.Notifications;
 using MotelLease.Application.Payments;
@@ -104,6 +106,36 @@ public static class DependencyInjection
         services.AddScoped<GetPaymentHandler>();
 
         services.AddScoped<ConfirmDepositLeaseHandler>();
+        services.AddScoped<ListLeasesHandler>();
+        services.AddScoped<GetLeaseHandler>();
+        services.AddScoped<GetCurrentLeaseHandler>();
+        services.AddScoped<GetRoomLeaseHistoryHandler>();
+        services.AddScoped<AddLeaseTenantHandler>();
+        services.AddScoped<RemoveLeaseTenantHandler>();
+        services.AddScoped<PreviewLeaseTerminationHandler>();
+        services.AddScoped<TerminateLeaseHandler>();
+        services.AddScoped<SweepLeaseExpiryHandler>();
+
+        services.AddScoped<ListExtensionRequestsHandler>();
+        services.AddScoped<GetExtensionRequestHandler>();
+        services.AddScoped<CreateExtensionRequestHandler>();
+        services.AddScoped<ApproveExtensionRequestHandler>();
+        services.AddScoped<RejectExtensionRequestHandler>();
+
+        services.AddScoped<ListRoomAdditionalFeesHandler>();
+        services.AddScoped<CreateRoomAdditionalFeeHandler>();
+        services.AddScoped<UpdateRoomAdditionalFeeHandler>();
+        services.AddScoped<DeleteRoomAdditionalFeeHandler>();
+
+        services.AddScoped<PreviewBillHandler>();
+        services.AddScoped<CreateBillHandler>();
+        services.AddScoped<ListBillsHandler>();
+        services.AddScoped<GetBillHandler>();
+        services.AddScoped<UpdateDraftBillHandler>();
+        services.AddScoped<IssueDraftBillHandler>();
+        services.AddScoped<CancelBillHandler>();
+        services.AddScoped<GenerateBillPdfHandler>();
+        services.AddScoped<SweepBillRemindersHandler>();
 
         services.AddScoped<ListNotificationsHandler>();
         services.AddScoped<CountUnreadNotificationsHandler>();

@@ -9,46 +9,6 @@ using MotelLease.Domain.Rooms;
 
 namespace MotelLease.Application.Leases;
 
-internal static class LeaseRules
-{
-    internal static async Task<LeaseResponse> LoadAsync(
-        IAppDbContext database,
-        Guid leaseId,
-        CancellationToken cancellationToken) =>
-        await database.Leases
-            .AsNoTracking()
-            .Where(l => l.Id == leaseId)
-            .Select(l => new LeaseResponse(
-                l.Id,
-                l.RoomId,
-                l.Room.RoomNumber,
-                l.Room.BoardingHouseId,
-                l.Room.BoardingHouse.Name,
-                l.DepositId,
-                l.PrimaryTenantUserId,
-                l.PrimaryTenant.FullName,
-                l.StartDate,
-                l.EndDate,
-                l.TermMonths,
-                l.MonthlyRent,
-                l.DepositHeld,
-                l.Status,
-                l.Tenants
-                    .OrderByDescending(t => t.IsPrimary)
-                    .Select(t => new LeaseTenantResponse(
-                        t.Id,
-                        t.UserId,
-                        t.FullName,
-                        t.PhoneNumber,
-                        t.IsPrimary,
-                        t.MovedInAt,
-                        t.MovedOutAt))
-                    .ToList(),
-                l.CreatedAt))
-            .FirstOrDefaultAsync(cancellationToken)
-        ?? throw new NotFoundException(MessageKeys.Lease.NotFound);
-}
-
 /// <summary>
 /// POST /deposits/{id}/confirm-lease. Turns a paid deposit into the contract it was paying for: the
 /// deposit is consumed (Completed), the money it represents becomes the deposit the lease holds, and

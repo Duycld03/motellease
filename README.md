@@ -36,11 +36,15 @@ middleware rather than separate SPAs.
 
 ## Status
 
-**Auth feature group: done** — registration with emailed OTP, login (password and Google),
-refresh rotation, session management, password reset, profile and email change. Covered by
-integration tests that run against a real PostGIS container.
+- **Auth feature group: done** — registration with emailed OTP, login (password and Google),
+  refresh rotation, session management, password reset, profile and email change.
+- **Property management & payments group: done** — boarding houses, room types, rooms, images,
+  utility prices; viewing appointments with auto-expiry background sweep; in-app and SignalR
+  realtime notifications; room deposits; end-to-end deposit and monthly bill payments via VNPay &
+  MoMo with idempotent IPN confirmation; deposit-to-lease transition.
+  Covered by 113 integration tests that run against a real PostGIS container.
 
-Next: listings and rooms, then search.
+Next: public search and catalogue with PostGIS, saved listings, and full lease/billing lifecycle.
 
 | Document | Contents |
 |---|---|
@@ -75,6 +79,19 @@ A gateway confirms a payment by calling this API from its own servers, and it ca
 the sandbox and the browser's return all work without one — but the deposit or bill only reaches
 `Paid` when the IPN callback arrives.
 
+Configure payment gateway credentials via `dotnet user-secrets` in `backend/MotelLease.Api`:
+
+```bash
+# VNPay sandbox credentials
+dotnet user-secrets set "VnPay:TmnCode" "<your-tmn-code>"
+dotnet user-secrets set "VnPay:HashSecret" "<your-hash-secret>"
+
+# MoMo sandbox credentials
+dotnet user-secrets set "MoMo:PartnerCode" "MOMO"
+dotnet user-secrets set "MoMo:AccessKey" "<your-access-key>"
+dotnet user-secrets set "MoMo:SecretKey" "<your-secret-key>"
+```
+
 Copy `.env.example` to `.env`, fill in the two ngrok values, then:
 
 ```bash
@@ -87,5 +104,6 @@ ASPNETCORE_URLS=http://0.0.0.0:5004 \
 
 `ASPNETCORE_URLS` matters: the default binding is `localhost` only, which the tunnel container
 cannot reach. `App__ApiBaseUrl` is what the callback URLs are built from — MoMo is told where to
-call back in each request, while VNPay's IPN URL is registered once in its merchant portal.
+call back in each request, while VNPay's IPN URL (`https://<your-domain>.ngrok-free.app/api/v1/payments/vnpay/ipn`)
+is registered once in the VNPay merchant portal (`https://sandbox.vnpayment.vn/merchantv2/`).
 Inspect what a gateway actually sent at `http://localhost:4040`.
