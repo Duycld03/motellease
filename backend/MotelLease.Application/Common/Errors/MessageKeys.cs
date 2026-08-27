@@ -201,6 +201,22 @@ public static class MessageKeys
         public const string AlreadySaved = "error.saved_listing.already_saved";
     }
 
+    public static class Review
+    {
+        public const string NotFound = "error.review.not_found";
+        public const string NotYours = "error.review.not_yours";
+        public const string LeaseRequired = "error.review.lease_required";
+        public const string AlreadyReviewed = "error.review.already_reviewed";
+        public const string CannotReplyToReply = "error.review.cannot_reply_to_reply";
+    }
+
+    public static class Report
+    {
+        public const string NotFound = "error.report.not_found";
+        public const string TargetNotFound = "error.report.target_not_found";
+        public const string AlreadyProcessed = "error.report.already_processed";
+    }
+
     public static class Validation
     {
         public const string Required = "validation.required";

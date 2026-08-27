@@ -12,6 +12,8 @@ using MotelLease.Application.Extensions;
 using MotelLease.Application.Leases;
 using MotelLease.Application.Notifications;
 using MotelLease.Application.Payments;
+using MotelLease.Application.Reports;
+using MotelLease.Application.Reviews;
 using MotelLease.Application.Rooms;
 using MotelLease.Application.RoomTypes;
 using MotelLease.Application.SavedListings;
@@ -157,6 +159,22 @@ public static class DependencyInjection
         services.AddScoped<ListSavedListingsHandler>();
         services.AddScoped<SaveListingHandler>();
         services.AddScoped<RemoveSavedListingHandler>();
+
+        services.AddScoped<CreateReviewHandler>();
+        services.AddScoped<UpdateReviewHandler>();
+        services.AddScoped<DeleteReviewHandler>();
+        services.AddScoped<ReplyReviewHandler>();
+        services.AddScoped<UpdateReviewReplyHandler>();
+        services.AddScoped<DeleteReviewReplyHandler>();
+        services.AddScoped<ListUserReviewsHandler>();
+        services.AddScoped<ListPropertyReviewsHandler>();
+
+        services.AddScoped<CreateReportHandler>();
+        services.AddScoped<ListUserReportsHandler>();
+        services.AddScoped<ListAdminReportsHandler>();
+        services.AddScoped<GetAdminReportHandler>();
+        services.AddScoped<ResolveReportHandler>();
+        services.AddScoped<DismissReportHandler>();
 
         return services;
     }
