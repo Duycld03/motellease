@@ -1,9 +1,11 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using MotelLease.Application.Accounts;
+using MotelLease.Application.Appointments;
 using MotelLease.Application.Auth;
 using MotelLease.Application.BoardingHouses;
 using MotelLease.Application.Common.Security;
+using MotelLease.Application.Notifications;
 using MotelLease.Application.Rooms;
 using MotelLease.Application.RoomTypes;
 
@@ -68,6 +70,15 @@ public static class DependencyInjection
         services.AddScoped<DeleteRoomHandler>();
         services.AddScoped<UpdateRoomStatusHandler>();
         services.AddScoped<UpdateMeterReadingsHandler>();
+
+        services.AddScoped<NotificationDispatcher>();
+
+        services.AddScoped<ListAppointmentsHandler>();
+        services.AddScoped<GetAppointmentHandler>();
+        services.AddScoped<BookAppointmentHandler>();
+        services.AddScoped<AnswerAppointmentHandler>();
+        services.AddScoped<CancelAppointmentHandler>();
+        services.AddScoped<ExpirePastAppointmentsHandler>();
 
         return services;
     }

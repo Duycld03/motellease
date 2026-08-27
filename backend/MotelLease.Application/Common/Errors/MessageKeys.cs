@@ -101,6 +101,18 @@ public static class MessageKeys
         public const string EmailChangeOtpBody = "email.email_change_otp.body";
     }
 
+    public static class Appointment
+    {
+        public const string NotFound = "error.appointment.not_found";
+        public const string NotYours = "error.appointment.not_yours";
+        public const string DateInPast = "error.appointment.date_in_past";
+        public const string ListingNotPublished = "error.appointment.listing_not_published";
+        public const string RoomNotAvailable = "error.appointment.room_not_available";
+        public const string AlreadyRequested = "error.appointment.already_requested";
+        public const string NotPending = "error.appointment.not_pending";
+        public const string NotCancellable = "error.appointment.not_cancellable";
+    }
+
     public static class Validation
     {
         public const string Required = "validation.required";

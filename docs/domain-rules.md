@@ -166,3 +166,17 @@ All registered explicitly in `Program.cs`, none inside an entity file.
 - Exactly one image of a listing is primary while it has any: the first upload becomes the cover,
   and deleting the cover promotes the next one.
 
+## 11. Viewing appointments
+
+- A visit is bookable only on an `Available` room of a `Published` listing, and only for a time
+  still ahead. A draft is not public, and a room already held or lived in has nothing to show.
+- One live request per person per room, where live means `Pending`/`Accepted` **and** still ahead.
+  A second row holds nothing extra and only gives the owner two things to answer.
+- Only a `Pending` request is answered, and answering records `HandledByUserId`. The tenant may
+  cancel while the visit is `Pending` or `Accepted`.
+- The sweep (§4, §8) refines what "past its time" means: `Pending` → `Expired`, because nobody is
+  going to answer it now, and `Accepted` → `Completed`, because the visit either happened or is
+  over. Both statuses come from the shared `RequestStatus`.
+- Approving or rejecting writes the `AppointmentHandled` notification in the **same** save as the
+  status change, so a message about something that failed to commit is never sent.
+
