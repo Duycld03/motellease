@@ -16,20 +16,20 @@
       <button
         type="button"
         :class="[
-          'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
-          selectedStatus === '' ? 'bg-slate-900 text-white' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800',
+          'px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all',
+          selectedStatus === '' ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800',
         ]"
         @click="changeStatus('')"
       >
-        Tất cả
+        Tất cả ({{ totalCount }})
       </button>
       <button
         v-for="st in ['Pending', 'Approved', 'Rejected', 'Cancelled']"
         :key="st"
         type="button"
         :class="[
-          'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
-          selectedStatus === st ? 'bg-slate-900 text-white' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800',
+          'px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all',
+          selectedStatus === st ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800',
         ]"
         @click="changeStatus(st)"
       >
