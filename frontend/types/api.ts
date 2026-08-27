@@ -694,21 +694,103 @@ export interface MaintenanceRequest {
   createdAt: string
 }
 
-export interface WorkTask {
+// Staff Contracts
+export interface CreateStaffRequest {
+  username: string
+  email: string
+  password: string
+  fullName: string
+  phoneNumber?: string
+  gender: Gender
+  hireDate: string
+}
+
+export interface UpdateStaffRequest {
+  fullName: string
+  phoneNumber?: string
+  gender: Gender
+  hireDate: string
+}
+
+export interface AssignStaffRequest {
+  staffUserId: string
+}
+
+export interface StaffAssignmentResponse {
   id: string
   boardingHouseId: string
-  boardingHouseName?: string
-  assignedStaffId: string
-  assignedStaffName?: string
+  boardingHouseName: string
+  staffUserId: string
+  staffFullName: string
+  assignedAt: string
+}
+
+export interface StaffSummaryResponse {
+  id: string
+  username: string
+  email: string
+  fullName: string
+  phoneNumber?: string
+  gender: Gender
+  isLocked: boolean
+  hireDate: string
+  activeAssignmentsCount: number
+  createdAt: string
+}
+
+export interface StaffDetailResponse {
+  id: string
+  username: string
+  email: string
+  fullName: string
+  phoneNumber?: string
+  gender: Gender
+  isLocked: boolean
+  hireDate: string
+  assignments: StaffAssignmentResponse[]
+  createdAt: string
+}
+
+// Tasks Contracts
+export interface CreateTaskRequest {
+  boardingHouseId: string
+  assignedToUserId: string
+  title: string
+  details?: string
+  priority?: TaskPriority
+  dueDate?: string
+}
+
+export interface UpdateTaskRequest {
+  assignedToUserId: string
+  title: string
+  details?: string
+  priority?: TaskPriority
+  dueDate?: string
+}
+
+export interface UpdateTaskStatusRequest {
+  status: WorkTaskStatus
+}
+
+export interface TaskResponse {
+  id: string
+  boardingHouseId: string
+  boardingHouseName: string
+  createdByUserId: string
+  assignedToUserId: string
+  assignedToFullName: string
   maintenanceRequestId?: string
   title: string
-  description?: string
+  details?: string
   priority: TaskPriority
   status: WorkTaskStatus
   dueDate?: string
   completedAt?: string
   createdAt: string
 }
+
+export type WorkTask = TaskResponse
 
 // Expenses Contracts
 export interface OtherExpenseItem {
