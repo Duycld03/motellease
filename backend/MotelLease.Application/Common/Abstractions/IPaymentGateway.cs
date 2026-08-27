@@ -3,21 +3,31 @@ using MotelLease.Domain.Enums;
 namespace MotelLease.Application.Common.Abstractions;
 
 /// <summary>
-/// One payment gateway, as the use-case handlers see it. Two things are asked of it: build the URL
+/// One payment gateway, as the use-case handlers see it. Two things are asked of it: produce the URL
 /// the tenant is sent to, and read a callback the gateway sent back. Both are provider-specific in
 /// their wire format and identical in meaning, which is why they sit behind this interface — the
 /// handlers must not know whether the signature was HMAC-SHA512 over a sorted query string or
-/// SHA256 over a fixed field order.
+/// HMAC-SHA256 over a fixed field order.
 /// </summary>
 public interface IPaymentGateway
 {
     PaymentProvider Provider { get; }
 
-    string BuildPaymentUrl(GatewayPaymentRequest request);
+    /// <summary>
+    /// Asynchronous because producing the URL is not always local work: VNPay is signed and assembled
+    /// in process, while MoMo has to be asked for one over its own API. A caller cannot tell which,
+    /// and should not have to.
+    /// </summary>
+    Task<string> CreatePaymentUrlAsync(
+        GatewayPaymentRequest request,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Reads a callback. Never throws on a bad signature: an unverified callback is a fact the
     /// handler has to record and answer, not an exception to swallow.
+    ///
+    /// The fields arrive flattened to strings whatever the transport was — a signed query string from
+    /// VNPay, a JSON body from MoMo — because what is signed is the values, not their encoding.
     /// </summary>
     GatewayCallback ReadCallback(IReadOnlyDictionary<string, string> fields);
 }

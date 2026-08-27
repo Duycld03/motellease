@@ -82,7 +82,7 @@ public sealed class StartBillPaymentHandler(
 
         var expiresAt = now + window.Lifetime;
 
-        var url = gateway.BuildPaymentUrl(new GatewayPaymentRequest(
+        var url = await gateway.CreatePaymentUrlAsync(new GatewayPaymentRequest(
             transaction.ProviderOrderId,
             transaction.Amount,
             localizer.Get(
@@ -92,7 +92,8 @@ public sealed class StartBillPaymentHandler(
                 bill.Year,
                 label.RoomNumber),
             expiresAt,
-            ipAddress));
+            ipAddress),
+            cancellationToken);
 
         return new PaymentCheckoutResponse(
             transaction.Id,

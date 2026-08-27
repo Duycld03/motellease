@@ -23,7 +23,7 @@ public sealed class ConfirmPaymentHandler(
     NotificationDispatcher notifications,
     TimeProvider time)
 {
-    public async Task<GatewayAcknowledgement> HandleAsync(
+    public async Task<PaymentConfirmation> HandleAsync(
         PaymentProvider provider,
         IReadOnlyDictionary<string, string> fields,
         CancellationToken cancellationToken = default)
@@ -34,12 +34,12 @@ public sealed class ConfirmPaymentHandler(
         // about who sent it, so it does not get to name a row.
         if (!callback.SignatureVerified)
         {
-            return GatewayAcknowledgement.InvalidSignature;
+            return PaymentConfirmation.InvalidSignature;
         }
 
         if (string.IsNullOrWhiteSpace(callback.OrderId))
         {
-            return GatewayAcknowledgement.OrderNotFound;
+            return PaymentConfirmation.OrderNotFound;
         }
 
         await using var scope = await database.BeginTransactionAsync(cancellationToken);
@@ -49,7 +49,16 @@ public sealed class ConfirmPaymentHandler(
 
         if (transaction is null)
         {
-            return GatewayAcknowledgement.OrderNotFound;
+            return PaymentConfirmation.OrderNotFound;
+        }
+
+        // An attempt opened at one gateway is not settleable through another's endpoint, however well
+        // signed the payload is. Reported as not found rather than as a mismatch: the caller proved it
+        // holds one provider's secret, which says nothing about its right to know about the other's
+        // orders.
+        if (transaction.Provider != provider)
+        {
+            return PaymentConfirmation.OrderNotFound;
         }
 
         // The replay guard. The unique index on ProviderTxnId is the authority (§9.7); this check
@@ -57,13 +66,13 @@ public sealed class ConfirmPaymentHandler(
         if (transaction.Status is PaymentStatus.Succeeded or PaymentStatus.Failed
             || await IsTxnIdRecordedAsync(callback.ProviderTxnId, transaction.Id, cancellationToken))
         {
-            return GatewayAcknowledgement.AlreadyConfirmed;
+            return PaymentConfirmation.AlreadyConfirmed;
         }
 
         // A payment for a different amount than the one agreed is not this payment.
         if (callback.Amount != transaction.Amount)
         {
-            return GatewayAcknowledgement.InvalidAmount;
+            return PaymentConfirmation.InvalidAmount;
         }
 
         transaction.RawCallbackPayload = callback.RawPayload;
@@ -84,7 +93,7 @@ public sealed class ConfirmPaymentHandler(
         // After the commit, so nothing is announced that could still roll back.
         await notifications.DeliverAsync(cancellationToken);
 
-        return GatewayAcknowledgement.Confirmed;
+        return PaymentConfirmation.Confirmed;
     }
 
     /// <summary>

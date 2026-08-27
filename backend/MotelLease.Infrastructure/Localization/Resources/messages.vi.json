@@ -89,6 +89,7 @@
   "error.payment.provider_not_available": "Cổng thanh toán này hiện không khả dụng.",
   "error.payment.deposit_not_awaiting_payment": "Yêu cầu đặt cọc này không ở trạng thái chờ thanh toán.",
   "error.payment.deadline_passed": "Đã quá hạn thanh toán cho yêu cầu đặt cọc này.",
+  "error.payment.gateway_rejected": "Cổng thanh toán không mở được giao dịch này. Vui lòng thử lại hoặc chọn cổng khác.",
   "error.bill.not_found": "Không tìm thấy hóa đơn.",
   "error.bill.not_yours": "Hóa đơn này thuộc về phòng khác.",
   "error.bill.not_payable": "Chỉ hóa đơn đã phát hành hoặc quá hạn mới có thể thanh toán.",

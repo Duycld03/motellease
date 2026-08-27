@@ -44,7 +44,9 @@ public sealed class VnPayGateway(
 
     public PaymentProvider Provider => PaymentProvider.VNPay;
 
-    public string BuildPaymentUrl(GatewayPaymentRequest request)
+    public Task<string> CreatePaymentUrlAsync(
+        GatewayPaymentRequest request,
+        CancellationToken cancellationToken = default)
     {
         var now = time.GetUtcNow().ToOffset(Vietnam);
 
@@ -73,7 +75,8 @@ public sealed class VnPayGateway(
 
         var query = Canonical(fields);
 
-        return $"{_options.PaymentUrl}?{query}&{SecureHashField}={Sign(query)}";
+        // Nothing to await: VNPay's whole request is a signed query string built here.
+        return Task.FromResult($"{_options.PaymentUrl}?{query}&{SecureHashField}={Sign(query)}");
     }
 
     public GatewayCallback ReadCallback(IReadOnlyDictionary<string, string> fields)

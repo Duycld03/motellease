@@ -83,7 +83,7 @@ public sealed class StartDepositPaymentHandler(
 
         await database.SaveChangesAsync(cancellationToken);
 
-        var url = gateway.BuildPaymentUrl(new GatewayPaymentRequest(
+        var url = await gateway.CreatePaymentUrlAsync(new GatewayPaymentRequest(
             transaction.ProviderOrderId,
             transaction.Amount,
             localizer.Get(
@@ -92,7 +92,8 @@ public sealed class StartDepositPaymentHandler(
                 label.RoomNumber,
                 label.HouseName),
             expiresAt,
-            ipAddress));
+            ipAddress),
+            cancellationToken);
 
         return new PaymentCheckoutResponse(
             transaction.Id,
