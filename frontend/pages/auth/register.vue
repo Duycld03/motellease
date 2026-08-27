@@ -1,10 +1,10 @@
 <template>
-  <div class="bg-white p-8 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-200">
+  <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-800 transition-colors">
     <div class="text-center mb-6">
-      <h1 class="text-xl font-bold text-slate-900">
+      <h1 class="text-xl font-bold text-slate-900 dark:text-white">
         {{ $t('auth.registerTitle') }}
       </h1>
-      <p class="text-xs text-slate-500 mt-1">
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
         {{ $t('auth.registerSubtitle') }}
       </p>
     </div>
@@ -61,10 +61,10 @@
       </div>
     </form>
 
-    <div class="mt-6 pt-6 border-t border-slate-100 text-center">
-      <p class="text-xs text-slate-500">
+    <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 text-center">
+      <p class="text-xs text-slate-500 dark:text-slate-400">
         {{ $t('auth.alreadyHaveAccount') }}
-        <NuxtLink to="/auth/login" class="font-semibold text-primary-600 hover:text-primary-700 ml-1">
+        <NuxtLink to="/auth/login" class="font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 ml-1">
           {{ $t('nav.login') }}
         </NuxtLink>
       </p>

@@ -1,10 +1,10 @@
 <template>
-  <div class="bg-white p-8 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-200">
+  <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-800 transition-colors">
     <div class="text-center mb-6">
-      <h1 class="text-xl font-bold text-slate-900">
+      <h1 class="text-xl font-bold text-slate-900 dark:text-white">
         {{ $t('auth.loginTitle') }}
       </h1>
-      <p class="text-xs text-slate-500 mt-1">
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
         {{ $t('auth.loginSubtitle') }}
       </p>
     </div>
@@ -20,10 +20,10 @@
 
       <div>
         <div class="flex items-center justify-between mb-1">
-          <label class="block text-sm font-medium text-slate-700">
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
             {{ $t('auth.password') }} <span class="text-red-500">*</span>
           </label>
-          <NuxtLink to="/auth/forgot-password" class="text-xs text-primary-600 hover:text-primary-700 font-medium">
+          <NuxtLink to="/auth/forgot-password" class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 font-medium">
             {{ $t('auth.forgotPasswordQuestion') }}
           </NuxtLink>
         </div>
@@ -48,10 +48,10 @@
       </div>
     </form>
 
-    <div class="mt-6 pt-6 border-t border-slate-100 text-center">
-      <p class="text-xs text-slate-500">
+    <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 text-center">
+      <p class="text-xs text-slate-500 dark:text-slate-400">
         {{ $t('auth.dontHaveAccount') }}
-        <NuxtLink to="/auth/register" class="font-semibold text-primary-600 hover:text-primary-700 ml-1">
+        <NuxtLink to="/auth/register" class="font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 ml-1">
           {{ $t('nav.register') }}
         </NuxtLink>
       </p>

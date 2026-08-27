@@ -10,10 +10,21 @@ export const useTheme = () => {
     storageKey: 'motellease-theme',
   })
 
-  const isDark = computed(() => mode.value === 'dark')
+  const isDark = computed(() => {
+    if (mode.value === 'dark') return true
+    if (mode.value === 'light') return false
+    if (import.meta.client) {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches
+    }
+    return false
+  })
 
   const toggleTheme = () => {
-    mode.value = mode.value === 'dark' ? 'light' : 'dark'
+    if (isDark.value) {
+      mode.value = 'light'
+    } else {
+      mode.value = 'dark'
+    }
   }
 
   const setTheme = (theme: 'light' | 'dark' | 'auto') => {

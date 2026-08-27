@@ -57,17 +57,17 @@
       <!-- Rejection Warning Banner -->
       <div
         v-if="house.listingStatus === 'Rejected' && house.rejectionReason"
-        class="p-4 bg-red-50 rounded-2xl border border-red-200 flex items-start gap-3"
+        class="p-4 bg-red-50 dark:bg-red-950/40 rounded-2xl border border-red-200 dark:border-red-800 flex items-start gap-3"
       >
         <div class="text-red-600 mt-0.5 font-bold">⚠️</div>
         <div>
-          <h4 class="text-xs font-bold text-red-900">Bài đăng bị từ chối kiểm duyệt</h4>
-          <p class="text-xs text-red-700 mt-0.5">{{ house.rejectionReason }}</p>
+          <h4 class="text-xs font-bold text-red-900 dark:text-red-300">Bài đăng bị từ chối kiểm duyệt</h4>
+          <p class="text-xs text-red-700 dark:text-red-400 mt-0.5">{{ house.rejectionReason }}</p>
         </div>
       </div>
 
       <!-- Navigation Tabs -->
-      <div class="border-b border-slate-200">
+      <div class="border-b border-slate-200 dark:border-slate-800">
         <nav class="flex space-x-6">
           <button
             v-for="tab in tabs"
@@ -76,8 +76,8 @@
             :class="[
               'py-3 text-xs font-semibold border-b-2 transition-colors -mb-px flex items-center gap-1.5',
               activeTab === tab.id
-                ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300',
+                ? 'border-primary-600 text-primary-600 dark:text-primary-400'
+                : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700',
             ]"
             @click="activeTab = tab.id"
           >
@@ -86,7 +86,7 @@
               v-if="tab.count !== undefined"
               :class="[
                 'px-1.5 py-0.5 rounded-full text-[10px]',
-                activeTab === tab.id ? 'bg-primary-100 text-primary-800' : 'bg-slate-100 text-slate-600',
+                activeTab === tab.id ? 'bg-primary-100 dark:bg-primary-950 text-primary-800 dark:text-primary-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400',
               ]"
             >
               {{ tab.count }}
@@ -99,38 +99,38 @@
       <div v-if="activeTab === 'overview'" class="space-y-6">
         <!-- Room Counts Summary -->
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          <div class="p-4 bg-white rounded-xl border border-slate-200 shadow-sm text-center">
+          <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm text-center">
             <span class="text-[10px] text-slate-400 uppercase font-semibold block">Tổng phòng</span>
-            <span class="text-lg font-bold text-slate-800 mt-0.5 block">{{ house.roomCounts?.total || 0 }}</span>
+            <span class="text-lg font-bold text-slate-800 dark:text-slate-100 mt-0.5 block">{{ house.roomCounts?.total || 0 }}</span>
           </div>
-          <div class="p-4 bg-emerald-50/50 rounded-xl border border-emerald-200/60 shadow-sm text-center">
-            <span class="text-[10px] text-emerald-600 uppercase font-semibold block">Phòng trống</span>
-            <span class="text-lg font-bold text-emerald-700 mt-0.5 block">{{ house.roomCounts?.available || 0 }}</span>
+          <div class="p-4 bg-emerald-50/50 dark:bg-emerald-950/30 rounded-xl border border-emerald-200/60 dark:border-emerald-800 shadow-sm text-center">
+            <span class="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase font-semibold block">Phòng trống</span>
+            <span class="text-lg font-bold text-emerald-700 dark:text-emerald-300 mt-0.5 block">{{ house.roomCounts?.available || 0 }}</span>
           </div>
-          <div class="p-4 bg-amber-50/50 rounded-xl border border-amber-200/60 shadow-sm text-center">
-            <span class="text-[10px] text-amber-600 uppercase font-semibold block">Đã cọc</span>
-            <span class="text-lg font-bold text-amber-700 mt-0.5 block">{{ house.roomCounts?.reserved || 0 }}</span>
+          <div class="p-4 bg-amber-50/50 dark:bg-amber-950/30 rounded-xl border border-amber-200/60 dark:border-amber-800 shadow-sm text-center">
+            <span class="text-[10px] text-amber-600 dark:text-amber-400 uppercase font-semibold block">Đã cọc</span>
+            <span class="text-lg font-bold text-amber-700 dark:text-amber-300 mt-0.5 block">{{ house.roomCounts?.reserved || 0 }}</span>
           </div>
-          <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-200/60 shadow-sm text-center">
-            <span class="text-[10px] text-blue-600 uppercase font-semibold block">Đang thuê</span>
-            <span class="text-lg font-bold text-blue-700 mt-0.5 block">{{ house.roomCounts?.occupied || 0 }}</span>
+          <div class="p-4 bg-blue-50/50 dark:bg-blue-950/30 rounded-xl border border-blue-200/60 dark:border-blue-800 shadow-sm text-center">
+            <span class="text-[10px] text-blue-600 dark:text-blue-400 uppercase font-semibold block">Đang thuê</span>
+            <span class="text-lg font-bold text-blue-700 dark:text-blue-300 mt-0.5 block">{{ house.roomCounts?.occupied || 0 }}</span>
           </div>
-          <div class="p-4 bg-red-50/50 rounded-xl border border-red-200/60 shadow-sm text-center">
-            <span class="text-[10px] text-red-600 uppercase font-semibold block">Bảo trì</span>
-            <span class="text-lg font-bold text-red-700 mt-0.5 block">{{ house.roomCounts?.maintenance || 0 }}</span>
+          <div class="p-4 bg-red-50/50 dark:bg-red-950/30 rounded-xl border border-red-200/60 dark:border-red-800 shadow-sm text-center">
+            <span class="text-[10px] text-red-600 dark:text-red-400 uppercase font-semibold block">Bảo trì</span>
+            <span class="text-lg font-bold text-red-700 dark:text-red-300 mt-0.5 block">{{ house.roomCounts?.maintenance || 0 }}</span>
           </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="lg:col-span-2 space-y-6">
             <BaseCard title="Mô tả khu trọ">
-              <p class="text-xs text-slate-600 leading-relaxed whitespace-pre-line">
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
                 {{ house.description || 'Chưa có mô tả chi tiết.' }}
               </p>
             </BaseCard>
 
             <BaseCard title="Vị trí bản đồ">
-              <div class="h-64 rounded-xl overflow-hidden border border-slate-200">
+              <div class="h-64 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800">
                 <ClientOnly>
                   <MapView
                     :latitude="house.latitude"
@@ -146,17 +146,17 @@
           <div>
             <BaseCard title="Đơn giá dịch vụ hiện tại">
               <div class="space-y-3">
-                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
-                  <span class="text-xs text-slate-600 font-medium">⚡ Tiền điện</span>
-                  <span class="text-xs font-bold text-slate-900">{{ formatCurrency(house.electricityUnitPrice) }} / kWh</span>
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                  <span class="text-xs text-slate-600 dark:text-slate-400 font-medium">⚡ Tiền điện</span>
+                  <span class="text-xs font-bold text-slate-900 dark:text-white">{{ formatCurrency(house.electricityUnitPrice) }} / kWh</span>
                 </div>
-                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
-                  <span class="text-xs text-slate-600 font-medium">💧 Tiền nước</span>
-                  <span class="text-xs font-bold text-slate-900">{{ formatCurrency(house.waterUnitPrice) }} / m³</span>
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                  <span class="text-xs text-slate-600 dark:text-slate-400 font-medium">💧 Tiền nước</span>
+                  <span class="text-xs font-bold text-slate-900 dark:text-white">{{ formatCurrency(house.waterUnitPrice) }} / m³</span>
                 </div>
                 <button
                   type="button"
-                  class="w-full text-center text-xs font-semibold text-primary-600 hover:text-primary-700 pt-2"
+                  class="w-full text-center text-xs font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 pt-2"
                   @click="activeTab = 'utilities'"
                 >
                   Chỉnh sửa bảng giá điện nước →
@@ -171,15 +171,15 @@
       <div v-if="activeTab === 'room-types'" class="space-y-6">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="text-base font-bold text-slate-900">Danh sách Loại phòng</h3>
-            <p class="text-xs text-slate-500 mt-0.5">Định nghĩa mức giá, diện tích và tiện ích áp dụng cho các phòng</p>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Danh sách Loại phòng</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Định nghĩa mức giá, diện tích và tiện ích áp dụng cho các phòng</p>
           </div>
           <BaseButton variant="primary" size="sm" @click="openCreateRoomTypeModal">
             + Thêm loại phòng mới
           </BaseButton>
         </div>
 
-        <div v-if="roomTypes.length === 0" class="py-12 text-center bg-white rounded-2xl border border-slate-200 text-slate-400 text-xs">
+        <div v-if="roomTypes.length === 0" class="py-12 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-400 text-xs">
           Chưa có loại phòng nào. Hãy thêm loại phòng đầu tiên.
         </div>
 
@@ -187,19 +187,19 @@
           <div
             v-for="rt in roomTypes"
             :key="rt.id"
-            class="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between"
+            class="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between"
           >
             <div>
               <div class="flex items-center justify-between mb-2">
-                <h4 class="text-sm font-bold text-slate-900">{{ rt.typeName }}</h4>
-                <span class="text-xs font-extrabold text-primary-600">{{ formatCurrency(rt.price) }}/tháng</span>
+                <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ rt.typeName }}</h4>
+                <span class="text-xs font-extrabold text-primary-600 dark:text-primary-400">{{ formatCurrency(rt.price) }}/tháng</span>
               </div>
-              <p class="text-xs text-slate-500 line-clamp-2 mb-3">{{ rt.description || 'Không có mô tả.' }}</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-3">{{ rt.description || 'Không có mô tả.' }}</p>
 
-              <div class="flex flex-wrap gap-2 text-[11px] text-slate-600 mb-3">
-                <span class="px-2 py-0.5 rounded bg-slate-100">📐 {{ rt.roomSizeM2 }} m²</span>
-                <span class="px-2 py-0.5 rounded bg-slate-100">👥 Tối đa {{ rt.maxOccupants }} người</span>
-                <span class="px-2 py-0.5 rounded bg-slate-100">🚪 {{ rt.roomCount }} phòng</span>
+              <div class="flex flex-wrap gap-2 text-[11px] text-slate-600 dark:text-slate-400 mb-3">
+                <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">📐 {{ rt.roomSizeM2 }} m²</span>
+                <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">👥 Tối đa {{ rt.maxOccupants }} người</span>
+                <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">🚪 {{ rt.roomCount }} phòng</span>
               </div>
 
               <!-- Facilities list -->
@@ -207,24 +207,24 @@
                 <span
                   v-for="f in rt.facilities"
                   :key="f.id"
-                  class="px-1.5 py-0.5 rounded text-[10px] bg-primary-50 text-primary-700"
+                  class="px-1.5 py-0.5 rounded text-[10px] bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300"
                 >
                   {{ f.name }}
                 </span>
               </div>
             </div>
 
-            <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-end gap-2">
+            <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2">
               <button
                 type="button"
-                class="text-xs font-semibold text-slate-600 hover:text-slate-900 px-2 py-1"
+                class="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 px-2 py-1"
                 @click="openEditRoomTypeModal(rt)"
               >
                 {{ $t('common.edit') }}
               </button>
               <button
                 type="button"
-                class="text-xs font-semibold text-red-600 hover:text-red-700 px-2 py-1"
+                class="text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-700 px-2 py-1"
                 @click="handleDeleteRoomType(rt.id)"
               >
                 {{ $t('common.delete') }}
@@ -238,8 +238,8 @@
       <div v-if="activeTab === 'rooms'" class="space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h3 class="text-base font-bold text-slate-900">Danh sách Phòng</h3>
-            <p class="text-xs text-slate-500 mt-0.5">Quản lý trạng thái phòng và chỉ số công tơ điện nước</p>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Danh sách Phòng</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Quản lý trạng thái phòng và chỉ số công tơ điện nước</p>
           </div>
           <BaseButton
             variant="primary"
@@ -251,7 +251,7 @@
           </BaseButton>
         </div>
 
-        <div v-if="roomTypes.length === 0" class="p-4 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-800">
+        <div v-if="roomTypes.length === 0" class="p-4 bg-amber-50 dark:bg-amber-950/40 rounded-xl border border-amber-200 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-300">
           ⚠️ Bạn cần tạo ít nhất 1 <strong>Loại phòng</strong> trước khi thêm danh sách phòng cụ thể.
         </div>
 
@@ -261,7 +261,7 @@
             type="button"
             :class="[
               'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
-              roomFilterStatus === '' ? 'bg-slate-900 text-white' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50',
+              roomFilterStatus === '' ? 'bg-slate-900 text-white' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800',
             ]"
             @click="roomFilterStatus = ''"
           >
@@ -273,7 +273,7 @@
             type="button"
             :class="[
               'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
-              roomFilterStatus === st ? 'bg-slate-900 text-white' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50',
+              roomFilterStatus === st ? 'bg-slate-900 text-white' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800',
             ]"
             @click="roomFilterStatus = st"
           >
@@ -282,14 +282,14 @@
         </div>
 
         <!-- Rooms Table / List -->
-        <div v-if="filteredRooms.length === 0" class="py-12 text-center bg-white rounded-2xl border border-slate-200 text-slate-400 text-xs">
+        <div v-if="filteredRooms.length === 0" class="py-12 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-400 text-xs">
           Không có phòng nào phù hợp với bộ lọc.
         </div>
 
-        <div v-else class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div v-else class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
+              <thead class="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold">
                 <tr>
                   <th class="py-3 px-4">Số phòng</th>
                   <th class="py-3 px-4">Loại phòng</th>
@@ -299,21 +299,21 @@
                   <th class="py-3 px-4 text-right">Thao tác</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100 text-slate-700">
-                <tr v-for="rm in filteredRooms" :key="rm.id" class="hover:bg-slate-50/60 transition-colors">
-                  <td class="py-3.5 px-4 font-bold text-slate-900">
+              <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                <tr v-for="rm in filteredRooms" :key="rm.id" class="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors">
+                  <td class="py-3.5 px-4 font-bold text-slate-900 dark:text-white">
                     Phòng {{ rm.roomNumber }}
                   </td>
                   <td class="py-3.5 px-4">
                     {{ rm.roomTypeName }}
                   </td>
-                  <td class="py-3.5 px-4 font-semibold text-slate-900">
+                  <td class="py-3.5 px-4 font-semibold text-slate-900 dark:text-white">
                     {{ formatCurrency(rm.price) }}
                   </td>
                   <td class="py-3.5 px-4">
                     <StatusBadge type="RoomStatus" :status="rm.status" />
                   </td>
-                  <td class="py-3.5 px-4 text-slate-500">
+                  <td class="py-3.5 px-4 text-slate-500 dark:text-slate-400">
                     <span>⚡ {{ rm.currentElectricityReading }} kWh</span>
                     <span class="mx-1.5">·</span>
                     <span>💧 {{ rm.currentWaterReading }} m³</span>
@@ -321,7 +321,7 @@
                   <td class="py-3.5 px-4 text-right space-x-2">
                     <button
                       type="button"
-                      class="text-xs font-semibold text-primary-600 hover:text-primary-700"
+                      class="text-xs font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700"
                       @click="openMeterModal(rm)"
                     >
                       Ghi số điện nước
@@ -329,14 +329,14 @@
                     <button
                       v-if="rm.status === 'Available' || rm.status === 'Maintenance'"
                       type="button"
-                      class="text-xs font-semibold text-slate-600 hover:text-slate-900"
+                      class="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                       @click="toggleMaintenanceStatus(rm)"
                     >
                       {{ rm.status === 'Available' ? 'Chuyển bảo trì' : 'Chuyển trống' }}
                     </button>
                     <button
                       type="button"
-                      class="text-xs font-semibold text-red-600 hover:text-red-700"
+                      class="text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-700"
                       @click="handleDeleteRoom(rm.id)"
                     >
                       {{ $t('common.delete') }}

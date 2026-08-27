@@ -1,13 +1,13 @@
 <template>
-  <div class="bg-white p-8 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-200">
+  <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-800 transition-colors">
     <div class="text-center mb-6">
-      <h1 class="text-xl font-bold text-slate-900">
+      <h1 class="text-xl font-bold text-slate-900 dark:text-white">
         {{ $t('auth.verifyOtpTitle') }}
       </h1>
-      <p class="text-xs text-slate-500 mt-1">
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
         {{ $t('auth.verifyOtpSubtitle') }}
       </p>
-      <p v-if="email" class="text-xs font-semibold text-primary-600 mt-1">
+      <p v-if="email" class="text-xs font-semibold text-primary-600 dark:text-primary-400 mt-1">
         {{ email }}
       </p>
     </div>

@@ -1,26 +1,26 @@
 <template>
   <div class="max-w-3xl mx-auto space-y-6">
     <div>
-      <h1 class="text-xl font-bold text-slate-900">{{ $t('nav.profile') }}</h1>
-      <p class="text-xs text-slate-500 mt-1">Quản lý thông tin cá nhân, bảo mật mật khẩu và các phiên đăng nhập</p>
+      <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('nav.profile') }}</h1>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Quản lý thông tin cá nhân, bảo mật mật khẩu và các phiên đăng nhập</p>
     </div>
 
     <!-- Profile Header Card -->
     <BaseCard>
       <div class="flex items-center gap-4">
-        <div class="w-16 h-16 rounded-2xl bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-2xl shadow-sm">
+        <div class="w-16 h-16 rounded-2xl bg-primary-100 dark:bg-primary-950 text-primary-700 dark:text-primary-300 flex items-center justify-center font-bold text-2xl shadow-sm">
           {{ user?.fullName ? user.fullName.charAt(0).toUpperCase() : 'U' }}
         </div>
         <div>
-          <h3 class="text-base font-bold text-slate-900">{{ user?.fullName }}</h3>
-          <span class="text-xs text-slate-500 block mt-0.5">{{ user?.email }}</span>
+          <h3 class="text-base font-bold text-slate-900 dark:text-white">{{ user?.fullName }}</h3>
+          <span class="text-xs text-slate-500 dark:text-slate-400 block mt-0.5">{{ user?.email }}</span>
           <div class="mt-2 flex items-center gap-2">
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-50 text-primary-700 border border-primary-200">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-300 border border-primary-200 dark:border-primary-800">
               {{ roleLabel }}
             </span>
             <span
               v-if="user?.isEmailVerified"
-              class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700"
+              class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300"
             >
               ✓ Email đã xác minh
             </span>
@@ -30,13 +30,13 @@
     </BaseCard>
 
     <!-- Sub-tabs -->
-    <div class="border-b border-slate-200">
+    <div class="border-b border-slate-200 dark:border-slate-800">
       <nav class="flex space-x-6">
         <button
           type="button"
           :class="[
             'py-3 text-xs font-semibold border-b-2 transition-colors -mb-px',
-            activeTab === 'info' ? 'border-primary-600 text-primary-600' : 'border-transparent text-slate-500 hover:text-slate-700',
+            activeTab === 'info' ? 'border-primary-600 text-primary-600 dark:text-primary-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300',
           ]"
           @click="activeTab = 'info'"
         >
@@ -46,7 +46,7 @@
           type="button"
           :class="[
             'py-3 text-xs font-semibold border-b-2 transition-colors -mb-px',
-            activeTab === 'security' ? 'border-primary-600 text-primary-600' : 'border-transparent text-slate-500 hover:text-slate-700',
+            activeTab === 'security' ? 'border-primary-600 text-primary-600 dark:text-primary-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300',
           ]"
           @click="activeTab = 'security'"
         >
@@ -56,7 +56,7 @@
           type="button"
           :class="[
             'py-3 text-xs font-semibold border-b-2 transition-colors -mb-px',
-            activeTab === 'sessions' ? 'border-primary-600 text-primary-600' : 'border-transparent text-slate-500 hover:text-slate-700',
+            activeTab === 'sessions' ? 'border-primary-600 text-primary-600 dark:text-primary-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300',
           ]"
           @click="activeTab = 'sessions'"
         >
@@ -148,22 +148,22 @@
           Không có thông tin phiên làm việc.
         </div>
 
-        <div v-else class="divide-y divide-slate-100">
+        <div v-else class="divide-y divide-slate-100 dark:divide-slate-800">
           <div
             v-for="s in sessions"
             :key="s.id"
             class="py-3.5 flex items-center justify-between gap-4"
           >
             <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-sm">
+              <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center font-bold text-sm">
                 💻
               </div>
               <div>
                 <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold text-slate-800">{{ s.deviceInfo || 'Thiết bị Web Browser' }}</span>
+                  <span class="text-xs font-bold text-slate-800 dark:text-slate-200">{{ s.deviceInfo || 'Thiết bị Web Browser' }}</span>
                   <span
                     v-if="s.isCurrent"
-                    class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700"
+                    class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300"
                   >
                     Thiết bị này
                   </span>
@@ -177,7 +177,7 @@
             <button
               v-if="!s.isCurrent"
               type="button"
-              class="text-xs font-semibold text-red-600 hover:text-red-700 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors"
+              class="text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 px-3 py-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
               @click="revokeSession(s.id)"
             >
               Thu hồi
