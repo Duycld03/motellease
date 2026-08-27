@@ -28,3 +28,6 @@ dist/
 .vscode/*
 !.vscode/extensions.json
 .DS_Store
+.agents/
+.claude/
+openspec/
