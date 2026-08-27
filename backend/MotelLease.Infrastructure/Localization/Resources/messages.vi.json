@@ -160,6 +160,16 @@
   "error.saved_listing.not_found": "Không tìm thấy tin đã lưu.",
   "error.saved_listing.already_saved": "Nhà trọ này đã có trong danh sách đã lưu.",
 
+  "error.review.not_found": "Không tìm thấy đánh giá.",
+  "error.review.not_yours": "Bạn chỉ có thể chỉnh sửa hoặc xóa đánh giá của chính mình.",
+  "error.review.lease_required": "Bạn chỉ có thể đánh giá nhà trọ mà bạn đang hoặc đã từng thuê hợp đồng.",
+  "error.review.already_reviewed": "Bạn đã đánh giá nhà trọ này cho kỳ thuê của mình rồi.",
+  "error.review.cannot_reply_to_reply": "Không thể phản hồi trên một phản hồi khác.",
+
+  "error.report.not_found": "Không tìm thấy báo cáo vi phạm.",
+  "error.report.target_not_found": "Đối tượng bị báo cáo không tồn tại.",
+  "error.report.already_processed": "Báo cáo này đã được xử lý trước đó.",
+
   "error.validation.title": "Dữ liệu không hợp lệ.",
   "error.unexpected": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.",
   "error.unauthorized": "Bạn cần đăng nhập để thực hiện thao tác này.",
