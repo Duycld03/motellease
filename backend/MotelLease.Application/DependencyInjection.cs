@@ -13,6 +13,7 @@ using MotelLease.Application.Leases;
 using MotelLease.Application.Maintenance;
 using MotelLease.Application.Notifications;
 using MotelLease.Application.Payments;
+using MotelLease.Application.Refunds;
 using MotelLease.Application.Reports;
 using MotelLease.Application.Reviews;
 using MotelLease.Application.Rooms;
@@ -20,6 +21,7 @@ using MotelLease.Application.RoomTypes;
 using MotelLease.Application.SavedListings;
 using MotelLease.Application.Staff;
 using MotelLease.Application.Tasks;
+using MotelLease.Application.Withdrawals;
 
 namespace MotelLease.Application;
 
@@ -200,6 +202,18 @@ public static class DependencyInjection
         services.AddScoped<AcceptMaintenanceRequestHandler>();
         services.AddScoped<ResolveMaintenanceRequestHandler>();
         services.AddScoped<RejectMaintenanceRequestHandler>();
+
+        services.AddScoped<ListRefundRequestsHandler>();
+        services.AddScoped<CreateRefundRequestHandler>();
+        services.AddScoped<GetRefundRequestHandler>();
+        services.AddScoped<ApproveRefundRequestHandler>();
+        services.AddScoped<RejectRefundRequestHandler>();
+
+        services.AddScoped<ListWithdrawRequestsHandler>();
+        services.AddScoped<CreateWithdrawRequestHandler>();
+        services.AddScoped<GetWithdrawRequestHandler>();
+        services.AddScoped<ApproveWithdrawRequestHandler>();
+        services.AddScoped<RejectWithdrawRequestHandler>();
 
         return services;
     }

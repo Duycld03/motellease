@@ -144,6 +144,10 @@
   "notification.LeaseExpiring.body": "Your lease for room {roomNumber} at {boardingHouseName} expires on {endDate}. You can request an extension if you wish to continue staying.",
   "notification.MaintenanceReported.title": "New maintenance request",
   "notification.MaintenanceReported.body": "Room {roomNumber} at {boardingHouseName} reported a maintenance issue: {category}. Open to review.",
+  "notification.RefundProcessed.title": "Deposit refund update",
+  "notification.RefundProcessed.body": "Your deposit refund request for {amount} VND has been {status}.",
+  "notification.WithdrawHandled.title": "Withdrawal request update",
+  "notification.WithdrawHandled.body": "Your withdrawal request of {amount} VND has been {status}.",
 
   "validation.required": "This field is required.",
   "validation.email_format": "This is not a valid email address.",
@@ -184,6 +188,18 @@
   "error.maintenance.not_yours": "You do not have access to this maintenance request.",
   "error.maintenance.no_active_lease": "You must have an active lease to report a maintenance issue.",
   "error.maintenance.already_processed": "This maintenance request has already been processed.",
+
+  "error.refund.not_found": "Refund request not found.",
+  "error.refund.not_yours": "You do not have access to this refund request.",
+  "error.refund.invalid_deposit_state": "Refund can only be requested for a paid deposit.",
+  "error.refund.already_processed": "This refund request has already been processed.",
+  "error.refund.already_requested": "A refund request is already pending for this deposit.",
+
+  "error.withdraw.not_found": "Withdrawal request not found.",
+  "error.withdraw.not_yours": "You do not have access to this withdrawal request.",
+  "error.withdraw.insufficient_balance": "Withdrawal amount exceeds your available balance.",
+  "error.withdraw.already_processed": "This withdrawal request has already been processed.",
+  "error.withdraw.bank_details_required": "Please provide bank account details for withdrawal.",
 
   "error.validation.title": "The request is invalid.",
   "error.unexpected": "Something went wrong. Please try again later.",
