@@ -97,6 +97,7 @@ public static class DependencyInjection
         services.AddSingleton<PaymentGateways>();
 
         services.AddScoped<StartDepositPaymentHandler>();
+        services.AddScoped<StartBillPaymentHandler>();
         services.AddScoped<ConfirmPaymentHandler>();
         services.AddScoped<ReadPaymentReturnHandler>();
         services.AddScoped<ListPaymentsHandler>();

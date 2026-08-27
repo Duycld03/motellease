@@ -89,7 +89,11 @@
   "error.payment.provider_not_available": "Cổng thanh toán này hiện không khả dụng.",
   "error.payment.deposit_not_awaiting_payment": "Yêu cầu đặt cọc này không ở trạng thái chờ thanh toán.",
   "error.payment.deadline_passed": "Đã quá hạn thanh toán cho yêu cầu đặt cọc này.",
+  "error.bill.not_found": "Không tìm thấy hóa đơn.",
+  "error.bill.not_yours": "Hóa đơn này thuộc về phòng khác.",
+  "error.bill.not_payable": "Chỉ hóa đơn đã phát hành hoặc quá hạn mới có thể thanh toán.",
   "payment.deposit.description": "Tien coc phong {0} tai {1}",
+  "payment.bill.description": "Hoa don {0}/{1} phong {2}",
   "refund.reason.paid_after_deadline": "Khoản thanh toán đến sau khi phòng đã được mở lại cho người khác.",
 
   "notification.AppointmentHandled.title": "Yêu cầu xem phòng của bạn đã được trả lời",

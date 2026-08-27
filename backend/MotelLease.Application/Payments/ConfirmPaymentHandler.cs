@@ -91,15 +91,20 @@ public sealed class ConfirmPaymentHandler(
     /// Applies a successful payment to whatever it was for. Each purpose is one branch, and a purpose
     /// with nothing to credit yet is left alone rather than guessed at.
     /// </summary>
-    private async Task CreditAsync(
+    private Task CreditAsync(PaymentTransaction transaction, CancellationToken cancellationToken) =>
+        transaction.Purpose switch
+        {
+            PaymentPurpose.Deposit when transaction.DepositId is not null =>
+                CreditDepositAsync(transaction, cancellationToken),
+            PaymentPurpose.Rent when transaction.PaymentBillId is not null =>
+                CreditBillAsync(transaction, cancellationToken),
+            _ => Task.CompletedTask
+        };
+
+    private async Task CreditDepositAsync(
         PaymentTransaction transaction,
         CancellationToken cancellationToken)
     {
-        if (transaction.Purpose != PaymentPurpose.Deposit || transaction.DepositId is null)
-        {
-            return;
-        }
-
         var deposit = await database.Deposits.FirstAsync(
             d => d.Id == transaction.DepositId, cancellationToken);
 
@@ -122,21 +127,54 @@ public sealed class ConfirmPaymentHandler(
 
         deposit.Status = DepositStatus.Paid;
 
-        await NotifyPaidAsync(deposit, transaction, cancellationToken);
+        await NotifyPaidAsync(
+            deposit.RoomId,
+            deposit.UserId,
+            transaction,
+            linkUrl: $"/deposits/{deposit.Id}",
+            cancellationToken);
+    }
+
+    private async Task CreditBillAsync(
+        PaymentTransaction transaction,
+        CancellationToken cancellationToken)
+    {
+        var bill = await database.PaymentBills.FirstAsync(
+            b => b.Id == transaction.PaymentBillId, cancellationToken);
+
+        // A bill reaches Paid only from here, and only once (§9.8). One already settled is left as it
+        // is; the money is recorded on the transaction either way, and a double payment is a refund
+        // question rather than a reason to rewrite a settled invoice.
+        if (bill.Status is not (BillStatus.Issued or BillStatus.Overdue))
+        {
+            return;
+        }
+
+        bill.Status = BillStatus.Paid;
+        bill.PaidAt = transaction.CompletedAt;
+
+        await NotifyPaidAsync(
+            bill.RoomId,
+            transaction.UserId,
+            transaction,
+            linkUrl: $"/bills/{bill.Id}",
+            cancellationToken);
     }
 
     /// <summary>
-    /// Both sides are told (docs/domain-rules.md §7): the tenant that the money went through, and the
-    /// owner that the room is now paid for and waiting on a contract.
+    /// Both sides are told (docs/domain-rules.md §7): the payer that the money went through, and the
+    /// owner that it arrived.
     /// </summary>
     private async Task NotifyPaidAsync(
-        Deposit deposit,
+        Guid roomId,
+        Guid payerUserId,
         PaymentTransaction transaction,
+        string linkUrl,
         CancellationToken cancellationToken)
     {
         var label = await database.Rooms
             .IgnoreQueryFilters()
-            .Where(r => r.Id == deposit.RoomId)
+            .Where(r => r.Id == roomId)
             .Select(r => new
             {
                 r.RoomNumber,
@@ -147,21 +185,21 @@ public sealed class ConfirmPaymentHandler(
 
         var payload = new
         {
-            depositId = deposit.Id,
             transactionId = transaction.Id,
+            purpose = transaction.Purpose.ToString(),
             roomNumber = label.RoomNumber,
             boardingHouseName = label.HouseName,
             amount = transaction.Amount,
             provider = transaction.Provider.ToString()
         };
 
-        foreach (var recipient in new[] { deposit.UserId, label.OwnerUserId }.Distinct())
+        foreach (var recipient in new[] { payerUserId, label.OwnerUserId }.Distinct())
         {
             notifications.Queue(
                 recipient,
                 NotificationType.PaymentSucceeded,
                 payload,
-                linkUrl: $"/deposits/{deposit.Id}");
+                linkUrl);
         }
     }
 

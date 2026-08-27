@@ -48,7 +48,10 @@ internal static class PaymentRules
             _ => database.PaymentTransactions.Where(t =>
                 database.Deposits.Any(d =>
                     d.Id == t.DepositId
-                    && access.Managed().Any(b => b.Id == d.Room.BoardingHouseId)))
+                    && access.Managed().Any(b => b.Id == d.Room.BoardingHouseId))
+                || database.PaymentBills.Any(bill =>
+                    bill.Id == t.PaymentBillId
+                    && access.Managed().Any(b => b.Id == bill.Room.BoardingHouseId)))
         };
     }
 }
