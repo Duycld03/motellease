@@ -89,7 +89,11 @@
   "error.payment.provider_not_available": "This payment provider is not available.",
   "error.payment.deposit_not_awaiting_payment": "This deposit request is not waiting for a payment.",
   "error.payment.deadline_passed": "The payment deadline for this deposit request has passed.",
+  "error.bill.not_found": "Bill not found.",
+  "error.bill.not_yours": "This bill belongs to another room.",
+  "error.bill.not_payable": "Only an issued or overdue bill can be paid.",
   "payment.deposit.description": "Deposit for room {0} at {1}",
+  "payment.bill.description": "Bill {0}/{1} for room {2}",
   "refund.reason.paid_after_deadline": "The payment arrived after the room had already been released.",
 
   "notification.AppointmentHandled.title": "Your viewing request has been answered",

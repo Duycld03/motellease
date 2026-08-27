@@ -47,6 +47,24 @@ public sealed class PaymentsController : ControllerBase
         Ok(await handler.HandleAsync(id, cancellationToken));
 
     /// <summary>
+    /// Opens a payment attempt for a monthly bill. As with a deposit, this pays nothing: the bill
+    /// becomes Paid only when the IPN callback confirms it (docs/domain-rules.md §9.8).
+    /// </summary>
+    [HttpPost("bills/{billId:guid}/checkout")]
+    [Authorize(Policy = AuthPolicies.RequireTenant)]
+    [ProducesResponseType(typeof(PaymentCheckoutResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PaymentCheckoutResponse>> CheckoutBill(
+        Guid billId,
+        StartPaymentRequest request,
+        [FromServices] StartBillPaymentHandler handler,
+        CancellationToken cancellationToken) =>
+        Ok(await handler.HandleAsync(
+            billId,
+            request,
+            HttpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1",
+            cancellationToken));
+
+    /// <summary>
     /// VNPay's IPN. Anonymous because the caller is VNPay, not a signed-in user; the signature over
     /// the query string is the authentication, and an unsigned call is answered with code 97 without
     /// touching a row.

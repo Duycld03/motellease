@@ -28,6 +28,7 @@ public interface IAppDbContext
     DbSet<LeaseTenant> LeaseTenants { get; }
 
     DbSet<PaymentTransaction> PaymentTransactions { get; }
+    DbSet<PaymentBill> PaymentBills { get; }
     DbSet<RefundRequest> RefundRequests { get; }
 
     DbSet<Appointment> Appointments { get; }

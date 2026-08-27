@@ -143,6 +143,7 @@ public static class MessageKeys
 
         /// <summary>Shown on the gateway's own page, so it is resolved in the payer's language.</summary>
         public const string DepositDescription = "payment.deposit.description";
+        public const string BillDescription = "payment.bill.description";
 
         /// <summary>
         /// Stored in RefundRequest.Reason when a payment lands after the room was released. The
@@ -151,6 +152,13 @@ public static class MessageKeys
         /// </summary>
         public const string RefundReasonPaidAfterDeadline =
             "refund.reason.paid_after_deadline";
+    }
+
+    public static class Bill
+    {
+        public const string NotFound = "error.bill.not_found";
+        public const string NotYours = "error.bill.not_yours";
+        public const string NotPayable = "error.bill.not_payable";
     }
 
     public static class Notification
