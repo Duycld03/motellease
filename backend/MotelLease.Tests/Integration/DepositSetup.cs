@@ -1,4 +1,5 @@
 using MotelLease.Application.Deposits.Contracts;
+using MotelLease.Application.Leases.Contracts;
 using MotelLease.Application.Payments.Contracts;
 using MotelLease.Domain.Enums;
 
@@ -53,6 +54,26 @@ internal static class DepositSetup
         return held;
     }
 
+    /// <summary>
+    /// Carried one step further: the paid deposit is signed into a lease, which is where a monthly
+    /// bill can exist at all.
+    /// </summary>
+    internal static async Task<SignedLease> SignedLeaseAsync(
+        this MotelLeaseAppFactory app,
+        HttpClient client)
+    {
+        var held = await app.PaidDepositAsync(client);
+
+        var response = await client.SendAsync(
+            HttpMethod.Post,
+            $"/api/v1/deposits/{held.Deposit.Id}/confirm-lease",
+            held.Listing.OwnerToken);
+
+        response.EnsureSuccessStatusCode();
+
+        return new SignedLease(held, await response.ReadAsync<LeaseResponse>());
+    }
+
     internal static async Task<DepositResponse> RequestDepositAsync(
         this HttpClient client,
         string tenantToken,
@@ -95,3 +116,5 @@ internal sealed record HeldRoom(
     Guid TenantUserId,
     Guid OwnerUserId,
     DepositResponse Deposit);
+
+internal sealed record SignedLease(HeldRoom Held, LeaseResponse Lease);

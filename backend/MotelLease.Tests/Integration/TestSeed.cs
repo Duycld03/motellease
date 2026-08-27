@@ -121,6 +121,42 @@ internal static class TestSeed
             .Select(n => n.Id)
             .SingleAsync();
     }
+    /// <summary>
+    /// A monthly bill in the state a tenant would find one in. Stands in for the bill issuing
+    /// endpoints, which are a later feature group — the figures here are not what §3 computes, only
+    /// enough of a bill to be paid.
+    /// </summary>
+    internal static async Task<Guid> IssueBillAsync(
+        this MotelLeaseAppFactory app,
+        Guid leaseId,
+        Guid roomId,
+        decimal totalAmount,
+        BillStatus status = BillStatus.Issued)
+    {
+        using var scope = app.Services.CreateScope();
+        var database = scope.ServiceProvider.GetRequiredService<MotelLeaseDbContext>();
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        var bill = new PaymentBill
+        {
+            LeaseId = leaseId,
+            RoomId = roomId,
+            Month = today.Month,
+            Year = today.Year,
+            RentAmount = totalAmount,
+            TotalAmount = totalAmount,
+            Status = status,
+            IssuedAt = status == BillStatus.Draft ? null : DateTimeOffset.UtcNow,
+            DueDate = status == BillStatus.Draft ? null : today.AddDays(7)
+        };
+
+        database.PaymentBills.Add(bill);
+
+        await database.SaveChangesAsync();
+
+        return bill.Id;
+    }
 }
 
 internal sealed record StaffAccount(Guid UserId, string AccessToken);
