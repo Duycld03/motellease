@@ -142,6 +142,8 @@
   "notification.BillOverdue.body": "Bill {month}/{year} for room {roomNumber} is overdue. Please settle the payment as soon as possible.",
   "notification.LeaseExpiring.title": "Your lease is expiring soon",
   "notification.LeaseExpiring.body": "Your lease for room {roomNumber} at {boardingHouseName} expires on {endDate}. You can request an extension if you wish to continue staying.",
+  "notification.MaintenanceReported.title": "New maintenance request",
+  "notification.MaintenanceReported.body": "Room {roomNumber} at {boardingHouseName} reported a maintenance issue: {category}. Open to review.",
 
   "validation.required": "This field is required.",
   "validation.email_format": "This is not a valid email address.",
@@ -169,6 +171,19 @@
   "error.report.not_found": "Report not found.",
   "error.report.target_not_found": "The reported target does not exist.",
   "error.report.already_processed": "This report has already been processed.",
+
+  "error.staff.not_found": "Staff member not found.",
+  "error.staff.not_yours": "You can only manage your own staff.",
+  "error.staff.already_assigned": "Staff member is already assigned to this boarding house.",
+  "error.staff.not_assigned": "Staff member is not assigned to this boarding house.",
+
+  "error.task.not_found": "Work task not found.",
+  "error.task.not_yours": "You can only view or update tasks for properties you manage or tasks assigned to you.",
+
+  "error.maintenance.not_found": "Maintenance request not found.",
+  "error.maintenance.not_yours": "You do not have access to this maintenance request.",
+  "error.maintenance.no_active_lease": "You must have an active lease to report a maintenance issue.",
+  "error.maintenance.already_processed": "This maintenance request has already been processed.",
 
   "error.validation.title": "The request is invalid.",
   "error.unexpected": "Something went wrong. Please try again later.",

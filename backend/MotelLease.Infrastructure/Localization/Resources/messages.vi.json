@@ -142,6 +142,8 @@
   "notification.BillOverdue.body": "Hóa đơn tháng {month}/{year} phòng {roomNumber} đã quá hạn. Vui lòng thanh toán sớm.",
   "notification.LeaseExpiring.title": "Hợp đồng thuê phòng sắp hết hạn",
   "notification.LeaseExpiring.body": "Hợp đồng thuê phòng {roomNumber} tại {boardingHouseName} sẽ hết hạn vào ngày {endDate}. Bạn có thể gửi yêu cầu gia hạn nếu muốn tiếp tục thuê.",
+  "notification.MaintenanceReported.title": "Yêu cầu sửa chữa mới",
+  "notification.MaintenanceReported.body": "Phòng {roomNumber} tại {boardingHouseName} gửi yêu cầu sửa chữa ({category}). Mở để xem chi tiết.",
 
   "validation.required": "Không được để trống.",
   "validation.email_format": "Email không đúng định dạng.",
@@ -169,6 +171,19 @@
   "error.report.not_found": "Không tìm thấy báo cáo vi phạm.",
   "error.report.target_not_found": "Đối tượng bị báo cáo không tồn tại.",
   "error.report.already_processed": "Báo cáo này đã được xử lý trước đó.",
+
+  "error.staff.not_found": "Không tìm thấy nhân viên.",
+  "error.staff.not_yours": "Bạn chỉ có thể quản lý nhân viên do chính mình tuyển dụng.",
+  "error.staff.already_assigned": "Nhân viên đã được phân công quản lý nhà trọ này.",
+  "error.staff.not_assigned": "Nhân viên chưa được phân công quản lý nhà trọ này.",
+
+  "error.task.not_found": "Không tìm thấy công việc.",
+  "error.task.not_yours": "Bạn chỉ có thể xem hoặc cập nhật công việc thuộc nhà trọ bạn quản lý hoặc được giao cho bạn.",
+
+  "error.maintenance.not_found": "Không tìm thấy yêu cầu sửa chữa.",
+  "error.maintenance.not_yours": "Bạn không có quyền truy cập yêu cầu sửa chữa này.",
+  "error.maintenance.no_active_lease": "Bạn cần có hợp đồng thuê còn hiệu lực để gửi yêu cầu sửa chữa.",
+  "error.maintenance.already_processed": "Yêu cầu sửa chữa này đã được xử lý trước đó.",
 
   "error.validation.title": "Dữ liệu không hợp lệ.",
   "error.unexpected": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.",

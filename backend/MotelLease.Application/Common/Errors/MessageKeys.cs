@@ -217,6 +217,28 @@ public static class MessageKeys
         public const string AlreadyProcessed = "error.report.already_processed";
     }
 
+    public static class Staff
+    {
+        public const string NotFound = "error.staff.not_found";
+        public const string NotYours = "error.staff.not_yours";
+        public const string AlreadyAssigned = "error.staff.already_assigned";
+        public const string NotAssigned = "error.staff.not_assigned";
+    }
+
+    public static class Task
+    {
+        public const string NotFound = "error.task.not_found";
+        public const string NotYours = "error.task.not_yours";
+    }
+
+    public static class Maintenance
+    {
+        public const string NotFound = "error.maintenance.not_found";
+        public const string NotYours = "error.maintenance.not_yours";
+        public const string NoActiveLease = "error.maintenance.no_active_lease";
+        public const string AlreadyProcessed = "error.maintenance.already_processed";
+    }
+
     public static class Validation
     {
         public const string Required = "validation.required";

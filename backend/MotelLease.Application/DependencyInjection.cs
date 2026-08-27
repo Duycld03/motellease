@@ -10,6 +10,7 @@ using MotelLease.Application.Common.Security;
 using MotelLease.Application.Deposits;
 using MotelLease.Application.Extensions;
 using MotelLease.Application.Leases;
+using MotelLease.Application.Maintenance;
 using MotelLease.Application.Notifications;
 using MotelLease.Application.Payments;
 using MotelLease.Application.Reports;
@@ -17,6 +18,8 @@ using MotelLease.Application.Reviews;
 using MotelLease.Application.Rooms;
 using MotelLease.Application.RoomTypes;
 using MotelLease.Application.SavedListings;
+using MotelLease.Application.Staff;
+using MotelLease.Application.Tasks;
 
 namespace MotelLease.Application;
 
@@ -175,6 +178,28 @@ public static class DependencyInjection
         services.AddScoped<GetAdminReportHandler>();
         services.AddScoped<ResolveReportHandler>();
         services.AddScoped<DismissReportHandler>();
+
+        services.AddScoped<ListStaffHandler>();
+        services.AddScoped<CreateStaffHandler>();
+        services.AddScoped<GetStaffHandler>();
+        services.AddScoped<UpdateStaffHandler>();
+        services.AddScoped<LockStaffHandler>();
+        services.AddScoped<ListBoardingHouseStaffHandler>();
+        services.AddScoped<AssignStaffHandler>();
+        services.AddScoped<UnassignStaffHandler>();
+
+        services.AddScoped<ListTasksHandler>();
+        services.AddScoped<CreateTaskHandler>();
+        services.AddScoped<GetTaskHandler>();
+        services.AddScoped<UpdateTaskHandler>();
+        services.AddScoped<UpdateTaskStatusHandler>();
+
+        services.AddScoped<ListMaintenanceRequestsHandler>();
+        services.AddScoped<CreateMaintenanceRequestHandler>();
+        services.AddScoped<GetMaintenanceRequestHandler>();
+        services.AddScoped<AcceptMaintenanceRequestHandler>();
+        services.AddScoped<ResolveMaintenanceRequestHandler>();
+        services.AddScoped<RejectMaintenanceRequestHandler>();
 
         return services;
     }

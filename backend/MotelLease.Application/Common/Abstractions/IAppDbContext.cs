@@ -37,6 +37,8 @@ public interface IAppDbContext
     DbSet<RefundRequest> RefundRequests { get; }
 
     DbSet<Appointment> Appointments { get; }
+    DbSet<MaintenanceRequest> MaintenanceRequests { get; }
+    DbSet<WorkTask> Tasks { get; }
     DbSet<Notification> Notifications { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
