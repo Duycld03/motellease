@@ -71,9 +71,15 @@ middleware rather than separate SPAs.
   and duplicate prevention; owner analytics suite including 12-month revenue breakdown by month and property,
   revenue years lookup, comprehensive occupancy metrics (total, occupied, reserved, vacant, occupancy rate %),
   monthly profit analytics (`NetProfit = Revenue - Expenses`), and dashboard summary cards.
-  Covered by 138 integration tests that run against a real PostGIS container.
+- **Admin platform management & audit logs group: done** — comprehensive platform administrative operations
+  including platform user account CRUD with role assignment (`Admin`, `Owner`, `Staff`, `Tenant`), account
+  locking/unlocking with immediate session token revocation, and self-action invariant guards; boarding house
+  listing moderation (approval and rejection with reason); shared facilities catalogue CRUD with in-use deletion
+  guard; review moderation and soft-delete/restore with automated rating recomputation; structured append-only
+  audit logs trail, and realtime platform-wide dashboard summary metrics.
+  Covered by 141 integration tests that run against a real PostGIS container.
 
-Next: admin platform management & audit logs, notifications SignalR hub & image uploading.
+Next: notifications SignalR hub & image uploading.
 
 | Document | Contents |
 |---|---|
