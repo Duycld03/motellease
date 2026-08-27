@@ -96,13 +96,14 @@ internal static class DepositSetup
 
     internal static async Task<PaymentCheckoutResponse> CheckoutAsync(
         this HttpClient client,
-        HeldRoom held)
+        HeldRoom held,
+        PaymentProvider provider = PaymentProvider.VNPay)
     {
         var response = await client.SendAsync(
             HttpMethod.Post,
             $"/api/v1/deposits/{held.Deposit.Id}/checkout",
             held.TenantToken,
-            new StartPaymentRequest(PaymentProvider.VNPay));
+            new StartPaymentRequest(provider));
 
         response.EnsureSuccessStatusCode();
 
