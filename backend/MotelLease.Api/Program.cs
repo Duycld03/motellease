@@ -19,6 +19,21 @@ builder.Services.AddApiAuthentication();
 builder.Services.AddApiRateLimiting(builder.Configuration);
 builder.Services.AddRealtimeNotifications();
 
+const string FrontendCorsPolicy = "FrontendCors";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(FrontendCorsPolicy, policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:3000",
+                "http://127.0.0.1:3000",
+                "https://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 // Background work is registered here and only here (docs/domain-rules.md §8).
 builder.Services.AddHostedService<AppointmentExpiryJob>();
 builder.Services.AddHostedService<DepositExpiryJob>();
@@ -79,6 +94,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(FrontendCorsPolicy);
 
 app.UseRateLimiter();
 
