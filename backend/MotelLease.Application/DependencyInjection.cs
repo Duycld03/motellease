@@ -8,6 +8,7 @@ using MotelLease.Application.BoardingHouses;
 using MotelLease.Application.Catalogue;
 using MotelLease.Application.Common.Security;
 using MotelLease.Application.Deposits;
+using MotelLease.Application.Expenses;
 using MotelLease.Application.Extensions;
 using MotelLease.Application.Leases;
 using MotelLease.Application.Maintenance;
@@ -20,6 +21,7 @@ using MotelLease.Application.Rooms;
 using MotelLease.Application.RoomTypes;
 using MotelLease.Application.SavedListings;
 using MotelLease.Application.Staff;
+using MotelLease.Application.Statistics;
 using MotelLease.Application.Tasks;
 using MotelLease.Application.Withdrawals;
 
@@ -214,6 +216,18 @@ public static class DependencyInjection
         services.AddScoped<GetWithdrawRequestHandler>();
         services.AddScoped<ApproveWithdrawRequestHandler>();
         services.AddScoped<RejectWithdrawRequestHandler>();
+
+        services.AddScoped<ListExpensesHandler>();
+        services.AddScoped<CreateExpenseHandler>();
+        services.AddScoped<GetExpenseHandler>();
+        services.AddScoped<UpdateExpenseHandler>();
+        services.AddScoped<DeleteExpenseHandler>();
+
+        services.AddScoped<GetRevenueStatsHandler>();
+        services.AddScoped<GetRevenueYearsHandler>();
+        services.AddScoped<GetOccupancyStatsHandler>();
+        services.AddScoped<GetProfitStatsHandler>();
+        services.AddScoped<GetDashboardSummaryHandler>();
 
         return services;
     }
