@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MotelLease.Application.Common.Abstractions;
 using MotelLease.Application.Common.Errors;
 using MotelLease.Domain.Entities;
+using MotelLease.Domain.Enums;
 
 namespace MotelLease.Application.Common.Security;
 
@@ -59,4 +60,20 @@ public sealed class BoardingHouseAccess(IAppDbContext database, ICurrentUser cur
     private async Task<BoardingHouse> LoadAsync(Guid id, CancellationToken cancellationToken) =>
         await database.BoardingHouses.FirstOrDefaultAsync(b => b.Id == id, cancellationToken)
         ?? throw new NotFoundException(MessageKeys.BoardingHouse.NotFound);
+
+    /// <summary>
+    /// The properties the caller runs, as a query the list endpoints compose onto. An owner runs
+    /// the ones they own, a staff member the ones they are currently assigned to.
+    /// </summary>
+    public IQueryable<BoardingHouse> Managed()
+    {
+        var userId = currentUser.RequireUserId();
+
+        return currentUser.Role == UserRole.Staff
+            ? database.BoardingHouses.Where(b => database.StaffAssignments.Any(
+                a => a.BoardingHouseId == b.Id
+                     && a.StaffUserId == userId
+                     && a.UnassignedAt == null))
+            : database.BoardingHouses.Where(b => b.OwnerUserId == userId);
+    }
 }

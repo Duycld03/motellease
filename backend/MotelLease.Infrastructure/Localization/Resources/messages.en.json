@@ -59,6 +59,15 @@
   "email.email_change_otp.subject": "Your MotelLease email change code",
   "email.email_change_otp.body": "<p>Your email change code is <strong>{0}</strong>.</p><p>It is valid for {1} minutes. If you did not request this change, you can ignore this email.</p>",
 
+  "error.appointment.not_found": "Viewing appointment not found.",
+  "error.appointment.not_yours": "This viewing appointment belongs to someone else.",
+  "error.appointment.date_in_past": "Pick a time in the future for the viewing.",
+  "error.appointment.listing_not_published": "This listing is not published, so no viewing can be booked yet.",
+  "error.appointment.room_not_available": "This room is no longer available for viewing.",
+  "error.appointment.already_requested": "You already have a pending viewing for this room.",
+  "error.appointment.not_pending": "This viewing appointment has already been answered.",
+  "error.appointment.not_cancellable": "Only a pending or accepted viewing appointment can be cancelled.",
+
   "validation.required": "This field is required.",
   "validation.email_format": "This is not a valid email address.",
   "validation.username_format": "The username must be 3–64 characters using letters, digits and . _ -",

@@ -59,6 +59,15 @@
   "email.email_change_otp.subject": "Mã xác thực đổi email MotelLease",
   "email.email_change_otp.body": "<p>Mã xác thực đổi email của bạn là <strong>{0}</strong>.</p><p>Mã có hiệu lực trong {1} phút. Nếu bạn không yêu cầu đổi email, vui lòng bỏ qua email này.</p>",
 
+  "error.appointment.not_found": "Không tìm thấy lịch xem phòng.",
+  "error.appointment.not_yours": "Lịch xem phòng này thuộc về người khác.",
+  "error.appointment.date_in_past": "Vui lòng chọn thời điểm xem phòng trong tương lai.",
+  "error.appointment.listing_not_published": "Tin đăng chưa được công bố nên chưa thể đặt lịch xem phòng.",
+  "error.appointment.room_not_available": "Phòng này không còn trống để xem.",
+  "error.appointment.already_requested": "Bạn đã có một lịch xem phòng đang chờ cho phòng này.",
+  "error.appointment.not_pending": "Lịch xem phòng này đã được trả lời.",
+  "error.appointment.not_cancellable": "Chỉ lịch xem phòng đang chờ hoặc đã được chấp nhận mới có thể hủy.",
+
   "validation.required": "Không được để trống.",
   "validation.email_format": "Email không đúng định dạng.",
   "validation.username_format": "Tên đăng nhập dài 3–64 ký tự, chỉ gồm chữ, số và các ký tự . _ -",

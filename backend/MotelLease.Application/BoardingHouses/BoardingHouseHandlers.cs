@@ -14,24 +14,17 @@ namespace MotelLease.Application.BoardingHouses;
 /// GET /my/boarding-houses. One endpoint for both roles: an owner sees the properties they own,
 /// a staff member the ones they hold a live assignment for (docs/api-design.md).
 /// </summary>
-public sealed class ListMyBoardingHousesHandler(IAppDbContext database, ICurrentUser currentUser)
+public sealed class ListMyBoardingHousesHandler(
+    IAppDbContext database,
+    BoardingHouseAccess access)
 {
     public async Task<PagedResponse<BoardingHouseSummaryResponse>> HandleAsync(
         int page,
         int pageSize,
         CancellationToken cancellationToken = default)
     {
-        var userId = currentUser.RequireUserId();
-
-        var query = currentUser.Role == UserRole.Staff
-            ? database.BoardingHouses.Where(b => database.StaffAssignments.Any(
-                a => a.BoardingHouseId == b.Id
-                     && a.StaffUserId == userId
-                     && a.UnassignedAt == null))
-            : database.BoardingHouses.Where(b => b.OwnerUserId == userId);
-
         return await Paged.FromAsync(
-            query
+            access.Managed()
                 .AsNoTracking()
                 .OrderByDescending(b => b.CreatedAt)
                 .Select(b => new BoardingHouseSummaryResponse(
