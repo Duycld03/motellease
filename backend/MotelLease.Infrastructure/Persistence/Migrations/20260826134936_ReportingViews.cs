@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MotelLease.Infrastructure.Persistence.Migrations
 {
     /// <summary>
-    /// Replaces the Revenue table and the totalRooms/availableRooms/priceRange caches of the
-    /// original project (docs/erd.md §7). Both views carry a unique index because
-    /// REFRESH MATERIALIZED VIEW CONCURRENTLY fails without one.
+    /// Reporting figures are derived here rather than cached in columns, so no counter can
+    /// drift out of step with the rows it summarises (docs/erd.md §7). Both views carry a
+    /// unique index because REFRESH MATERIALIZED VIEW CONCURRENTLY fails without one.
     /// </summary>
     public partial class ReportingViews : Migration
     {

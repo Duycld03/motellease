@@ -6,9 +6,9 @@ using MotelLease.Application.Common.Abstractions;
 namespace MotelLease.Infrastructure.Security;
 
 /// <summary>
-/// Verifies a Google ID token against Google's published signing keys. The old project
-/// trusted whatever the browser posted back; here the token is checked server-side and the
-/// audience is pinned to our own client id.
+/// Verifies a Google ID token against Google's published signing keys. Nothing the browser
+/// posts is trusted: the signature is checked server-side and the audience is pinned to our
+/// own client id, so a token minted for another application is rejected.
 /// </summary>
 public sealed class GoogleTokenVerifier(
     IOptions<GoogleAuthOptions> options,

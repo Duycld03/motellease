@@ -7,8 +7,7 @@ namespace MotelLease.Application.Auth;
 /// <summary>
 /// Creates a session: one RefreshTokens row plus the access token bound to it. Shared by
 /// every entry point that hands out tokens (register, login, Google login, refresh) so the
-/// rules live in one place — the old project issued a lone JWT that could not be revoked
-/// (docs/features.md §3.6).
+/// rules live in one place and every session is revocable (docs/features.md §3.6).
 /// </summary>
 public sealed class SessionIssuer(
     IAppDbContext database,

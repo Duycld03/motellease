@@ -49,7 +49,7 @@ Index: `TokenHash` unique, `(UserId, RevokedAt)`
 
 **BoardingHouses**
 `Id` · `OwnerUserId` FK · `Name` · `Description` ·
-`Type` enum(Traditional, MiniHouse, DormStyle) — thay bảng `boardingHouseType` cũ ·
+`Type` enum(Traditional, MiniHouse, DormStyle) ·
 `AddressLine` · `Ward` · `District` · `Province` ·
 `Latitude` decimal(9,6) · `Longitude` decimal(9,6) ·
 `Location geography(Point,4326)` **computed STORED** từ Longitude/Latitude ·
@@ -58,8 +58,9 @@ Index: `TokenHash` unique, `(UserId, RevokedAt)`
 `Rating` decimal(2,1) cache · `ReviewCount` int cache · `IsDeleted`
 Index: GiST trên `Location`, `(ListingStatus, IsDeleted)`, `(Province, District)`, `OwnerUserId`
 
-Bỏ so với bản cũ: `priceRange` (tính từ `RoomTypes`), `totalRooms`/`availableRooms`
-(tính từ `vw_room_occupancy`), `likes` (đếm `SavedListings`), `staffId` (thành `StaffAssignments`).
+Không có cột cache: `priceRange` tính từ `RoomTypes`, `totalRooms`/`availableRooms` tính từ
+`vw_room_occupancy`, số lượt lưu tin đếm từ `SavedListings`. Staff phụ trách nằm ở
+`StaffAssignments` chứ không phải một cột trên bảng này, vì một nhà trọ có nhiều staff.
 
 **StaffAssignments** — `Id` · `BoardingHouseId` · `StaffUserId` · `AssignedByUserId` ·
 `AssignedAt` · `UnassignedAt`
@@ -77,8 +78,8 @@ Index: unique partial `(BoardingHouseId, StaffUserId) WHERE UnassignedAt IS NULL
 `Description` · `CurrentElectricityReading` · `CurrentWaterReading` · `IsDeleted`
 Index: unique `(BoardingHouseId, RoomNumber) WHERE IsDeleted = false`, `(BoardingHouseId, Status)`
 
-Bỏ `previousElectricityReading`/`previousWaterReading`: chỉ số cũ đã nằm trong
-`PaymentBills.ElectricityOld`. Phòng chỉ giữ chỉ số hiện tại (đồng hồ đang chạy).
+Phòng chỉ giữ chỉ số hiện tại (đồng hồ đang chạy). Chỉ số đầu kỳ của một hóa đơn nằm ở
+`PaymentBills.ElectricityOld`/`WaterOld`, không lặp lại trên `Rooms`.
 
 **Images** (polymorphic) — `Id` · `OwnerType` enum(BoardingHouse, RoomType, Room, Review, Report, MaintenanceRequest) ·
 `OwnerId` uuid · `Url` · `PublicId` (Cloudinary) · `IsPrimary` · `SortOrder`
@@ -99,7 +100,7 @@ Index: `(RoomId, AppointmentDate)`, `(UserId, Status)`
 `ReasonForCancel` · `HandledByUserId`
 Index: `(RoomId, Status)`, `(UserId, Status)`, partial `(RoomId) WHERE Status IN ('Accepted','Paid')`
 
-`rentalTime`/`startDate`/`endDate` của bản cũ chuyển sang `Leases`; ở đây chỉ là *yêu cầu*.
+Kỳ hạn, ngày bắt đầu và ngày kết thúc thuộc `Leases`; ở đây chỉ là *yêu cầu* giữ chỗ.
 
 **Leases** — `Id` · `RoomId` · `DepositId` (nullable, unique) · `PrimaryTenantUserId` ·
 `StartDate` date · `EndDate` date · `TermMonths` int ·
@@ -179,7 +180,7 @@ Index: `(TargetType, TargetId)`, `(Status, CreatedAt)`
 `Status` enum(Open, InProgress, Resolved, Rejected) · `TaskId` (nullable)
 Index: `(RoomId, Status)`, `(LeaseId)`
 
-**Tasks** — `Id` · `BoardingHouseId` (**mới** — bản cũ thiếu, owner không xem việc theo nhà trọ được) ·
+**Tasks** — `Id` · `BoardingHouseId` (để owner xem được việc theo từng nhà trọ) ·
 `CreatedByUserId` · `AssignedToUserId` · `MaintenanceRequestId` (nullable) ·
 `Title` · `Details` · `Priority` enum(Low, Medium, High) ·
 `Status` enum(InProgress, Completed, Cancelled) · `DueDate` · `CompletedAt`
@@ -203,15 +204,15 @@ Không có `UpdatedAt`, không sửa, không xóa (append-only).
 
 ## 7. View
 
-**vw_monthly_revenue** (materialized) — thay bảng `Revenue` cũ
+**vw_monthly_revenue** (materialized) — doanh thu suy ra từ hóa đơn, không lưu bảng tổng hợp
 `BoardingHouseId, Year, Month, TotalRevenue, TransactionCount, PaidBillCount`
 Nguồn: `PaymentBills` `Status='Paid'` join `Leases` join `Rooms`.
 Refresh: background job sau mỗi lần hóa đơn chuyển sang `Paid`, và hằng đêm.
 Index: unique `(BoardingHouseId, Year, Month)` (cần cho `REFRESH ... CONCURRENTLY`).
 
-**vw_room_occupancy** (materialized) — thay `totalRooms`/`availableRooms` cache trên `BoardingHouses`
+**vw_room_occupancy** (materialized) — số phòng theo trạng thái, suy ra từ `Rooms`
 `BoardingHouseId, TotalRooms, AvailableRooms, ReservedRooms, OccupiedRooms, MaintenanceRooms, MinPrice, MaxPrice`
-`MinPrice`/`MaxPrice` thay luôn `priceRange` cũ.
+`MinPrice`/`MaxPrice` là khoảng giá hiển thị trên trang danh sách.
 
 ## 8. Ghi chú migration
 

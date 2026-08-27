@@ -10,9 +10,8 @@ public sealed class OtpOptions
     public int LifetimeMinutes { get; set; } = 5;
 
     /// <summary>
-    /// How long before the same address may ask for another code. The old project had no
-    /// limit at all, so the send endpoint doubled as a free mail cannon
-    /// (docs/features.md §3.7).
+    /// How long before the same address may ask for another code. Without a cooldown the send
+    /// endpoint would double as a free mail cannon aimed at any address (docs/features.md §3.7).
     /// </summary>
     [Range(10, 600)]
     public int ResendCooldownSeconds { get; set; } = 60;

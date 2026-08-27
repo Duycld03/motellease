@@ -1,15 +1,14 @@
-# MotelLease — Thiết kế API mới
+# MotelLease — Thiết kế API
 
-> Thiết kế lại từ đầu theo **resource**, không bám theo 221 route của bản cũ.
-> `api-inventory.csv` chỉ dùng làm checklist đối chiếu để không bỏ sót tính năng —
-> không phải nguồn thiết kế, và không cần map 1-1 với bất kỳ route cũ nào.
+> Thiết kế theo **resource**: một endpoint cho một tài nguyên, phân quyền bằng policy thay vì
+> nhân bản đường dẫn theo role.
 
 ## Quy ước
 
 - Base: `/api/v1`. OpenAPI ở `/swagger`, sinh client TS cho Nuxt từ đây.
 - Auth: `Authorization: Bearer <access token>`, refresh qua `POST /auth/refresh`.
 - Phân trang: `?page=1&pageSize=20` → `{ items, page, pageSize, total, totalPages }`.
-- Lọc/sắp xếp bằng query param, **không** có endpoint `/filter` riêng như bản cũ.
+- Lọc/sắp xếp bằng query param trên chính endpoint list, **không** có endpoint `/filter` riêng.
 - Lỗi: RFC 7807 `application/problem+json`, message theo `Accept-Language` (`vi`/`en`).
 - Cột `role` dưới đây: `–` công khai · `T` tenant · `S` staff · `O` owner · `A` admin.
   `S` luôn kèm điều kiện `StaffAssignment` đang hoạt động với nhà trọ liên quan.
@@ -49,7 +48,7 @@
 | GET | `/facilities` | danh mục tiện ích |
 | GET | `/provinces` · `/provinces/{code}/districts` | dữ liệu địa giới cho bộ lọc |
 
-## Tin đã lưu (3) — gộp Favorite + WatchLater
+## Tin đã lưu (3)
 
 | Method | Path | Role |
 |---|---|---|
@@ -248,9 +247,9 @@
 
 ---
 
-**Tổng: ~150 endpoint** (bản cũ 221). Không mất tính năng nào — phần giảm đến từ:
-bỏ `/filter` trùng, gộp WatchLater vào SavedListing, và một endpoint dùng chung cho
-staff/owner/admin thay vì ba bản sao ở ba router.
+**Tổng: ~150 endpoint.** Con số này giữ được thấp nhờ hai quy ước ở trên: lọc là query param
+trên endpoint list, và staff/owner/admin dùng chung một endpoint với authorization theo tài
+nguyên thay vì ba bản sao.
 
 
 

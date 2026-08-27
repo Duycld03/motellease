@@ -6,8 +6,8 @@ using MotelLease.Application.Common.Errors;
 namespace MotelLease.Application.Accounts;
 
 /// <summary>
-/// PUT /me/avatar. The previous image is deleted from storage after the new URL is saved —
-/// the old project replaced the URL and left the file behind forever.
+/// PUT /me/avatar. The previous image is deleted from storage after the new URL is saved, so
+/// replacing an avatar does not leave an orphaned file behind.
 /// </summary>
 public sealed class UpdateAvatarHandler(
     IAppDbContext database,

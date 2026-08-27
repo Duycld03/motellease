@@ -2,7 +2,7 @@ namespace MotelLease.Application.Common.Abstractions;
 
 /// <summary>
 /// Image hosting. The public id is kept alongside the URL so a replaced image can be
-/// deleted instead of leaking storage, which the old project never did.
+/// deleted rather than left orphaned in storage.
 /// </summary>
 public interface IImageStorage
 {

@@ -42,7 +42,7 @@ public class Deposit : Entity
 
     /// <summary>
     /// Payment deadline, set when the owner accepts. Past it the deposit expires and the
-    /// room returns to Available — the original project held rooms indefinitely.
+    /// room returns to Available, so an unpaid request cannot hold a room indefinitely.
     /// </summary>
     public DateTimeOffset? ExpiresAt { get; set; }
 

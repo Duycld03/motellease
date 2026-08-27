@@ -1,9 +1,8 @@
 namespace MotelLease.Domain.Enums;
 
 /// <summary>
-/// Replaces the admin-managed BoardingHouseType table from the original project.
-/// Occupancy rules branch on these values (see docs/domain-rules.md §1), so they must not
-/// be editable at runtime.
+/// Occupancy rules branch on these values (see docs/domain-rules.md §1), so they are an enum
+/// rather than an admin-managed lookup table: a new row would have no rule attached to it.
 /// </summary>
 public enum BoardingHouseType
 {
@@ -26,8 +25,8 @@ public enum ListingStatus
 }
 
 /// <summary>
-/// Replaces the boolean isAvailable of the original project, which could not express
-/// "deposited but not moved in yet" and therefore needed a nightly repair job.
+/// Four states rather than a boolean, because "deposited but not moved in yet" has to be
+/// distinguishable: a room held by a paid deposit is neither free to book nor occupied.
 /// </summary>
 public enum RoomStatus
 {

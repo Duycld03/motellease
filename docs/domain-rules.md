@@ -1,106 +1,93 @@
-# MotelLease — Quy tắc nghiệp vụ trích từ repo cũ
+# MotelLease — Quy tắc nghiệp vụ
 
-> Mỗi quy tắc ghi kèm nơi nó đang nằm trong repo cũ, để đối chiếu khi implement.
-> Phần "Đổi lại" là quyết định cho bản mới — đọc kỹ, có vài chỗ là **sửa lỗi**, không phải port.
+> Đây là nguồn sự thật cho tầng Domain và Application. Mỗi mục nói rõ quy tắc và **lý do**;
+> phần bất biến ở mục 9 là yêu cầu bắt buộc có test, không phải khuyến nghị.
 
 ## 1. Phòng còn trống
 
-Đang chôn trong Mongoose `pre("save")` của `backend/src/models/room.js` (lặp lại 3 lần ở
-`updateRoomAvailability`, `updateAllRoomsAvailability`, `checkAvailabilityRules`):
+Số người được ở trong một phòng phụ thuộc loại nhà trọ:
 
-| Loại nhà trọ (`codeName` cũ) | Enum mới | Quy tắc |
-|---|---|---|
-| `nha_tro_truyen_thong` | `Traditional` | Tối đa **1** người thuê / phòng |
-| `mini_house` | `MiniHouse` | Tối đa **1** người thuê / phòng |
-| `nha_tro_kien_truc_xa` | `DormStyle` | Tối đa `RoomType.MaxOccupants` người |
+| Loại nhà trọ | Quy tắc |
+|---|---|
+| `Traditional` | Tối đa **1** người thuê / phòng |
+| `MiniHouse` | Tối đa **1** người thuê / phòng |
+| `DormStyle` | Tối đa `RoomType.MaxOccupants` người |
 
-**Đổi lại:** `Room.Status` là enum 4 giá trị thay cho `boolean isAvailable`. Số người ở
-tính từ `LeaseTenants` đang hoạt động, không từ array `room.rentBy`. Quy tắc đặt trong
-`Domain/Rooms/RoomOccupancyPolicy.cs`, gọi từ Application layer — **không** đặt trong
-EF interceptor, để test được mà không cần DB.
+`Room.Status` là enum 4 giá trị (`Available`, `Reserved`, `Occupied`, `Maintenance`) chứ không
+phải cờ boolean, vì "đã cọc, chờ nhận phòng" phải phân biệt được với "còn trống" và "đang ở".
 
-Hệ quả: bỏ được cron `0 2 * * *` (`models/room.js:419`) vốn tồn tại chỉ để vá lại
-`isAvailable` bị lệch.
+Số người đang ở tính từ `LeaseTenants` đang hoạt động — trạng thái suy ra từ dữ liệu, không có
+biến đếm song song để lệch. Quy tắc đặt trong `Domain/Rooms/RoomOccupancyPolicy.cs`, gọi từ
+Application layer. **Không** đặt trong EF interceptor hay lifecycle hook: nếu một quy tắc cần
+database mới test được thì nó đang nằm sai tầng.
 
 ## 2. Tiền cọc
 
-`controllers/depositController.js:53` — `amount: price`, tức **tiền cọc = giá thuê 1 tháng**
-của loại phòng. Kỳ hạn: `rentalTime * (timeType === "month" ? 1 : 12)` → luôn quy về số tháng.
+Tiền cọc = giá thuê 1 tháng của loại phòng, **chốt vào `Deposits.Amount`** tại thời điểm tạo
+yêu cầu. Đọc `RoomType.Price` lúc phát hành chứng từ sẽ làm số tiền đã cam kết thay đổi về sau.
 
-Ràng buộc đã có: một người không được cọc 2 lần cùng 1 phòng (`existDeposit` check).
+Kỳ hạn luôn quy về số tháng (`RequestedTermMonths`).
 
-**Đổi lại:** giữ quy tắc "cọc = 1 tháng tiền thuê" nhưng chốt `Deposits.Amount` tại thời
-điểm tạo. Thêm `ExpiresAt`: sau khi chủ trọ duyệt, khách có N giờ để thanh toán, hết hạn
-thì `Status = Expired` và phòng trả về `Available` (bản cũ không có, phòng bị giữ vô thời hạn).
+Một người không được cọc 2 lần cùng một phòng khi yêu cầu trước còn hiệu lực.
+
+Sau khi chủ trọ duyệt, `ExpiresAt` cho khách N giờ để thanh toán. Quá hạn thì `Status = Expired`
+và phòng trả về `Available`, để một yêu cầu không thanh toán không giữ phòng vô thời hạn.
 
 ## 3. Tính hóa đơn tháng
 
-`controllers/paymentBillController.js:140–205`:
-
 ```
-electricalQty  = ElectricityNew - ElectricityOld
+electricityQty = ElectricityNew - ElectricityOld
 waterQty       = WaterNew - WaterOld
-electricalAmt  = electricalQty * boardingHouse.electricityPrice
-waterAmt       = waterQty * boardingHouse.waterPrice
-additionalTotal= Σ RoomAdditionalFees(roomId)
-paymentAmount  = roomType.price + electricalAmt + waterAmt + additionalTotal
+electricityAmt = electricityQty * BoardingHouse.ElectricityPrice
+waterAmt       = waterQty * BoardingHouse.WaterPrice
+additionalTotal= Σ RoomAdditionalFees(RoomId, Month, Year)
+TotalAmount    = Leases.MonthlyRent + electricityAmt + waterAmt + additionalTotal
 ```
 
-Sau đó chia đều cho số người ở: `splitAmount = paymentAmount / room.rentBy.length`,
-tạo 1 `UserPayment` cho mỗi người.
+Bốn điểm dễ sai, đã chốt cách xử lý:
 
-**4 lỗi trong công thức trên phải sửa, không port:**
+1. **Phí phát sinh phải lọc theo kỳ.** `RoomAdditionalFees` lọc theo `(RoomId, Month, Year)`,
+   và gán `PaymentBillId` cho phí đã dùng để không bị cộng lại ở hóa đơn sau.
+2. **Tiền thuê lấy từ `Leases.MonthlyRent`**, là giá chốt khi ký, không đọc `RoomType.Price`
+   hiện tại. Chủ trọ tăng giá phòng không được làm đổi hóa đơn của người đang thuê giá cũ.
+   Nguyên tắc chung: chứng từ lịch sử (hóa đơn, hợp đồng) không bao giờ đọc giá hiện hành.
+3. **Chia tiền theo đồng, không theo số thực.** Chia đều cho các `LeaseTenants` đang ở, phần dư
+   dồn cho người đại diện (`IsPrimary`), để Σ phần chia luôn đúng bằng `TotalAmount`. Hợp đồng
+   không có người ở thì chặn phát hành hóa đơn — không để phép chia cho 0 xảy ra.
+4. **Cập nhật chỉ số và tạo hóa đơn nằm trong 1 EF transaction.** Nếu tách rời, lỗi ở giữa để
+   lại chỉ số đã nhảy mà không có hóa đơn tương ứng.
 
-1. `RoomAdditionalFees.find({ roomId })` (dòng 151) **không lọc `month`/`year`**, dù bảng có 2
-   cột đó. Hóa đơn tháng 6 đang cộng cả phí phát sinh của tháng 1–5. → Bản mới lọc theo
-   `(RoomId, Month, Year)` và gán `PaymentBillId` cho phí đã dùng để không cộng lại.
-2. `roomType.price` đọc **trực tiếp** lúc tạo hóa đơn. Chủ trọ tăng giá phòng thì mọi hóa
-   đơn tạo sau đó đổi theo, kể cả người đang thuê hợp đồng giá cũ. → Bản mới lấy
-   `Leases.MonthlyRent` (giá chốt khi ký).
-3. `splitAmount = paymentAmount / totalPeople` chia số thực. 3 người → mỗi người
-   333.333,33đ, tổng ≠ hóa đơn. Và `totalPeople = 0` cho ra `Infinity`. → Bản mới chia
-   theo đồng, phần dư dồn cho người đại diện (`LeaseTenants.IsPrimary`), và chặn phát hành
-   hóa đơn khi hợp đồng không có người ở.
-4. `room.save()` (cập nhật chỉ số) và `PaymentBill.create()` là 2 lệnh rời. Fail ở giữa là
-   chỉ số đã nhảy mà hóa đơn không có. → Bản mới nằm trong 1 EF transaction.
-
-Ngoài ra: bản cũ ghi `room.previousElectricityReading = newNumber` để làm chỉ số cũ cho
-tháng sau. Bản mới chỉ giữ `Rooms.CurrentElectricityReading`; chỉ số cũ của hóa đơn tháng
-sau lấy từ `PaymentBills.ElectricityNew` của tháng trước — một nguồn sự thật, không đồng bộ tay.
+Chỉ số cũ của hóa đơn tháng sau lấy từ `PaymentBills.ElectricityNew` của tháng trước;
+`Rooms.CurrentElectricityReading` là con số hiện tại duy nhất. Một nguồn sự thật, không đồng bộ tay.
 
 ## 4. Lịch xem phòng
 
-`models/appointment.js:76` — cron `0 * * * *` mỗi giờ đánh dấu lịch đã qua giờ thành hết hạn.
-
-**Đổi lại:** giữ nguyên logic, chuyển thành `AppointmentExpiryJob : BackgroundService` khai
-báo tường minh ở `Program.cs`. Không đặt cron trong file entity như bản cũ (đang chạy mỗi
-lần model được import, kể cả trong test).
+Lịch đã qua giờ chuyển sang `Expired` bằng `AppointmentExpiryJob : BackgroundService`, khai báo
+tường minh ở `Program.cs`. Job không được khai báo trong file entity: ở đó nó chạy mỗi lần
+entity được nạp, kể cả trong test, và không ai kiểm soát được vòng đời của nó.
 
 ## 5. Doanh thu
 
-Bản cũ ghi vào bảng `Revenue` (`totalRevenue`, `transactionCount`, `transactions[]`) —
-đồng bộ tay, lệch là không phát hiện được.
-
-**Đổi lại:** `vw_monthly_revenue` materialized view từ `PaymentBills` có `Status = 'Paid'`.
+`vw_monthly_revenue` là materialized view dựng từ `PaymentBills` có `Status = 'Paid'`.
 Doanh thu tháng = Σ `TotalAmount` các hóa đơn đã thanh toán, nhóm theo nhà trọ.
-Lợi nhuận = doanh thu − `BoardingHouseExpenses.TotalExpense` cùng kỳ (bản cũ chưa trừ bao giờ).
+Lợi nhuận = doanh thu − `BoardingHouseExpenses.TotalExpense` cùng kỳ.
+
+Không lưu số tổng hợp vào bảng riêng: mọi con số ở đây tính lại được, và một bộ đếm đồng bộ tay
+lệch đi thì không có cách nào phát hiện.
 
 ## 6. Phân quyền
 
-`middlewares/authMiddleware.js` — 4 middleware theo role:
-`authMiddleware` (đã đăng nhập) · `staffMiddleware` (`staff` **hoặc** `owner`) ·
-`ownerMiddleware` (`owner`) · `adminMiddleware` (`admin`).
+Hai tầng, vì role một mình không đủ: kiểm tra "người này là Staff" không trả lời được câu hỏi
+"Staff này có phụ trách nhà trọ đó không".
 
-Điểm yếu: chỉ kiểm tra role, **không kiểm tra quyền trên tài nguyên cụ thể**. Staff A gọi
-API sửa nhà trọ của owner B vẫn qua middleware.
-
-**Đổi lại:** 2 tầng —
-- Policy theo role: `RequireOwner`, `RequireStaffOrOwner`, `RequireAdmin`
-- `IAuthorizationHandler` theo tài nguyên: `BoardingHouseAccessHandler` kiểm tra
+- **Policy theo role:** `RequireTenant`, `RequireOwner`, `RequireStaffOrOwner`, `RequireAdmin`.
+  Fallback policy yêu cầu đã đăng nhập, nên endpoint mặc định đóng; endpoint công khai tự mở
+  bằng `[AllowAnonymous]`.
+- **`IAuthorizationHandler` theo tài nguyên:** `BoardingHouseAccessHandler` kiểm tra
   `OwnerUserId == currentUser` **hoặc** tồn tại `StaffAssignment` đang hoạt động cho
   `(BoardingHouseId, currentUser)`. Mọi endpoint nhận `boardingHouseId` đều đi qua handler này.
 
-## 7. Thông báo (mới — bản cũ không có)
+## 7. Thông báo
 
 | Sự kiện | Người nhận | `Type` |
 |---|---|---|
@@ -119,9 +106,12 @@ API sửa nhà trọ của owner B vẫn qua middleware.
 | Có báo sự cố mới | Staff phụ trách | `MaintenanceReported` |
 | Nhà trọ được duyệt / bị từ chối hiển thị | Chủ trọ | `ListingReviewed` |
 
-Mỗi thông báo lưu `TitleKey`/`BodyKey` + `PayloadJson`, không lưu câu hoàn chỉnh.
+Mỗi thông báo lưu `TitleKey`/`BodyKey` + `PayloadJson`, không lưu câu hoàn chỉnh — người nhận
+đọc bằng ngôn ngữ họ chọn tại lúc xem, không phải lúc gửi.
 
-## 8. Background job (thay 2 cron rải rác trong model)
+## 8. Background job
+
+Tất cả khai báo tường minh ở `Program.cs`, không nằm trong file entity.
 
 | Job | Chu kỳ | Việc |
 |---|---|---|
@@ -143,11 +133,10 @@ Mỗi thông báo lưu `TitleKey`/`BodyKey` + `PayloadJson`, không lưu câu ho
 6. Σ số tiền chia cho các `LeaseTenants` = `PaymentBills.TotalAmount` (không lệch 1 đồng).
 7. Một `ProviderTxnId` chỉ được ghi nhận thành công **1 lần** (unique index + kiểm tra ở IPN).
 8. `PaymentBills` chỉ sang `Paid` khi có `PaymentTransaction` `Succeeded` với
-   `SignatureVerified = true`.
+   `SignatureVerified = true`. Trạng thái tiền không bao giờ xác nhận từ URL redirect của
+   browser — chỉ từ callback server-to-server đã kiểm chữ ký.
 9. `ElectricityNew ≥ ElectricityOld` và `WaterNew ≥ WaterOld` (CHECK constraint).
 10. Chỉ tạo được `Review` gốc khi user có `Lease` với nhà trọ đó; mỗi `(UserId, LeaseId)`
     một đánh giá.
 11. Owner không rút quá `OwnerProfile.AvailableBalance`.
 12. Staff chỉ đọc/ghi được dữ liệu của nhà trọ có `StaffAssignment` đang hoạt động.
-
-

@@ -1,7 +1,7 @@
 # MotelLease
 
-Boarding house search and management platform. A ground-up rewrite of a MERN
-graduation project, keeping the domain and dropping the old architecture.
+Boarding house search and management platform: tenants find and book rooms, owners and their
+staff run the properties, and the monthly billing and payment cycle is handled end to end.
 
 | Layer | Technology |
 |---|---|
@@ -11,50 +11,58 @@ graduation project, keeping the domain and dropping the old architecture.
 | Media | Cloudinary |
 | Payments | MoMo, VNPay (sandbox) |
 
-Four roles: tenant, staff, owner, admin — one Nuxt app with layouts and route
-middleware, not separate SPAs.
+Four roles — tenant, staff, owner, admin — served by one Nuxt app with layouts and route
+middleware rather than separate SPAs.
+
+## Design decisions worth knowing
+
+- **Clean layering, enforced by project references.** `Api → Application → Domain` and
+  `Infrastructure → Application → Domain`; `Domain` references nothing. A business rule that
+  needs a database to be tested is in the wrong layer.
+- **No MediatR.** One plain handler class per use case, registered explicitly in DI. The
+  indirection of a mediator buys nothing at this size and hides the call graph.
+- **Money state changes are transactional and idempotent.** Payment confirmation happens only in
+  a server-to-server IPN callback with a verified HMAC signature; `PaymentTransaction.ProviderTxnId`
+  is unique, so a replayed callback cannot move a balance twice.
+- **Historical documents freeze their amounts.** A bill reads `Leases.MonthlyRent`, not the
+  current room price, so a price change never rewrites what an existing tenant owes.
+- **Sessions are revocable.** Access tokens are short-lived; refresh tokens rotate and only their
+  SHA-256 hash is stored. Presenting a rotated token proves the value leaked and drops every live
+  session for that user.
+- **Location search is done in the database.** `geography(Point, 4326)` as a stored generated
+  column plus a GiST index, queried with `ST_DWithin`/`ST_Distance`.
+- **No hardcoded user-facing strings.** Every message is a resource key resolved through i18n,
+  and that includes validation errors, emails and notifications — not just the frontend.
 
 ## Status
 
-**Step 1 — specification: done.** No application code yet.
+**Auth feature group: done** — registration with emailed OTP, login (password and Google),
+refresh rotation, session management, password reset, profile and email change. Covered by
+integration tests that run against a real PostGIS container.
 
-Specs are written in Vietnamese to match the thesis report. Commit messages,
-PR descriptions and this README are in English.
+Next: listings and rooms, then search.
 
 | Document | Contents |
 |---|---|
-| [docs/features.md](docs/features.md) | Agreed feature scope: what was dropped, what was added, and why |
+| [docs/features.md](docs/features.md) | Feature scope by role, priorities, entity list, state machines |
 | [docs/erd.md](docs/erd.md) | 29 tables, indexes, materialized views, PostGIS migration notes |
-| [docs/domain-rules.md](docs/domain-rules.md) | Business rules, 12 invariants, and 4 billing bugs inherited from the old code |
+| [docs/domain-rules.md](docs/domain-rules.md) | Business rules and the 12 invariants that must hold |
 | [docs/api-design.md](docs/api-design.md) | ~150 resource-oriented endpoints with policy-based authorization |
 | [docs/seed-plan.md](docs/seed-plan.md) | Demo data: coordinate anchors, volumes, consistency rules |
-| [docs/api-inventory.csv](docs/api-inventory.csv) | Old project's routes, used only as a cross-check list |
 
-## What changed from the original project
-
-- **`Lease` split from `Deposit`.** The old schema used the deposit record to
-  store rental term and dates, so there was nowhere to keep the agreed rent, no
-  rental history per room, and no move-out flow.
-- **Payments are confirmed by IPN, not by a browser redirect.** The old MoMo
-  return handler verified no signature and could be replayed to reserve a room
-  for free. `PaymentTransaction.ProviderTxnId` is now unique.
-- **Room status is a 4-value enum**, not a boolean plus a nightly cron job that
-  repaired the boolean.
-- **Notifications exist.** The old backend had none beyond registration OTP.
-- **Location search uses PostGIS**, not manual latitude/longitude filtering.
-- **Endpoints are grouped by resource**, not duplicated per role.
-
-## Roadmap
-
-2. Lock the schema, write the first migration and `docker-compose.yml` (PostGIS)
-3. Scaffold the solution, the Nuxt app and CI
-4. Build vertical slices in dependency order: auth → listings/rooms → search →
-   viewings → deposits → leases → billing/payments → extensions/refunds →
-   revenue → staff/tasks → reviews/reports → admin
-5. Integrations: Cloudinary, MoMo, VNPay, email, background jobs
-6. Tests (xUnit + Testcontainers with PostGIS, Vitest), seed data, deployment
+Specs are written in Vietnamese. Code, comments, commit messages and this README are in English.
 
 ## Local development
 
-Requires .NET 10 SDK, Node 24, and Docker. PostgreSQL runs in a container — no
-local `psql` installation needed.
+Requires .NET 10 SDK, Node 24, and Docker. PostgreSQL runs in a container, so no local `psql`
+installation is needed.
+
+```bash
+docker compose up -d                     # PostgreSQL 17 + PostGIS
+cd backend/MotelLease.Api
+dotnet user-secrets set "Jwt:SigningKey" "<at least 32 bytes>"
+dotnet run
+```
+
+Swagger UI is at `/swagger` in Development. `dotnet test` starts its own throwaway PostGIS
+container, so the integration suite needs Docker but not a running local database.

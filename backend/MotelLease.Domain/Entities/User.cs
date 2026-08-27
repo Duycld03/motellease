@@ -32,7 +32,7 @@ public class User : Entity, ISoftDeletable
 }
 
 /// <summary>
-/// Owner-specific fields. Replaces the Mongoose discriminator of the original project.
+/// Owner-specific fields, in their own table so a Tenant row carries no unused columns.
 /// </summary>
 public class OwnerProfile : Entity
 {

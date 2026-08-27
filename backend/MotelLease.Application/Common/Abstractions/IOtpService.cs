@@ -12,8 +12,8 @@ public enum OtpPurpose
 }
 
 /// <summary>
-/// One-time codes with resend throttling and an attempt limit — the old project had a
-/// bare OTP send with neither (docs/features.md §3.7).
+/// One-time codes with resend throttling and an attempt limit, so the send endpoint cannot be
+/// used to flood a mailbox and the code cannot be brute-forced (docs/features.md §3.7).
 /// Codes live in a distributed cache rather than a table: they expire in minutes, so
 /// losing them on restart is harmless and the ERD needs no extra entity.
 /// </summary>
