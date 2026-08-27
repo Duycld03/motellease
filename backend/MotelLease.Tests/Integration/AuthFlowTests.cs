@@ -10,7 +10,7 @@ namespace MotelLease.Tests.Integration;
 
 /// <summary>
 /// Drives the Auth group through HTTP against a real PostGIS database. These are the flows
-/// the "Auth &amp; tài khoản" section of docs/api-design.md describes; the security-relevant ones
+/// the "Auth and accounts" section of docs/api-design.md describes; the security-relevant ones
 /// (rotation, replay, revocation) are asserted rather than assumed.
 /// </summary>
 [Collection(PostgresCollection.Name)]
