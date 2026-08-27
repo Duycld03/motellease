@@ -1,14 +1,16 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using MotelLease.Application.Common.Abstractions;
 using MotelLease.Domain.Common;
 using MotelLease.Domain.Entities;
 
 namespace MotelLease.Infrastructure.Persistence;
 
 public class MotelLeaseDbContext(DbContextOptions<MotelLeaseDbContext> options)
-    : DbContext(options)
+    : DbContext(options), IAppDbContext
 {
     public DbSet<User> Users => Set<User>();
     public DbSet<OwnerProfile> OwnerProfiles => Set<OwnerProfile>();
@@ -128,5 +130,46 @@ public class MotelLeaseDbContext(DbContextOptions<MotelLeaseDbContext> options)
         }
 
         return base.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Reuses the ambient transaction when one is already open, so a handler that wraps a
+    /// nested call does not start a second one and deadlock against itself.
+    /// </summary>
+    public async Task<IAppTransaction> BeginTransactionAsync(
+        CancellationToken cancellationToken = default)
+    {
+        if (Database.CurrentTransaction is not null)
+        {
+            return new AmbientTransaction();
+        }
+
+        return new EfTransaction(await Database.BeginTransactionAsync(cancellationToken));
+    }
+
+    private sealed class EfTransaction(IDbContextTransaction transaction) : IAppTransaction
+    {
+        public Task CommitAsync(CancellationToken cancellationToken = default) =>
+            transaction.CommitAsync(cancellationToken);
+
+        public Task RollbackAsync(CancellationToken cancellationToken = default) =>
+            transaction.RollbackAsync(cancellationToken);
+
+        public ValueTask DisposeAsync() => transaction.DisposeAsync();
+    }
+
+    /// <summary>
+    /// A no-op handle: the outermost caller owns the real transaction, so committing here
+    /// must not end it early.
+    /// </summary>
+    private sealed class AmbientTransaction : IAppTransaction
+    {
+        public Task CommitAsync(CancellationToken cancellationToken = default) =>
+            Task.CompletedTask;
+
+        public Task RollbackAsync(CancellationToken cancellationToken = default) =>
+            Task.CompletedTask;
+
+        public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
 }
