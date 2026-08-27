@@ -201,6 +201,10 @@
   "error.withdraw.already_processed": "This withdrawal request has already been processed.",
   "error.withdraw.bank_details_required": "Please provide bank account details for withdrawal.",
 
+  "error.expense.not_found": "Expense record not found.",
+  "error.expense.not_yours": "You can only manage expenses for your own properties.",
+  "error.expense.already_exists": "An expense record for this month and year already exists.",
+
   "error.validation.title": "The request is invalid.",
   "error.unexpected": "Something went wrong. Please try again later.",
   "error.unauthorized": "You must sign in to do this.",

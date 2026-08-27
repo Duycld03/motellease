@@ -201,6 +201,10 @@
   "error.withdraw.already_processed": "Yêu cầu rút tiền này đã được xử lý trước đó.",
   "error.withdraw.bank_details_required": "Vui lòng cung cấp đầy đủ thông tin tài khoản ngân hàng nhận tiền.",
 
+  "error.expense.not_found": "Không tìm thấy bản ghi chi phí.",
+  "error.expense.not_yours": "Bạn chỉ có thể quản lý chi phí cho nhà trọ do chính mình sở hữu.",
+  "error.expense.already_exists": "Chi phí cho tháng và năm này đã tồn tại trước đó.",
+
   "error.validation.title": "Dữ liệu không hợp lệ.",
   "error.unexpected": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.",
   "error.unauthorized": "Bạn cần đăng nhập để thực hiện thao tác này.",

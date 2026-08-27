@@ -257,6 +257,13 @@ public static class MessageKeys
         public const string BankDetailsRequired = "error.withdraw.bank_details_required";
     }
 
+    public static class Expense
+    {
+        public const string NotFound = "error.expense.not_found";
+        public const string NotYours = "error.expense.not_yours";
+        public const string AlreadyExists = "error.expense.already_exists";
+    }
+
     public static class Validation
     {
         public const string Required = "validation.required";

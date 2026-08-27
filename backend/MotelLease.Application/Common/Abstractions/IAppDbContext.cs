@@ -36,6 +36,7 @@ public interface IAppDbContext
     DbSet<RoomAdditionalFee> RoomAdditionalFees { get; }
     DbSet<RefundRequest> RefundRequests { get; }
     DbSet<WithdrawRequest> WithdrawRequests { get; }
+    DbSet<BoardingHouseExpense> BoardingHouseExpenses { get; }
 
     DbSet<Appointment> Appointments { get; }
     DbSet<MaintenanceRequest> MaintenanceRequests { get; }
