@@ -205,6 +205,13 @@
   "error.expense.not_yours": "Bạn chỉ có thể quản lý chi phí cho nhà trọ do chính mình sở hữu.",
   "error.expense.already_exists": "Chi phí cho tháng và năm này đã tồn tại trước đó.",
 
+  "error.admin.cannot_lock_self": "Bạn không thể tự khóa tài khoản quản trị viên của chính mình.",
+  "error.admin.cannot_delete_self": "Bạn không thể tự xóa tài khoản quản trị viên của chính mình.",
+
+  "error.facility.not_found": "Không tìm thấy tiện ích.",
+  "error.facility.name_taken": "Tên tiện ích này đã tồn tại trong danh mục.",
+  "error.facility.in_use": "Không thể xóa tiện ích vì đang được gán cho một hoặc nhiều nhà trọ.",
+
   "error.validation.title": "Dữ liệu không hợp lệ.",
   "error.unexpected": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.",
   "error.unauthorized": "Bạn cần đăng nhập để thực hiện thao tác này.",
