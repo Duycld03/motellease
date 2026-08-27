@@ -710,31 +710,164 @@ export interface WorkTask {
   createdAt: string
 }
 
-export interface BoardingHouseExpense {
-  id: string
-  boardingHouseId: string
-  month: number
-  year: number
-  electricityAmount: number
-  waterAmount: number
-  otherExpenses?: Record<string, number>
-  totalAmount: number
-  notes?: string
+// Expenses Contracts
+export interface OtherExpenseItem {
+  feeName: string
+  feeAmount: number
 }
 
-export interface WithdrawRequest {
+export interface CreateExpenseRequest {
+  month: number
+  year: number
+  electricityOld: number
+  electricityNew: number
+  electricityQty: number
+  electricityAmount: number
+  waterOld: number
+  waterNew: number
+  waterQty: number
+  waterAmount: number
+  otherExpenses?: OtherExpenseItem[]
+}
+
+export interface UpdateExpenseRequest {
+  electricityOld: number
+  electricityNew: number
+  electricityQty: number
+  electricityAmount: number
+  waterOld: number
+  waterNew: number
+  waterQty: number
+  waterAmount: number
+  otherExpenses?: OtherExpenseItem[]
+}
+
+export interface ExpenseResponse {
   id: string
-  ownerId: string
-  ownerName?: string
-  amount: number
-  bankName: string
-  accountNumber: string
-  accountHolderName: string
-  status: RequestStatus
-  processedAt?: string
-  rejectionReason?: string
+  boardingHouseId: string
+  boardingHouseName: string
+  month: number
+  year: number
+  electricityOld: number
+  electricityNew: number
+  electricityQty: number
+  electricityAmount: number
+  waterOld: number
+  waterNew: number
+  waterQty: number
+  waterAmount: number
+  otherExpenses: OtherExpenseItem[]
+  otherExpensesTotal: number
+  totalExpense: number
   createdAt: string
 }
+
+export type BoardingHouseExpense = ExpenseResponse
+
+// Statistics Contracts
+export interface MonthlyRevenueItem {
+  month: number
+  revenue: number
+  rentRevenue: number
+  utilityRevenue: number
+  paidBillsCount: number
+}
+
+export interface RevenueStatsResponse {
+  year: number
+  boardingHouseId?: string
+  totalRevenue: number
+  totalRentRevenue: number
+  totalUtilityRevenue: number
+  totalPaidBills: number
+  monthlyBreakdown: MonthlyRevenueItem[]
+}
+
+export interface RevenueYearsResponse {
+  years: number[]
+}
+
+export interface HouseOccupancyItem {
+  boardingHouseId: string
+  boardingHouseName: string
+  totalRooms: number
+  rentedRooms: number
+  reservedRooms: number
+  vacantRooms: number
+  occupancyRate: number
+}
+
+export interface OccupancyStatsResponse {
+  totalRooms: number
+  rentedRooms: number
+  reservedRooms: number
+  vacantRooms: number
+  overallOccupancyRate: number
+  houses: HouseOccupancyItem[]
+}
+
+export interface MonthlyProfitItem {
+  month: number
+  revenue: number
+  expense: number
+  netProfit: number
+}
+
+export interface ProfitStatsResponse {
+  year: number
+  boardingHouseId?: string
+  totalRevenue: number
+  totalExpense: number
+  totalNetProfit: number
+  monthlyBreakdown: MonthlyProfitItem[]
+}
+
+export interface DashboardSummaryResponse {
+  totalBoardingHouses: number
+  totalRooms: number
+  occupiedRooms: number
+  vacantRooms: number
+  occupancyRate: number
+  activeLeases: number
+  pendingAppointments: number
+  pendingMaintenanceRequests: number
+  unpaidBillsCount: number
+  unpaidBillsAmount: number
+  revenueThisMonth: number
+  expensesThisMonth: number
+  profitThisMonth: number
+  availableBalance: number
+}
+
+// Withdrawals Contracts
+export interface CreateWithdrawRequest {
+  amount: number
+  bankName?: string
+  bankAccountNumber?: string
+  bankAccountHolder?: string
+}
+
+export interface RejectWithdrawRequest {
+  reason?: string
+}
+
+export interface WithdrawRequestResponse {
+  id: string
+  ownerUserId: string
+  ownerFullName: string
+  amount: number
+  bankName: string
+  bankAccountNumber: string
+  bankAccountHolder: string
+  status: RequestStatus
+  processedByUserId?: string
+  processedByFullName?: string
+  processedAt?: string
+  rejectReason?: string
+  createdAt: string
+}
+
+export type WithdrawRequest = WithdrawRequestResponse
 
 export interface Review {
   id: string
