@@ -187,5 +187,4 @@ npm run dev
 | [docs/domain-rules.md](docs/domain-rules.md) | Business logic rules and 12 core domain invariants |
 | [docs/api-design.md](docs/api-design.md) | Complete REST API endpoint contracts (~150 endpoints) |
 | [docs/seed-plan.md](docs/seed-plan.md) | Seed data specification and coordinate anchors |
-| [AGENTS.md](AGENTS.md) | Architecture rules & AI agent conventions |
 
