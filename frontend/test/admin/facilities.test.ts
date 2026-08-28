@@ -39,12 +39,13 @@ describe('AdminFacilitiesPage.vue', () => {
 
     const vm = wrapper.vm as any
     vm.openCreateModal()
+    await wrapper.vm.$nextTick()
     vm.facilityForm.name = 'Máy giặt riêng'
     vm.facilityForm.codeName = 'washing_machine'
     vm.facilityForm.iconKey = 'washer'
     vm.facilityForm.description = 'Máy giặt cửa trước lồng ngang'
 
-    await vm.handleSubmitFacility()
+    await wrapper.find('form').trigger('submit.prevent')
 
     expect(mockPost).toHaveBeenCalledWith('/admin/facilities', {
       name: 'Máy giặt riêng',

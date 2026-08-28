@@ -60,6 +60,7 @@ describe('OwnerExpensesPage.vue', () => {
     const vm = wrapper.vm as any
     vm.selectedHouseId = 'house-1'
     vm.openCreateExpenseModal()
+    await wrapper.vm.$nextTick()
     vm.form.month = 8
     vm.form.year = 2026
     vm.form.electricityOld = 1000
@@ -71,7 +72,7 @@ describe('OwnerExpensesPage.vue', () => {
     vm.form.waterQty = 30
     vm.form.waterAmount = 600000
 
-    await vm.handleSubmitExpense()
+    await wrapper.find('form').trigger('submit.prevent')
 
     expect(mockPost).toHaveBeenCalledWith('/my/boarding-houses/house-1/expenses', expect.objectContaining({
       month: 8,

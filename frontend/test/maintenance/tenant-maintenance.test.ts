@@ -45,12 +45,13 @@ describe('TenantMaintenancePage.vue', () => {
     await wrapper.vm.$nextTick()
 
     const vm = wrapper.vm as any
-    vm.openCreateModal()
+    await vm.openCreateModal()
+    await wrapper.vm.$nextTick()
     vm.form.leaseId = 'lease-101'
     vm.form.category = 'Water'
     vm.form.description = 'Vòi nước bồn rửa mặt bị rò rỉ liên tục'
 
-    await vm.handleSubmitCreate()
+    await wrapper.find('form').trigger('submit.prevent')
 
     expect(mockPost).toHaveBeenCalledWith('/maintenance-requests', {
       leaseId: 'lease-101',

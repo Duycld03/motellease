@@ -45,12 +45,13 @@ describe('OwnerWithdrawPage.vue', () => {
 
     const vm = wrapper.vm as any
     vm.openWithdrawModal()
+    await wrapper.vm.$nextTick()
     vm.withdrawForm.amount = 5000000
     vm.withdrawForm.bankName = 'MBBank'
     vm.withdrawForm.bankAccountNumber = '999988887777'
     vm.withdrawForm.bankAccountHolder = 'NGUYEN VAN OWNER'
 
-    await vm.handleSubmitWithdraw()
+    await wrapper.find('form').trigger('submit.prevent')
 
     expect(mockPost).toHaveBeenCalledWith('/withdraw-requests', {
       amount: 5000000,

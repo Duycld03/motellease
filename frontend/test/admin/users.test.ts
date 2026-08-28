@@ -37,13 +37,14 @@ describe('AdminUsersPage.vue', () => {
 
     const vm = wrapper.vm as any
     vm.openCreateModal()
+    await wrapper.vm.$nextTick()
     vm.createForm.fullName = 'Admin Tong'
     vm.createForm.username = 'superadmin'
     vm.createForm.email = 'admin@motellease.vn'
     vm.createForm.password = 'Admin12345@'
     vm.createForm.gender = 'Male'
 
-    await vm.handleSubmitCreateAdmin()
+    await wrapper.find('form').trigger('submit.prevent')
 
     expect(mockPost).toHaveBeenCalledWith('/admin/accounts', {
       fullName: 'Admin Tong',

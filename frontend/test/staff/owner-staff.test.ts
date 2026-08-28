@@ -55,6 +55,7 @@ describe('OwnerStaffPage.vue', () => {
 
     const vm = wrapper.vm as any
     vm.openCreateStaffModal()
+    await wrapper.vm.$nextTick()
     vm.createForm.username = 'staff_new'
     vm.createForm.email = 'staff_new@test.com'
     vm.createForm.password = 'Pass12345@'
@@ -63,7 +64,7 @@ describe('OwnerStaffPage.vue', () => {
     vm.createForm.gender = 'Female'
     vm.createForm.hireDate = '2026-08-01'
 
-    await vm.handleSubmitCreateStaff()
+    await wrapper.find('form').trigger('submit.prevent')
 
     expect(mockPost).toHaveBeenCalledWith('/my/staff', expect.objectContaining({
       username: 'staff_new',
