@@ -7,7 +7,7 @@ let refreshPromise: Promise<boolean> | null = null
 export const useApi = () => {
   const config = useRuntimeConfig()
   const authStore = useAuthStore()
-  const { locale } = useI18n()
+  const { locale, t, te } = useI18n()
 
   const apiBase = config.public.apiBase
 
@@ -87,7 +87,21 @@ export const useApi = () => {
       // Parse RFC 7807 problem+json
       const problem = err?.data as ProblemDetails | undefined
       if (problem) {
-        let message = problem.detail
+        let message = ''
+
+        // 1. If problem has an error code matching a frontend i18n key, translate it
+        if (problem.code && te(`errors.${problem.code}`)) {
+          message = t(`errors.${problem.code}`)
+        } else if (problem.code && te(problem.code)) {
+          message = t(problem.code)
+        }
+
+        // 2. Otherwise use localized detail returned by backend (via Accept-Language header)
+        if (!message) {
+          message = problem.detail || ''
+        }
+
+        // 3. If validation errors dictionary is present, pick first message
         if (!message && problem.errors && Object.keys(problem.errors).length > 0) {
           const firstKey = Object.keys(problem.errors)[0]
           const firstList = problem.errors[firstKey]
@@ -95,9 +109,12 @@ export const useApi = () => {
             message = firstList[0]
           }
         }
+
+        // 4. Fallback to title or default
         if (!message) {
-          message = problem.title || err.message || 'Đã xảy ra lỗi'
+          message = problem.title || err.message || t('common.error') || 'Đã xảy ra lỗi'
         }
+
         const customError: any = new Error(message)
         customError.status = err?.response?.status || problem.status
         customError.problem = problem
