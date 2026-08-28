@@ -18,6 +18,39 @@ services:
       timeout: 5s
       retries: 10
 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: motellease-backend
+    restart: unless-stopped
+    environment:
+      ConnectionStrings__Default: "Host=db;Port=5432;Database=motellease;Username=motellease;Password=${POSTGRES_PASSWORD:-devonly_change_me}"
+      Jwt__SigningKey: "devonly-signing-key-change-me-at-least-32-bytes-long"
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:5004"
+      App__ApiBaseUrl: "http://localhost:5004"
+      App__WebBaseUrl: "http://localhost:3000"
+    ports:
+      - "5004:5004"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NUXT_PUBLIC_API_BASE: "http://localhost:5004/api/v1"
+        NUXT_PUBLIC_HUB_URL: "http://localhost:5004/hubs/notifications"
+    container_name: motellease-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: motellease-pgadmin
@@ -36,31 +69,20 @@ services:
       - pgadmin-data:/var/lib/pgadmin
 
   ngrok:
-    # Only needed to receive a payment gateway's IPN callback. That call is server-to-server:
-    # MoMo's or VNPay's machine has to reach this one, and it cannot reach localhost. Everything
-    # else in the payment flow — the redirect out and the browser's return — works without it.
+    # Only needed to receive a payment gateway's IPN callback.
     image: ngrok/ngrok:latest
     container_name: motellease-ngrok
     restart: unless-stopped
     profiles: ["tunnel"]
     environment:
       NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN:-}
-    # The free plan's assigned dev domain is stable, so the URL registered in VNPay's merchant
-    # portal stays valid between runs.
-    #
-    # Defaulted rather than declared required: compose interpolates every service before it filters
-    # by profile, so `${NGROK_DOMAIN:?...}` would fail `docker compose up -d` for anybody who never
-    # asked for a tunnel. Unset, ngrok refuses the placeholder domain and says so.
     command:
       - http
       - --url=${NGROK_DOMAIN:-set-NGROK_DOMAIN-in-dot-env}
       - host.docker.internal:5004
     extra_hosts:
-      # The API runs on the host under `dotnet run`, not in a container.
       - "host.docker.internal:host-gateway"
     ports:
-      # ngrok's own request inspector. Worth having open while testing a callback: it shows the
-      # exact query string or body the gateway sent, which is what the signature was made over.
       - "4040:4040"
 
 volumes:
