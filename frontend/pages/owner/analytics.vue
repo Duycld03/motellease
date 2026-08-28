@@ -4,20 +4,20 @@
       <div>
         <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('nav.analytics') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Báo cáo doanh thu 12 tháng, chi phí vận hành, lợi nhuận ròng và tỷ lệ lấp đầy phòng
+          {{ $t('analytics.subtitle') }}
         </p>
       </div>
 
       <!-- Year and House Filters -->
       <div class="flex items-center gap-2">
         <select v-model="selectedHouseId" class="input-field !text-xs !py-1.5 w-44" @change="fetchAllStats">
-          <option value="">Tất cả khu trọ</option>
+          <option value="">{{ $t('common.allBoardingHouses') }}</option>
           <option v-for="h in boardingHouses" :key="h.id" :value="h.id">
             {{ h.name }}
           </option>
         </select>
         <select v-model.number="selectedYear" class="input-field !text-xs !py-1.5 w-28" @change="fetchAllStats">
-          <option v-for="y in availableYears" :key="y" :value="y">Năm {{ y }}</option>
+          <option v-for="y in availableYears" :key="y" :value="y">{{ $t('common.yearLabel', { year: y }) }}</option>
         </select>
         <BaseButton variant="outline" size="sm" @click="fetchAllStats">
           🔄
@@ -33,42 +33,42 @@
       <!-- KPI Summary Cards -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <span class="text-[10px] text-slate-400 font-semibold uppercase block">Tổng doanh thu năm {{ selectedYear }}</span>
+          <span class="text-[10px] text-slate-400 font-semibold uppercase block">{{ $t('common.totalRevenueYear', { year: selectedYear }) }}</span>
           <span class="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-1 block">
             {{ formatCurrency(profitStats?.totalRevenue || 0) }}
           </span>
           <span class="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">
-            {{ revenueStats?.totalPaidBills || 0 }} hóa đơn đã thanh toán
+            {{ $t('common.paidBillsCount', { count: revenueStats?.totalPaidBills || 0 }) }}
           </span>
         </div>
 
         <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <span class="text-[10px] text-slate-400 font-semibold uppercase block">Tổng chi phí vận hành</span>
+          <span class="text-[10px] text-slate-400 font-semibold uppercase block">{{ $t('common.totalOperationalExpenses') }}</span>
           <span class="text-lg font-black text-rose-500 dark:text-rose-400 mt-1 block">
             {{ formatCurrency(profitStats?.totalExpense || 0) }}
           </span>
           <span class="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">
-            Điện nước tổng & bảo trì
+            {{ $t('common.utilitiesAndMaintenance') }}
           </span>
         </div>
 
         <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <span class="text-[10px] text-slate-400 font-semibold uppercase block">Lợi nhuận ròng (Net Profit)</span>
+          <span class="text-[10px] text-slate-400 font-semibold uppercase block">{{ $t('common.netProfitLabel') }}</span>
           <span class="text-lg font-black text-primary-600 dark:text-primary-400 mt-1 block">
             {{ formatCurrency(profitStats?.totalNetProfit || 0) }}
           </span>
           <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold block mt-0.5">
-            Doanh thu - Chi phí
+            {{ $t('common.revenueMinusExpenses') }}
           </span>
         </div>
 
         <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <span class="text-[10px] text-slate-400 font-semibold uppercase block">Tỷ lệ lấp đầy bình quân</span>
+          <span class="text-[10px] text-slate-400 font-semibold uppercase block">{{ $t('common.averageOccupancyRateLabel') }}</span>
           <span class="text-lg font-black text-blue-600 dark:text-blue-400 mt-1 block">
             {{ Math.round((occupancyStats?.overallOccupancyRate || 0) * 100) }}%
           </span>
           <span class="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">
-            {{ occupancyStats?.rentedRooms || 0 }} / {{ occupancyStats?.totalRooms || 0 }} phòng đang thuê
+            {{ $t('common.occupiedRoomsCount', { rented: occupancyStats?.rentedRooms || 0, total: occupancyStats?.totalRooms || 0 }) }}
           </span>
         </div>
       </div>
@@ -79,9 +79,9 @@
         <div class="lg:col-span-2 p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <div class="flex items-center justify-between">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white">
-              Doanh thu & Chi phí 12 tháng năm {{ selectedYear }}
+              {{ $t('common.annualRevenueAndExpensesChart', { year: selectedYear }) }}
             </h3>
-            <span class="text-xs text-slate-500">Đơn vị: Triệu VNĐ</span>
+            <span class="text-xs text-slate-500">{{ $t('common.currencyMillionVnd') }}</span>
           </div>
           <ClientOnly>
             <RevenueChart
@@ -90,7 +90,7 @@
             />
             <template #fallback>
               <div class="h-72 flex items-center justify-center text-xs text-slate-400">
-                Đang tải biểu đồ...
+                {{ $t('common.loadingChart') }}
               </div>
             </template>
           </ClientOnly>
@@ -99,7 +99,7 @@
         <!-- Occupancy Doughnut Chart -->
         <div class="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h3 class="text-sm font-bold text-slate-900 dark:text-white">
-            Tỷ lệ lấp đầy phòng trọ
+            {{ $t('ownerAnalytics.occupancyRateChartTitle') }}
           </h3>
           <ClientOnly>
             <OccupancyChart
@@ -109,7 +109,7 @@
             />
             <template #fallback>
               <div class="h-64 flex items-center justify-center text-xs text-slate-400">
-                Đang tải biểu đồ...
+                {{ $t('common.loadingChart') }}
               </div>
             </template>
           </ClientOnly>
@@ -119,19 +119,19 @@
       <!-- Table: Occupancy Breakdown by Property -->
       <div class="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
         <h3 class="text-sm font-bold text-slate-900 dark:text-white">
-          Thống kê phòng theo từng Khu trọ
+          {{ $t('ownerAnalytics.propertyBreakdownTitle') }}
         </h3>
 
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
             <thead>
               <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
-                <th class="pb-2 font-semibold">Tên khu trọ</th>
-                <th class="pb-2 font-semibold text-center">Tổng số phòng</th>
-                <th class="pb-2 font-semibold text-center">Đang thuê</th>
-                <th class="pb-2 font-semibold text-center">Đã cọc</th>
-                <th class="pb-2 font-semibold text-center">Phòng trống</th>
-                <th class="pb-2 font-semibold text-right">Tỷ lệ lấp đầy</th>
+                <th class="pb-2 font-semibold">{{ $t('ownerAnalytics.propertyNameHeader') }}</th>
+                <th class="pb-2 font-semibold text-center">{{ $t('ownerAnalytics.totalRoomsHeader') }}</th>
+                <th class="pb-2 font-semibold text-center">{{ $t('ownerAnalytics.occupiedHeader') }}</th>
+                <th class="pb-2 font-semibold text-center">{{ $t('ownerAnalytics.reservedHeader') }}</th>
+                <th class="pb-2 font-semibold text-center">{{ $t('ownerAnalytics.vacantHeader') }}</th>
+                <th class="pb-2 font-semibold text-right">{{ $t('ownerAnalytics.occupancyRateHeader') }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">

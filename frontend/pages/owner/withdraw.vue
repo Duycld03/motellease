@@ -4,15 +4,15 @@
       <div>
         <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('nav.withdrawals') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Quản lý số dư khả dụng và gửi yêu cầu rút tiền về tài khoản ngân hàng của bạn
+          {{ $t('common.ownerWithdrawSubtitle') }}
         </p>
       </div>
       <div class="flex items-center gap-2">
         <BaseButton variant="outline" size="sm" @click="fetchData">
-          🔄 Làm mới
+          🔄 {{ $t('common.refresh') }}
         </BaseButton>
         <BaseButton variant="primary" size="sm" @click="openWithdrawModal">
-          + Tạo yêu cầu rút tiền
+          {{ $t('withdrawals.requestWithdrawalBtn') }}
         </BaseButton>
       </div>
     </div>
@@ -21,15 +21,15 @@
     <div class="p-6 bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-900 dark:to-slate-950 text-white rounded-3xl shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-6">
       <div class="space-y-2">
         <span class="text-xs font-semibold text-slate-300 uppercase tracking-wide block">
-          💰 Số dư khả dụng có thể rút
+          💰 {{ $t('withdrawals.availableBalance') }}
         </span>
         <div class="text-3xl font-black tracking-tight text-emerald-400">
           {{ formatCurrency(summaryStats?.availableBalance || 0) }}
         </div>
         <div class="flex flex-wrap items-center gap-4 text-xs text-slate-400 pt-1">
-          <span>Doanh thu tháng này: <strong class="text-white">{{ formatCurrency(summaryStats?.revenueThisMonth || 0) }}</strong></span>
+          <span>{{ $t('analytics.totalRevenue') }}: <strong class="text-white">{{ formatCurrency(summaryStats?.revenueThisMonth || 0) }}</strong></span>
           <span>·</span>
-          <span>Lợi nhuận tháng này: <strong class="text-emerald-400">{{ formatCurrency(summaryStats?.profitThisMonth || 0) }}</strong></span>
+          <span>{{ $t('analytics.netProfit') }}: <strong class="text-emerald-400">{{ formatCurrency(summaryStats?.profitThisMonth || 0) }}</strong></span>
         </div>
       </div>
 
@@ -39,7 +39,7 @@
         class="shrink-0 !bg-emerald-500 hover:!bg-emerald-600 text-white font-bold shadow-md"
         @click="openWithdrawModal"
       >
-        🏦 Rút tiền về Ngân hàng
+        🏦 {{ $t('withdrawals.requestWithdrawalBtn') }}
       </BaseButton>
     </div>
 
@@ -55,7 +55,7 @@
         ]"
         @click="filterStatus = ''"
       >
-        Tất cả ({{ requests.length }})
+        {{ $t('common.allCount', { count: requests.length }) }}
       </button>
       <button
         v-for="st in ['Pending', 'Accepted', 'Rejected']"
@@ -82,7 +82,7 @@
       <svg class="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
-      <p class="font-medium text-slate-500 dark:text-slate-400">Không có yêu cầu rút tiền nào.</p>
+      <p class="font-medium text-slate-500 dark:text-slate-400">{{ $t('withdrawals.emptyWithdrawRequests') }}</p>
     </div>
 
     <div v-else class="space-y-4">
@@ -102,8 +102,8 @@
               </span>
             </div>
             <p class="text-xs text-slate-600 dark:text-slate-400">
-              Chủ tài khoản: <strong class="text-slate-900 dark:text-white uppercase">{{ r.bankAccountHolder }}</strong>
-              · Tạo lúc: {{ formatRelativeTime(r.createdAt) }}
+              {{ $t('withdrawals.accountHolderLabel') }}: <strong class="text-slate-900 dark:text-white uppercase">{{ r.bankAccountHolder }}</strong>
+              · {{ $t('common.createdAt', { time: formatRelativeTime(r.createdAt) }) }}
             </p>
           </div>
 
@@ -111,12 +111,12 @@
         </div>
 
         <div v-if="r.rejectReason" class="p-3 bg-red-50 dark:bg-red-950/30 rounded-xl text-xs text-red-700 dark:text-red-300">
-          <strong>Lý do từ chối từ Admin:</strong> {{ r.rejectReason }}
+          <strong>{{ $t('common.rejectionReasonPrefix', { reason: r.rejectReason }) }}</strong>
         </div>
 
         <div v-if="r.processedAt" class="text-[11px] text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-          <span>Xử lý bởi: {{ r.processedByFullName || 'Quản trị viên' }}</span>
-          <span>Thời gian xử lý: {{ formatRelativeTime(r.processedAt) }}</span>
+          <span>{{ $t('common.processedBy', { name: r.processedByFullName || $t('roles.Admin') }) }}</span>
+          <span>{{ $t('common.sentAtPrefix', { time: formatRelativeTime(r.processedAt) }) }}</span>
         </div>
       </div>
     </div>
@@ -124,14 +124,14 @@
     <!-- MODAL: Create Withdraw Request -->
     <BaseModal
       v-model="isWithdrawModalOpen"
-      title="Tạo Yêu cầu Rút tiền về Ngân hàng"
+      :title="$t('withdrawals.modalCreateTitle')"
       max-width="md"
     >
       <form @submit.prevent="handleSubmitWithdraw" class="space-y-4">
         <!-- Balance notice -->
         <div class="p-3.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl text-xs space-y-1">
           <div class="flex items-center justify-between">
-            <span class="text-emerald-800 dark:text-emerald-300 font-medium">Số dư khả dụng:</span>
+            <span class="text-emerald-800 dark:text-emerald-300 font-medium">{{ $t('withdrawals.availableBalance') }}</span>
             <span class="font-extrabold text-emerald-700 dark:text-emerald-300 text-sm">
               {{ formatCurrency(summaryStats?.availableBalance || 0) }}
             </span>
@@ -141,7 +141,7 @@
         <!-- Amount -->
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Số tiền muốn rút (VNĐ) <span class="text-red-500">*</span>
+            {{ $t('withdrawals.withdrawAmountLabel') }} <span class="text-red-500">*</span>
           </label>
           <input
             v-model.number="withdrawForm.amount"
@@ -150,7 +150,7 @@
             :max="summaryStats?.availableBalance || 0"
             step="10000"
             class="input-field !text-xs !py-2 font-bold"
-            placeholder="Tối thiểu 50.000 đ"
+            :placeholder="$t('withdrawals.withdrawAmountLabel')"
             required
           />
         </div>
@@ -158,26 +158,26 @@
         <!-- Bank Name -->
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Ngân hàng thụ hưởng <span class="text-red-500">*</span>
+            {{ $t('withdrawals.bankNameLabel') }} <span class="text-red-500">*</span>
           </label>
           <select v-model="withdrawForm.bankName" class="input-field !text-xs !py-2" required>
-            <option value="">-- Chọn ngân hàng --</option>
-            <option value="Vietcombank">Vietcombank - Ngân hàng Ngoại Thương</option>
-            <option value="MBBank">MB Bank - Ngân hàng Quân Đội</option>
-            <option value="Techcombank">Techcombank - Ngân hàng Kỹ Thương</option>
-            <option value="VPBank">VPBank - Ngân hàng Việt Nam Thịnh Vượng</option>
-            <option value="ACB">ACB - Ngân hàng Á Châu</option>
-            <option value="BIDV">BIDV - Ngân hàng Đầu tư & Phát triển</option>
-            <option value="VietinBank">VietinBank - Ngân hàng Công Thương</option>
-            <option value="TPBank">TPBank - Ngân hàng Tiên Phong</option>
-            <option value="Agribank">Agribank - Ngân hàng Nông nghiệp</option>
+            <option value="">-- {{ $t('common.select') }} --</option>
+            <option value="Vietcombank">Vietcombank</option>
+            <option value="MBBank">MB Bank</option>
+            <option value="Techcombank">Techcombank</option>
+            <option value="VPBank">VPBank</option>
+            <option value="ACB">ACB</option>
+            <option value="BIDV">BIDV</option>
+            <option value="VietinBank">VietinBank</option>
+            <option value="TPBank">TPBank</option>
+            <option value="Agribank">Agribank</option>
           </select>
         </div>
 
         <!-- Account Number -->
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Số tài khoản ngân hàng <span class="text-red-500">*</span>
+            {{ $t('withdrawals.bankAccountLabel') }} <span class="text-red-500">*</span>
           </label>
           <input
             v-model="withdrawForm.bankAccountNumber"
@@ -191,7 +191,7 @@
         <!-- Account Holder -->
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Tên chủ tài khoản (Viết hoa không dấu) <span class="text-red-500">*</span>
+            {{ $t('withdrawals.accountHolderLabel') }} <span class="text-red-500">*</span>
           </label>
           <input
             v-model="withdrawForm.bankAccountHolder"
@@ -207,7 +207,7 @@
             {{ $t('common.cancel') }}
           </BaseButton>
           <BaseButton variant="primary" size="sm" type="submit" :loading="isSubmittingWithdraw">
-            Gửi yêu cầu rút tiền
+            {{ $t('withdrawals.confirmWithdraw') }}
           </BaseButton>
         </div>
       </form>
@@ -228,6 +228,7 @@ definePageMeta({
 
 const { get, post } = useApi()
 const { formatCurrency, formatRelativeTime } = useFormat()
+const { t } = useI18n()
 const toast = useToast()
 
 const isLoading = ref(true)
@@ -277,11 +278,11 @@ const openWithdrawModal = () => {
 
 const handleSubmitWithdraw = async () => {
   if (withdrawForm.amount <= 0) {
-    toast.error('Số tiền rút phải lớn hơn 0.')
+    toast.error(t('messages.actionFailed'))
     return
   }
   if (summaryStats.value && withdrawForm.amount > summaryStats.value.availableBalance) {
-    toast.error('Số tiền yêu cầu rút vượt quá số dư khả dụng.')
+    toast.error(t('messages.actionFailed'))
     return
   }
 
@@ -293,11 +294,11 @@ const handleSubmitWithdraw = async () => {
       bankAccountNumber: withdrawForm.bankAccountNumber,
       bankAccountHolder: withdrawForm.bankAccountHolder.toUpperCase(),
     })
-    toast.success('Gửi yêu cầu rút tiền thành công! Admin sẽ xử lý chuyển khoản trong 24h.')
+    toast.success(t('messages.requestWithdrawSuccess'))
     isWithdrawModalOpen.value = false
     await fetchData()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể tạo yêu cầu rút tiền.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isSubmittingWithdraw.value = false
   }

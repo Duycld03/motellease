@@ -24,13 +24,13 @@
           </h4>
           <ul class="space-y-2 text-xs">
             <li>
-              <NuxtLink to="/search" class="hover:text-white transition-colors">{{ $t('nav.search') }}</NuxtLink>
+              <NuxtLinkLocale to="/search" class="hover:text-white transition-colors">{{ $t('nav.search') }}</NuxtLinkLocale>
             </li>
             <li>
-              <NuxtLink to="/auth/login" class="hover:text-white transition-colors">{{ $t('nav.login') }}</NuxtLink>
+              <NuxtLinkLocale to="/auth/login" class="hover:text-white transition-colors">{{ $t('nav.login') }}</NuxtLinkLocale>
             </li>
             <li>
-              <NuxtLink to="/auth/register" class="hover:text-white transition-colors">{{ $t('nav.register') }}</NuxtLink>
+              <NuxtLinkLocale to="/auth/register" class="hover:text-white transition-colors">{{ $t('nav.register') }}</NuxtLinkLocale>
             </li>
           </ul>
         </div>
@@ -42,13 +42,13 @@
           </h4>
           <ul class="space-y-2 text-xs">
             <li>
-              <NuxtLink to="/tenant/dashboard" class="hover:text-white transition-colors">{{ $t('nav.tenantPortal') }}</NuxtLink>
+              <NuxtLinkLocale to="/tenant/dashboard" class="hover:text-white transition-colors">{{ $t('nav.tenantPortal') }}</NuxtLinkLocale>
             </li>
             <li>
-              <NuxtLink to="/owner/dashboard" class="hover:text-white transition-colors">{{ $t('nav.ownerPortal') }}</NuxtLink>
+              <NuxtLinkLocale to="/owner/dashboard" class="hover:text-white transition-colors">{{ $t('nav.ownerPortal') }}</NuxtLinkLocale>
             </li>
             <li>
-              <NuxtLink to="/staff/dashboard" class="hover:text-white transition-colors">{{ $t('nav.staffPortal') }}</NuxtLink>
+              <NuxtLinkLocale to="/staff/dashboard" class="hover:text-white transition-colors">{{ $t('nav.staffPortal') }}</NuxtLinkLocale>
             </li>
           </ul>
         </div>

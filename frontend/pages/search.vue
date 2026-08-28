@@ -19,13 +19,13 @@
 
         <!-- Province / District -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Tỉnh / Thành phố</label>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{{ $t('location.province') }}</label>
           <select
             v-model="filters.province"
             class="input-field !text-xs !py-2"
             @change="onProvinceChange"
           >
-            <option value="">Tất cả Tỉnh/Thành</option>
+            <option value="">{{ $t('search.allProvinces') }}</option>
             <option v-for="p in provinces" :key="p.code" :value="p.name">
               {{ p.fullName || p.name }}
             </option>
@@ -34,14 +34,14 @@
 
         <!-- District -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Quận / Huyện</label>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{{ $t('location.district') }}</label>
           <select
             v-model="filters.district"
             :disabled="!filters.province || districts.length === 0"
             class="input-field !text-xs !py-2"
             @change="fetchResults"
           >
-            <option value="">Tất cả Quận/Huyện</option>
+            <option value="">{{ $t('search.allDistricts') }}</option>
             <option v-for="d in districts" :key="d.code" :value="d.name">
               {{ d.fullName || d.name }}
             </option>
@@ -50,12 +50,12 @@
 
         <!-- Property Type -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Mô hình nhà trọ</label>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{{ $t('search.propertyType') }}</label>
           <select v-model="filters.type" class="input-field !text-xs !py-2" @change="fetchResults">
-            <option value="">Tất cả mô hình</option>
-            <option value="Traditional">Phòng trọ truyền thống</option>
-            <option value="MiniHouse">Căn hộ mini / CC mini</option>
-            <option value="DormStyle">Ký túc xá / Sleepbox</option>
+            <option value="">{{ $t('search.allTypes') }}</option>
+            <option value="Traditional">{{ $t('enums.BoardingHouseType.Traditional') }}</option>
+            <option value="MiniHouse">{{ $t('enums.BoardingHouseType.MiniHouse') }}</option>
+            <option value="DormStyle">{{ $t('enums.BoardingHouseType.DormStyle') }}</option>
           </select>
         </div>
       </div>
@@ -64,30 +64,30 @@
       <div class="pt-3 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
         <!-- Price Range Select -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Khoảng giá thuê</label>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{{ $t('search.priceRange') }}</label>
           <select v-model="selectedPriceRange" class="input-field !text-xs !py-2 h-[38px]" @change="onPriceRangeChange">
-            <option value="all">Tất cả mức giá</option>
-            <option value="under_2m">Dưới 2 triệu</option>
-            <option value="2m_4m">2 triệu - 4 triệu</option>
-            <option value="4m_7m">4 triệu - 7 triệu</option>
-            <option value="above_7m">Trên 7 triệu</option>
+            <option value="all">{{ $t('search.allPrices') }}</option>
+            <option value="under_2m">{{ $t('search.under2m') }}</option>
+            <option value="2m_4m">{{ $t('search.between2m4m') }}</option>
+            <option value="4m_7m">{{ $t('search.between4m7m') }}</option>
+            <option value="above_7m">{{ $t('search.above7m') }}</option>
           </select>
         </div>
 
         <!-- Sort -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Sắp xếp theo</label>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{{ $t('search.sortBy') }}</label>
           <select v-model="filters.sort" class="input-field !text-xs !py-2 h-[38px]" @change="fetchResults">
-            <option value="newest">Mới nhất</option>
-            <option value="rating">Đánh giá cao nhất</option>
-            <option value="price_asc">Giá tăng dần</option>
-            <option value="price_desc">Giá giảm dần</option>
+            <option value="newest">{{ $t('search.newest') }}</option>
+            <option value="rating">{{ $t('search.topRated') }}</option>
+            <option value="price_asc">{{ $t('search.priceAsc') }}</option>
+            <option value="price_desc">{{ $t('search.priceDesc') }}</option>
           </select>
         </div>
 
         <!-- Geolocation "Near Me" button -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Vị trí của bạn</label>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{{ $t('search.yourLocation') }}</label>
           <button
             type="button"
             :class="[
@@ -100,13 +100,13 @@
             @click="toggleNearMe"
           >
             <span>📍</span>
-            <span>{{ isLocating ? 'Đang định vị...' : isNearbyActive ? 'Đang tìm gần tôi (5km)' : 'Tìm trọ gần tôi' }}</span>
+            <span>{{ isLocating ? $t('search.locating') : isNearbyActive ? $t('search.findingNearby') : $t('search.findNearMe') }}</span>
           </button>
         </div>
 
         <!-- Search Action Buttons -->
         <div>
-          <label class="block text-xs font-semibold text-transparent select-none mb-1">Thao tác</label>
+          <label class="block text-xs font-semibold text-transparent select-none mb-1">{{ $t('common.actions') }}</label>
           <div class="flex items-center gap-2">
             <BaseButton variant="primary" size="sm" class="flex-1 h-[38px] !text-xs !py-0" @click="fetchResults">
               {{ $t('common.search') }}
@@ -120,7 +120,7 @@
 
       <!-- Facilities Pills Filter -->
       <div v-if="facilitiesList.length > 0" class="pt-2">
-        <label class="block text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-1.5">Lọc theo tiện ích:</label>
+        <label class="block text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-1.5">{{ $t('search.facilitiesFilter') }}:</label>
         <div class="flex flex-wrap gap-1.5">
           <button
             v-for="fac in facilitiesList"
@@ -143,8 +143,8 @@
     <!-- Header bar: Results count & Map/List switch -->
     <div class="flex items-center justify-between">
       <h1 class="text-lg font-bold text-slate-900 dark:text-white">
-        Kết quả tìm kiếm
-        <span class="text-xs font-normal text-slate-500 dark:text-slate-400 ml-2">({{ total }} khu trọ)</span>
+        {{ $t('search.resultsHeading') }}
+        <span class="text-xs font-normal text-slate-500 dark:text-slate-400 ml-2">{{ $t('search.totalHousesFound', { count: total }) }}</span>
       </h1>
 
       <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
@@ -159,7 +159,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
           </svg>
-          Danh sách
+          {{ $t('search.viewList') }}
         </button>
         <button
           type="button"
@@ -172,7 +172,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
           </svg>
-          Bản đồ
+          {{ $t('search.viewMap') }}
         </button>
       </div>
     </div>
@@ -186,11 +186,11 @@
           :longitude="userLon || 105.8542"
           :zoom="14"
           @bounds-changed="onMapBoundsChanged"
-          @click-marker="(id) => navigateTo(`/boarding-houses/${id}`)"
+          @click-marker="(id) => navigateTo(localePath(`/boarding-houses/${id}`))"
         />
         <template #fallback>
           <div class="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs text-slate-400">
-            Đang tải bản đồ...
+            {{ $t('location.loadingMap') }}
           </div>
         </template>
       </ClientOnly>
@@ -209,7 +209,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
         <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">{{ $t('common.noData') }}</p>
-        <p class="text-xs text-slate-400 mt-1">Không tìm thấy khu trọ nào phù hợp với bộ lọc</p>
+        <p class="text-xs text-slate-400 mt-1">{{ $t('search.noMatchingFilter') }}</p>
       </div>
 
       <!-- Cards Grid -->
@@ -218,7 +218,7 @@
           v-for="house in items"
           :key="house.id"
           class="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between cursor-pointer"
-          @click="navigateTo(`/boarding-houses/${house.id}`)"
+          @click="navigateTo(localePath(`/boarding-houses/${house.id}`))"
         >
           <div>
             <!-- Image & Badges -->
@@ -248,7 +248,7 @@
                     ? 'bg-red-500 text-white hover:bg-red-600'
                     : 'bg-white/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-300 hover:text-red-500',
                 ]"
-                title="Lưu tin yêu thích"
+                :title="$t('search.saveFavorite')"
                 @click.stop="toggleBookmark(house.id)"
               >
                 <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -269,7 +269,7 @@
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-500',
                   ]"
                 >
-                  {{ house.availableRoomsCount > 0 ? `Còn ${house.availableRoomsCount} phòng trống` : 'Hết phòng' }}
+                  {{ house.availableRoomsCount > 0 ? $t('property.availableRoomsBadge', { count: house.availableRoomsCount }) : $t('property.outOfRooms') }}
                 </span>
 
                 <!-- Rating -->
@@ -310,13 +310,13 @@
           <!-- Price & CTA -->
           <div class="px-5 pb-5 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <div>
-              <span class="text-[10px] text-slate-400 block">Giá từ</span>
+              <span class="text-[10px] text-slate-400 block">{{ $t('search.priceFrom') }}</span>
               <span class="text-xs font-bold text-primary-600 dark:text-primary-400">
-                {{ house.minPrice ? formatCurrency(house.minPrice) : 'Liên hệ' }}
+                {{ house.minPrice ? formatCurrency(house.minPrice) : $t('property.contactPrice') }}
                 <span v-if="house.maxPrice && house.maxPrice !== house.minPrice" class="text-[11px] text-slate-400 font-normal">
                   - {{ formatCurrency(house.maxPrice) }}
                 </span>
-                /tháng
+                {{ $t('property.perMonth') }}
               </span>
             </div>
 
@@ -348,6 +348,8 @@ const route = useRoute()
 const { get, post, delete: deleteApi } = useApi()
 const { formatCurrency } = useFormat()
 const { isAuthenticated } = useAuth()
+const { t } = useI18n()
+const localePath = useLocalePath()
 const toast = useToast()
 
 const viewMode = ref<'list' | 'map'>('list')
@@ -495,7 +497,7 @@ const toggleNearMe = () => {
   }
 
   if (!navigator.geolocation) {
-    toast.error('Trình duyệt không hỗ trợ định vị GPS.')
+    toast.error(t('messages.geoNotSupported'))
     return
   }
 
@@ -507,11 +509,11 @@ const toggleNearMe = () => {
       isNearbyActive.value = true
       isLocating.value = false
       fetchResults()
-      toast.success('Đã tìm thấy vị trí của bạn!')
+      toast.success(t('messages.geoFoundSuccess'))
     },
     () => {
       isLocating.value = false
-      toast.error('Không thể truy cập vị trí hiện tại của bạn.')
+      toast.error(t('messages.geoAccessFailed'))
     }
   )
 }
@@ -559,14 +561,14 @@ const toggleBookmark = async (houseId: string) => {
     if (savedIds.value.has(houseId)) {
       await deleteApi(`/me/saved-listings/${houseId}`)
       savedIds.value.delete(houseId)
-      toast.success('Đã bỏ lưu tin!')
+      toast.success(t('messages.unsaveListingSuccess'))
     } else {
       await post('/me/saved-listings', { boardingHouseId: houseId })
       savedIds.value.add(houseId)
-      toast.success('Đã lưu tin trọ vào mục Yêu thích!')
+      toast.success(t('messages.saveListingSuccess'))
     }
   } catch (err: any) {
-    toast.error(err.message || 'Không thể lưu tin.')
+    toast.error(err.message || t('messages.actionFailed'))
   }
 }
 

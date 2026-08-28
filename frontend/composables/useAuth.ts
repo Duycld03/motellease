@@ -50,7 +50,8 @@ export const useAuth = () => {
     toast.success(t('auth.loginSuccess'))
 
     const target = getDefaultRouteForRole(data.user.role)
-    await navigateTo(target)
+    const localePath = useLocalePath()
+    await navigateTo(localePath(target))
     return data
   }
 
@@ -66,7 +67,8 @@ export const useAuth = () => {
     toast.success(t('auth.loginSuccess'))
 
     const target = getDefaultRouteForRole(data.user.role)
-    await navigateTo(target)
+    const localePath = useLocalePath()
+    await navigateTo(localePath(target))
     return data
   }
 
@@ -113,7 +115,8 @@ export const useAuth = () => {
     toast.success(t('auth.registerSuccess'))
 
     const target = getDefaultRouteForRole(data.user.role)
-    await navigateTo(target)
+    const localePath = useLocalePath()
+    await navigateTo(localePath(target))
     return data
   }
 

@@ -2,17 +2,17 @@
   <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-xl font-bold text-slate-900 dark:text-white">Quản lý Tài khoản Người dùng</h1>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('admin.usersTitle') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Theo dõi toàn bộ tài khoản người dùng trên hệ thống: Khách thuê, Chủ trọ, Nhân viên và Quản trị viên
+          {{ $t('admin.usersSubtitle') }}
         </p>
       </div>
       <div class="flex items-center gap-2">
         <BaseButton variant="outline" size="sm" @click="fetchAccounts">
-          🔄 Làm mới
+          🔄 {{ $t('common.refresh') }}
         </BaseButton>
         <BaseButton variant="primary" size="sm" @click="openCreateModal">
-          + Thêm Quản trị viên
+          {{ $t('common.createAdminAccountBtn') }}
         </BaseButton>
       </div>
     </div>
@@ -25,7 +25,7 @@
           v-model="searchQuery"
           type="text"
           class="input-field !text-xs !py-1.5"
-          placeholder="🔍 Tìm theo tên, email, SĐT..."
+          :placeholder="$t('admin.searchUsersPlaceholder')"
           @input="debounceFetch"
         />
       </div>
@@ -33,17 +33,17 @@
       <!-- Filters -->
       <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         <select v-model="filterRole" class="input-field !text-xs !py-1.5 w-36" @change="fetchAccounts">
-          <option value="">Tất cả vai trò</option>
-          <option value="Tenant">Khách thuê (Tenant)</option>
-          <option value="Owner">Chủ trọ (Owner)</option>
-          <option value="Staff">Nhân viên (Staff)</option>
-          <option value="Admin">Quản trị viên (Admin)</option>
+          <option value="">{{ $t('common.all') }}</option>
+          <option value="Tenant">{{ $t('enums.UserRole.Tenant') }}</option>
+          <option value="Owner">{{ $t('enums.UserRole.Owner') }}</option>
+          <option value="Staff">{{ $t('enums.UserRole.Staff') }}</option>
+          <option value="Admin">{{ $t('enums.UserRole.Admin') }}</option>
         </select>
 
         <select v-model="filterLock" class="input-field !text-xs !py-1.5 w-36" @change="fetchAccounts">
-          <option :value="null">Tất cả trạng thái</option>
-          <option :value="false">Đang hoạt động</option>
-          <option :value="true">Đã khóa</option>
+          <option :value="null">{{ $t('common.all') }}</option>
+          <option :value="false">{{ $t('common.statusActive') }}</option>
+          <option :value="true">{{ $t('common.statusLocked') }}</option>
         </select>
       </div>
     </div>
@@ -54,19 +54,19 @@
     </div>
 
     <div v-else-if="accounts.length === 0" class="p-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
-      <p class="font-medium text-slate-500 dark:text-slate-400">Không tìm thấy tài khoản nào phù hợp.</p>
+      <p class="font-medium text-slate-500 dark:text-slate-400">{{ $t('common.noData') }}</p>
     </div>
 
     <div v-else class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-x-auto">
       <table class="w-full text-left text-xs">
         <thead>
           <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
-            <th class="pb-3 font-semibold">Người dùng</th>
-            <th class="pb-3 font-semibold">Tên đăng nhập / SĐT</th>
-            <th class="pb-3 font-semibold">Vai trò</th>
-            <th class="pb-3 font-semibold">Trạng thái</th>
-            <th class="pb-3 font-semibold">Ngày tạo</th>
-            <th class="pb-3 font-semibold text-right">Thao tác</th>
+            <th class="pb-3 font-semibold">{{ $t('admin.colUser') }}</th>
+            <th class="pb-3 font-semibold">{{ $t('auth.phoneNumber') }}</th>
+            <th class="pb-3 font-semibold">{{ $t('admin.colRole') }}</th>
+            <th class="pb-3 font-semibold">{{ $t('admin.colStatus') }}</th>
+            <th class="pb-3 font-semibold">{{ $t('admin.colJoinedDate') }}</th>
+            <th class="pb-3 font-semibold text-right">{{ $t('admin.colActions') }}</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -88,7 +88,7 @@
             </td>
             <td class="py-3 text-slate-600 dark:text-slate-400">
               <div>@{{ acc.username }}</div>
-              <div class="text-[11px] text-slate-400">{{ acc.phoneNumber || 'Chưa cập nhật SĐT' }}</div>
+              <div class="text-[11px] text-slate-400">{{ acc.phoneNumber || $t('common.noPhoneProvided') }}</div>
             </td>
             <td class="py-3">
               <span
@@ -97,7 +97,7 @@
                   getRoleBadgeClass(acc.role),
                 ]"
               >
-                {{ acc.role }}
+                {{ $t(`enums.UserRole.${acc.role}`) }}
               </span>
             </td>
             <td class="py-3">
@@ -109,7 +109,7 @@
                     : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300',
                 ]"
               >
-                {{ acc.isLocked ? 'Đã khóa' : 'Hoạt động' }}
+                {{ acc.isLocked ? $t('common.statusLocked') : $t('common.statusActive') }}
               </span>
             </td>
             <td class="py-3 text-slate-500 dark:text-slate-400">
@@ -123,7 +123,7 @@
                 :class="acc.isLocked ? 'text-emerald-600' : 'text-red-600 hover:text-red-700'"
                 @click="handleToggleLock(acc)"
               >
-                {{ acc.isLocked ? 'Mở khóa' : 'Khóa' }}
+                {{ acc.isLocked ? $t('common.unlockAction') : $t('common.lockAction') }}
               </BaseButton>
             </td>
           </tr>
@@ -134,14 +134,14 @@
     <!-- MODAL: Create Admin Account -->
     <BaseModal
       v-model="isCreateModalOpen"
-      title="Tạo Tài khoản Quản trị viên (Admin)"
+      :title="$t('common.createAdminAccountModalTitle')"
       max-width="md"
     >
       <form @submit.prevent="handleSubmitCreateAdmin" class="space-y-4">
         <BaseInput
           v-model="createForm.fullName"
-          label="Họ và tên"
-          placeholder="VD: Quản trị viên 1"
+          :label="$t('auth.fullName')"
+          :placeholder="$t('auth.fullNamePlaceholder')"
           required
         />
         <div class="grid grid-cols-2 gap-3">
@@ -153,7 +153,7 @@
           />
           <BaseInput
             v-model="createForm.phoneNumber"
-            label="Số điện thoại"
+            :label="$t('auth.phoneNumber')"
             placeholder="0912345678"
           />
         </div>
@@ -166,9 +166,9 @@
         />
         <BaseInput
           v-model="createForm.password"
-          label="Mật khẩu"
+          :label="$t('auth.password')"
           type="password"
-          placeholder="Tối thiểu 6 ký tự"
+          :placeholder="$t('common.adminMinPasswordLength')"
           required
         />
 
@@ -177,7 +177,7 @@
             {{ $t('common.cancel') }}
           </BaseButton>
           <BaseButton variant="primary" size="sm" type="submit" :loading="isSubmittingCreate">
-            Tạo tài khoản Admin
+            {{ $t('common.createAdminSubmit') }}
           </BaseButton>
         </div>
       </form>
@@ -203,6 +203,7 @@ definePageMeta({
 
 const { get, post } = useApi()
 const { formatRelativeTime } = useFormat()
+const { t } = useI18n()
 const toast = useToast()
 
 const isLoading = ref(true)
@@ -252,16 +253,15 @@ const fetchAccounts = async () => {
 // Lock / Unlock
 const handleToggleLock = async (acc: AdminAccountSummaryResponse) => {
   const action = acc.isLocked ? 'unlock' : 'lock'
-  const actionName = acc.isLocked ? 'mở khóa' : 'khóa'
-  if (!confirm(`Bạn có chắc chắn muốn ${actionName} tài khoản "${acc.fullName}"?`)) return
+  if (!confirm(t('messages.confirmAction'))) return
   try {
     await post(`/admin/accounts/${acc.id}/${action}`, {
-      reason: acc.isLocked ? undefined : 'Khóa bởi Quản trị viên',
+      reason: acc.isLocked ? undefined : t('admin.lockedByAdminReason'),
     })
-    toast.success(`Đã ${actionName} tài khoản thành công!`)
+    toast.success(t('messages.toggleUserLockSuccess'))
     await fetchAccounts()
   } catch (err: any) {
-    toast.error(err.message || `Không thể ${actionName} tài khoản.`)
+    toast.error(err.message || t('messages.actionFailed'))
   }
 }
 
@@ -299,11 +299,11 @@ const handleSubmitCreateAdmin = async () => {
       gender: createForm.gender,
       role: 'Admin',
     })
-    toast.success('Tạo tài khoản Quản trị viên thành công!')
+    toast.success(t('messages.createAdminSuccess'))
     isCreateModalOpen.value = false
     await fetchAccounts()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể tạo tài khoản admin.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isSubmittingCreate.value = false
   }

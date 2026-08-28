@@ -2,10 +2,12 @@ import { UserRole } from '~/types/enums'
 
 export default defineNuxtRouteMiddleware((to) => {
   const authStore = useAuthStore()
+  const localePath = useLocalePath()
   const path = to.path
+  const normalizedPath = path.replace(/^\/(?:en|vi)(?=\/|$)/, '') || '/'
 
   // Check if page is guest only (e.g. Login, Register)
-  const isGuestOnly = to.meta.guestOnly || path.startsWith('/auth/login') || path.startsWith('/auth/register')
+  const isGuestOnly = to.meta.guestOnly || normalizedPath.startsWith('/auth/login') || normalizedPath.startsWith('/auth/register')
 
   if (isGuestOnly && authStore.isAuthenticated) {
     const defaultRoute = authStore.role === UserRole.Tenant ? '/tenant/dashboard'
@@ -13,18 +15,18 @@ export default defineNuxtRouteMiddleware((to) => {
       : authStore.role === UserRole.Staff ? '/staff/dashboard'
       : authStore.role === UserRole.Admin ? '/admin/dashboard'
       : '/'
-    return navigateTo(defaultRoute)
+    return navigateTo(localePath(defaultRoute))
   }
 
   // Determine if path requires role protection
   let requiredRole: UserRole | null = null
-  if (path.startsWith('/admin')) {
+  if (normalizedPath.startsWith('/admin')) {
     requiredRole = UserRole.Admin
-  } else if (path.startsWith('/owner')) {
+  } else if (normalizedPath.startsWith('/owner')) {
     requiredRole = UserRole.Owner
-  } else if (path.startsWith('/staff')) {
+  } else if (normalizedPath.startsWith('/staff')) {
     requiredRole = UserRole.Staff
-  } else if (path.startsWith('/tenant')) {
+  } else if (normalizedPath.startsWith('/tenant')) {
     requiredRole = UserRole.Tenant
   }
 
@@ -33,10 +35,10 @@ export default defineNuxtRouteMiddleware((to) => {
   const allowedRoles = (to.meta.roles as UserRole[]) || (requiredRole ? [requiredRole] : null)
 
   if (requiresAuth && !authStore.isAuthenticated) {
-    return navigateTo({
+    return navigateTo(localePath({
       path: '/auth/login',
       query: { redirect: to.fullPath },
-    })
+    }))
   }
 
   if (allowedRoles && allowedRoles.length > 0 && authStore.user) {
@@ -47,7 +49,8 @@ export default defineNuxtRouteMiddleware((to) => {
         : authStore.role === UserRole.Staff ? '/staff/dashboard'
         : authStore.role === UserRole.Admin ? '/admin/dashboard'
         : '/'
-      return navigateTo(defaultRoute)
+      return navigateTo(localePath(defaultRoute))
     }
   }
 })
+

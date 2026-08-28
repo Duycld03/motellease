@@ -4,15 +4,15 @@
       <div>
         <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('nav.staff') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Tạo tài khoản nhân viên, phân công quyền quản lý theo khu trọ và quản lý trạng thái tài khoản
+          {{ $t('common.ownerStaffSubtitle') }}
         </p>
       </div>
       <div class="flex items-center gap-2">
         <BaseButton variant="outline" size="sm" @click="fetchStaffList">
-          🔄 Làm mới
+          🔄 {{ $t('common.refresh') }}
         </BaseButton>
         <BaseButton variant="primary" size="sm" @click="openCreateStaffModal">
-          + Thêm nhân viên
+          {{ $t('staff.addNewStaffBtn') }}
         </BaseButton>
       </div>
     </div>
@@ -26,7 +26,7 @@
       <svg class="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
-      <p class="font-medium text-slate-500 dark:text-slate-400">Chưa có nhân viên nào trong hệ thống.</p>
+      <p class="font-medium text-slate-500 dark:text-slate-400">{{ $t('staff.emptyStaffList') }}</p>
     </div>
 
     <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -52,7 +52,7 @@
                       : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300',
                   ]"
                 >
-                  {{ s.isLocked ? 'Đã khóa' : 'Đang hoạt động' }}
+                  {{ s.isLocked ? $t('common.statusLocked') : $t('common.statusActive') }}
                 </span>
               </div>
               <p class="text-xs text-slate-500 dark:text-slate-400">@{{ s.username }} · {{ s.email }}</p>
@@ -62,10 +62,10 @@
 
         <!-- Info Grid -->
         <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800">
-          <div>📞 SĐT: <strong class="text-slate-900 dark:text-white">{{ s.phoneNumber || 'Chưa cập nhật' }}</strong></div>
-          <div>📅 Ngày vào làm: <strong class="text-slate-900 dark:text-white">{{ s.hireDate }}</strong></div>
+          <div>📞 {{ $t('auth.phoneNumber') }}: <strong class="text-slate-900 dark:text-white">{{ s.phoneNumber || $t('common.noPhoneProvided') }}</strong></div>
+          <div>📅 {{ $t('admin.colJoinedDate') }}: <strong class="text-slate-900 dark:text-white">{{ s.hireDate }}</strong></div>
           <div class="col-span-2 text-primary-600 dark:text-primary-400 font-semibold">
-            🏢 Đang quản lý: {{ s.activeAssignmentsCount }} khu trọ
+            🏢 {{ $t('staff.assignedHouses') }} {{ s.activeAssignmentsCount }}
           </div>
         </div>
 
@@ -76,7 +76,7 @@
             size="sm"
             @click="openAssignmentModal(s)"
           >
-            🏢 Phân công khu trọ
+            {{ $t('staff.assignHouseModalTitle') }}
           </BaseButton>
 
           <BaseButton
@@ -85,7 +85,7 @@
             :class="s.isLocked ? 'text-emerald-600' : 'text-red-600 hover:text-red-700'"
             @click="handleToggleLockStaff(s)"
           >
-            {{ s.isLocked ? 'Mở khóa' : 'Khóa tài khoản' }}
+            {{ s.isLocked ? $t('common.unlockAction') : $t('common.lockAction') }}
           </BaseButton>
         </div>
       </div>
@@ -94,34 +94,34 @@
     <!-- MODAL 1: Create Staff -->
     <BaseModal
       v-model="isCreateModalOpen"
-      title="Tạo Tài khoản Nhân viên mới"
+      :title="$t('staff.createStaffModalTitle')"
       max-width="md"
     >
       <form @submit.prevent="handleSubmitCreateStaff" class="space-y-4">
         <BaseInput
           v-model="createForm.fullName"
-          label="Họ và tên nhân viên"
-          placeholder="VD: Trần Văn C"
+          :label="$t('staff.staffFullName')"
+          :placeholder="$t('auth.fullNamePlaceholder')"
           required
         />
 
         <div class="grid grid-cols-2 gap-3">
           <BaseInput
             v-model="createForm.username"
-            label="Tên đăng nhập (Username)"
+            :label="$t('auth.email')"
             placeholder="nhanvien_01"
             required
           />
           <BaseInput
             v-model="createForm.phoneNumber"
-            label="Số điện thoại"
+            :label="$t('staff.staffPhone')"
             placeholder="0912345678"
           />
         </div>
 
         <BaseInput
           v-model="createForm.email"
-          label="Email đăng nhập"
+          :label="$t('staff.staffEmail')"
           type="email"
           placeholder="staff@example.com"
           required
@@ -129,23 +129,23 @@
 
         <BaseInput
           v-model="createForm.password"
-          label="Mật khẩu khởi tạo"
+          :label="$t('staff.staffPassword')"
           type="password"
-          placeholder="Tối thiểu 6 ký tự"
+          :placeholder="$t('common.adminMinPasswordLength')"
           required
         />
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Giới tính</label>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{{ $t('auth.gender') }}</label>
             <select v-model="createForm.gender" class="input-field !text-xs !py-2">
-              <option value="Male">Nam</option>
-              <option value="Female">Nữ</option>
-              <option value="Other">Khác</option>
+              <option value="Male">{{ $t('enums.Gender.Male') }}</option>
+              <option value="Female">{{ $t('enums.Gender.Female') }}</option>
+              <option value="Other">{{ $t('enums.Gender.Other') }}</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Ngày vào làm</label>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{{ $t('admin.colJoinedDate') }}</label>
             <input
               v-model="createForm.hireDate"
               type="date"
@@ -160,7 +160,7 @@
             {{ $t('common.cancel') }}
           </BaseButton>
           <BaseButton variant="primary" size="sm" type="submit" :loading="isSubmittingCreate">
-            Tạo tài khoản nhân viên
+            {{ $t('staff.createStaff') }}
           </BaseButton>
         </div>
       </form>
@@ -169,18 +169,18 @@
     <!-- MODAL 2: Manage Property Assignments -->
     <BaseModal
       v-model="isAssignmentModalOpen"
-      :title="`Phân công Quản lý Khu trọ - ${selectedStaff?.fullName}`"
+      :title="$t('staff.assignHouseModalTitle')"
       max-width="lg"
     >
       <div v-if="selectedStaff" class="space-y-5">
         <!-- Add new assignment section -->
         <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
           <span class="text-xs font-bold text-slate-900 dark:text-white block">
-            + Gán quyền quản lý thêm khu trọ:
+            {{ $t('staff.selectHouseToAssign') }}:
           </span>
           <div class="flex items-center gap-3">
             <select v-model="selectedHouseToAssign" class="input-field !text-xs !py-2 flex-1">
-              <option value="">-- Chọn khu trọ cần phân công --</option>
+              <option value="">-- {{ $t('common.select') }} --</option>
               <option
                 v-for="h in availableHousesToAssign"
                 :key="h.id"
@@ -196,7 +196,7 @@
               :loading="isAssigning"
               @click="handleAssignHouse"
             >
-              Phân công
+              {{ $t('staff.confirmAssign') }}
             </BaseButton>
           </div>
         </div>
@@ -204,11 +204,11 @@
         <!-- Currently assigned houses list -->
         <div class="space-y-2">
           <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
-            Các khu trọ đang quản lý ({{ staffAssignments.length }})
+            {{ $t('staff.assignedHouses') }} ({{ staffAssignments.length }})
           </h4>
 
           <div v-if="staffAssignments.length === 0" class="p-6 bg-slate-50 dark:bg-slate-800/40 rounded-xl text-center text-xs text-slate-400">
-            Nhân viên này chưa được phân công khu trọ nào.
+            {{ $t('common.noData') }}
           </div>
 
           <div v-else class="space-y-2">
@@ -219,7 +219,7 @@
             >
               <div>
                 <span class="font-bold text-slate-900 dark:text-white block">{{ assign.boardingHouseName }}</span>
-                <span class="text-[10px] text-slate-400">Phân công lúc: {{ formatRelativeTime(assign.assignedAt) }}</span>
+                <span class="text-[10px] text-slate-400">{{ $t('common.createdAt', { time: formatRelativeTime(assign.assignedAt) }) }}</span>
               </div>
 
               <BaseButton
@@ -228,7 +228,7 @@
                 class="text-red-500 hover:text-red-700 !text-xs !py-1"
                 @click="handleUnassignHouse(assign)"
               >
-                Gỡ phân công
+                {{ $t('staff.unassignBtn') }}
               </BaseButton>
             </div>
           </div>
@@ -236,7 +236,7 @@
 
         <div class="flex justify-end pt-3 border-t border-slate-100 dark:border-slate-800">
           <BaseButton variant="outline" size="sm" @click="isAssignmentModalOpen = false">
-            Đóng
+            {{ $t('common.close') }}
           </BaseButton>
         </div>
       </div>
@@ -264,6 +264,7 @@ definePageMeta({
 
 const { get, post, delete: deleteApi } = useApi()
 const { formatRelativeTime } = useFormat()
+const { t } = useI18n()
 const toast = useToast()
 
 const isLoading = ref(true)
@@ -322,11 +323,11 @@ const handleSubmitCreateStaff = async () => {
       gender: createForm.gender,
       hireDate: createForm.hireDate,
     })
-    toast.success('Tạo tài khoản nhân viên thành công!')
+    toast.success(t('messages.createStaffSuccess'))
     isCreateModalOpen.value = false
     await fetchStaffList()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể tạo nhân viên.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isSubmittingCreate.value = false
   }
@@ -334,14 +335,13 @@ const handleSubmitCreateStaff = async () => {
 
 // Lock staff
 const handleToggleLockStaff = async (s: StaffSummaryResponse) => {
-  const action = s.isLocked ? 'Mở khóa' : 'Khóa'
-  if (!confirm(`Bạn có chắc chắn muốn ${action} tài khoản nhân viên "${s.fullName}"?`)) return
+  if (!confirm(t('messages.confirmAction'))) return
   try {
     await deleteApi(`/my/staff/${s.id}`)
-    toast.success(`Đã ${action} tài khoản nhân viên.`)
+    toast.success(t('messages.toggleStaffLockSuccess'))
     await fetchStaffList()
   } catch (err: any) {
-    toast.error(err.message || `Không thể ${action} tài khoản.`)
+    toast.error(err.message || t('messages.actionFailed'))
   }
 }
 
@@ -378,7 +378,7 @@ const handleAssignHouse = async () => {
     await post(`/my/boarding-houses/${selectedHouseToAssign.value}/staff`, {
       staffUserId: selectedStaff.value.id,
     })
-    toast.success('Phân công khu trọ thành công!')
+    toast.success(t('messages.assignStaffSuccess'))
     selectedHouseToAssign.value = ''
 
     // Refresh assignments
@@ -386,24 +386,24 @@ const handleAssignHouse = async () => {
     staffAssignments.value = (detail.assignments as StaffAssignmentResponse[]) || []
     await fetchStaffList()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể phân công khu trọ.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isAssigning.value = false
   }
 }
 
 const handleUnassignHouse = async (assign: StaffAssignmentResponse) => {
-  if (!confirm(`Gỡ quyền quản lý khu trọ "${assign.boardingHouseName}" của nhân viên này?`)) return
+  if (!confirm(t('messages.confirmAction'))) return
   try {
     await deleteApi(`/my/boarding-houses/${assign.boardingHouseId}/staff/${assign.staffUserId}`)
-    toast.success('Đã gỡ quyền quản lý.')
+    toast.success(t('messages.unassignStaffSuccess'))
     if (selectedStaff.value) {
       const detail = await get<StaffDetailResponse>(`/my/staff/${selectedStaff.value.id}`)
       staffAssignments.value = (detail.assignments as StaffAssignmentResponse[]) || []
     }
     await fetchStaffList()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể gỡ phân công.')
+    toast.error(err.message || t('messages.actionFailed'))
   }
 }
 

@@ -3,16 +3,16 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
-          Tổng quan Quản trị viên (Admin)
+          {{ $t('nav.dashboard') }}
         </h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Theo dõi toàn bộ nền tảng MotelLease: người dùng, bài đăng khu trọ, duyệt rút tiền và báo cáo vi phạm
+          {{ $t('admin.auditLogsSubtitle') }}
         </p>
       </div>
 
       <div class="flex items-center gap-3">
         <BaseButton variant="outline" size="sm" @click="fetchAdminStats">
-          🔄 Làm mới
+          🔄 {{ $t('common.refresh') }}
         </BaseButton>
       </div>
     </div>
@@ -24,9 +24,9 @@
           👥
         </div>
         <div>
-          <span class="text-xs text-slate-500 dark:text-slate-400 block">Tổng người dùng</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 block">{{ $t('admin.kpiTotalUsers') }}</span>
           <span class="text-lg font-bold text-slate-900 dark:text-white mt-0.5 block">
-            {{ stats?.totalUsers ?? 0 }} tài khoản
+            {{ $t('common.accountsCount', { count: stats?.totalUsers ?? 0 }) }}
           </span>
         </div>
       </BaseCard>
@@ -36,9 +36,9 @@
           🏢
         </div>
         <div>
-          <span class="text-xs text-slate-500 dark:text-slate-400 block">Khu trọ & Phòng</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 block">{{ $t('admin.kpiBoardingHouses') }}</span>
           <span class="text-lg font-bold text-slate-900 dark:text-white mt-0.5 block">
-            {{ stats?.totalBoardingHouses ?? 0 }} khu ({{ stats?.totalRooms ?? 0 }} phòng)
+            {{ $t('common.housesAndRoomsCount', { houses: stats?.totalBoardingHouses ?? 0, rooms: stats?.totalRooms ?? 0 }) }}
           </span>
         </div>
       </BaseCard>
@@ -48,7 +48,7 @@
           💳
         </div>
         <div>
-          <span class="text-xs text-slate-500 dark:text-slate-400 block">Khối lượng giao dịch</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 block">{{ $t('admin.kpiTransactionVolume') }}</span>
           <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 block">
             {{ formatCurrency(stats?.totalTransactionVolume ?? 0) }}
           </span>
@@ -60,9 +60,9 @@
           📄
         </div>
         <div>
-          <span class="text-xs text-slate-500 dark:text-slate-400 block">HĐ đang thuê</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 block">{{ $t('admin.kpiActiveLeases') }}</span>
           <span class="text-lg font-bold text-slate-900 dark:text-white mt-0.5 block">
-            {{ stats?.activeLeases ?? 0 }} hợp đồng
+            {{ $t('common.leasesCount', { count: stats?.activeLeases ?? 0 }) }}
           </span>
         </div>
       </BaseCard>
@@ -70,106 +70,106 @@
 
     <!-- Attention Needed Banner -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <NuxtLink
+      <NuxtLinkLocale
         to="/admin/withdrawals"
         class="p-4 bg-amber-50 dark:bg-amber-950/40 rounded-2xl border border-amber-200 dark:border-amber-800 flex items-center justify-between hover:bg-amber-100/60 dark:hover:bg-amber-950/60 transition-colors"
       >
         <div class="flex items-center gap-3">
           <span class="text-2xl">💰</span>
           <div>
-            <span class="text-xs font-bold text-amber-900 dark:text-amber-200 block">Yêu cầu rút tiền chờ duyệt</span>
-            <span class="text-[11px] text-amber-700 dark:text-amber-400">Từ các chủ nhà trọ</span>
+            <span class="text-xs font-bold text-amber-900 dark:text-amber-200 block">{{ $t('admin.pendingWithdrawalsAlert') }}</span>
+            <span class="text-[11px] text-amber-700 dark:text-amber-400">{{ $t('admin.pendingWithdrawalsDesc') }}</span>
           </div>
         </div>
         <span class="px-2.5 py-1 rounded-full text-xs font-black bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-100">
           {{ stats?.pendingWithdrawals ?? 0 }}
         </span>
-      </NuxtLink>
+      </NuxtLinkLocale>
 
-      <NuxtLink
+      <NuxtLinkLocale
         to="/admin/reports"
         class="p-4 bg-red-50 dark:bg-red-950/40 rounded-2xl border border-red-200 dark:border-red-800 flex items-center justify-between hover:bg-red-100/60 dark:hover:bg-red-950/60 transition-colors"
       >
         <div class="flex items-center gap-3">
           <span class="text-2xl">⚠️</span>
           <div>
-            <span class="text-xs font-bold text-red-900 dark:text-red-200 block">Báo cáo vi phạm chờ xử lý</span>
-            <span class="text-[11px] text-red-700 dark:text-red-400">Tin đăng & Đánh giá</span>
+            <span class="text-xs font-bold text-red-900 dark:text-red-200 block">{{ $t('admin.pendingReportsAlert') }}</span>
+            <span class="text-[11px] text-red-700 dark:text-red-400">{{ $t('admin.pendingReportsDesc') }}</span>
           </div>
         </div>
         <span class="px-2.5 py-1 rounded-full text-xs font-black bg-red-200 dark:bg-red-900 text-red-900 dark:text-red-100">
           {{ stats?.pendingReports ?? 0 }}
         </span>
-      </NuxtLink>
+      </NuxtLinkLocale>
 
-      <NuxtLink
+      <NuxtLinkLocale
         to="/admin/moderation"
         class="p-4 bg-purple-50 dark:bg-purple-950/40 rounded-2xl border border-purple-200 dark:border-purple-800 flex items-center justify-between hover:bg-purple-100/60 dark:hover:bg-purple-950/60 transition-colors"
       >
         <div class="flex items-center gap-3">
           <span class="text-2xl">🔍</span>
           <div>
-            <span class="text-xs font-bold text-purple-900 dark:text-purple-200 block">Kiểm duyệt khu trọ</span>
-            <span class="text-[11px] text-purple-700 dark:text-purple-400">Chờ duyệt niêm yết</span>
+            <span class="text-xs font-bold text-purple-900 dark:text-purple-200 block">{{ $t('common.listingModerationCard') }}</span>
+            <span class="text-[11px] text-purple-700 dark:text-purple-400">{{ $t('common.pendingListingModerationDesc') }}</span>
           </div>
         </div>
         <span class="px-2.5 py-1 rounded-full text-xs font-black bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100">
           {{ stats?.pendingListingReviews ?? 0 }}
         </span>
-      </NuxtLink>
+      </NuxtLinkLocale>
     </div>
 
     <!-- Quick Links Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <BaseCard title="Quản lý Hệ thống">
+      <BaseCard :title="$t('common.systemManagementCard')">
         <div class="space-y-2.5 pt-2">
-          <NuxtLink
+          <NuxtLinkLocale
             to="/admin/users"
             class="p-3.5 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-800 flex items-center justify-between transition-colors"
           >
             <div class="flex items-center gap-2.5">
               <span>👥</span>
-              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Quản lý Tài khoản người dùng</span>
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ $t('common.userAccountsCard') }}</span>
             </div>
-            <span class="text-xs text-primary-600 font-semibold">Xem chi tiết →</span>
-          </NuxtLink>
+            <span class="text-xs text-primary-600 font-semibold">{{ $t('common.viewDetail') }}</span>
+          </NuxtLinkLocale>
 
-          <NuxtLink
+          <NuxtLinkLocale
             to="/admin/facilities"
             class="p-3.5 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-800 flex items-center justify-between transition-colors"
           >
             <div class="flex items-center gap-2.5">
               <span>✨</span>
-              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Danh mục Tiện ích chuẩn</span>
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ $t('common.standardFacilitiesCard') }}</span>
             </div>
-            <span class="text-xs text-primary-600 font-semibold">Xem danh mục →</span>
-          </NuxtLink>
+            <span class="text-xs text-primary-600 font-semibold">{{ $t('common.viewDetail') }}</span>
+          </NuxtLinkLocale>
         </div>
       </BaseCard>
 
-      <BaseCard title="Bảo mật & Kiểm toán">
+      <BaseCard :title="$t('common.securityAndAuditCard')">
         <div class="space-y-2.5 pt-2">
-          <NuxtLink
+          <NuxtLinkLocale
             to="/admin/reports"
             class="p-3.5 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-800 flex items-center justify-between transition-colors"
           >
             <div class="flex items-center gap-2.5">
               <span>🚨</span>
-              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Khiếu nại & Báo cáo vi phạm</span>
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ $t('common.reportsAndComplaintsCard') }}</span>
             </div>
-            <span class="text-xs text-red-600 font-semibold">Xử lý →</span>
-          </NuxtLink>
+            <span class="text-xs text-red-600 font-semibold">{{ $t('admin.viewAndHandle') }}</span>
+          </NuxtLinkLocale>
 
-          <NuxtLink
+          <NuxtLinkLocale
             to="/admin/audit-logs"
             class="p-3.5 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-800 flex items-center justify-between transition-colors"
           >
             <div class="flex items-center gap-2.5">
               <span>📜</span>
-              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Nhật ký hoạt động (Audit Logs)</span>
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ $t('common.auditLogsCard') }}</span>
             </div>
             <span class="text-xs text-slate-500 font-semibold">Xem logs →</span>
-          </NuxtLink>
+          </NuxtLinkLocale>
         </div>
       </BaseCard>
     </div>

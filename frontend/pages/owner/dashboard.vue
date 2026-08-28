@@ -3,20 +3,20 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
-          Tổng quan Chủ trọ
+          {{ $t('ownerDashboard.title') }}
         </h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Theo dõi doanh thu, tỷ lệ lấp đầy phòng, hóa đơn và số dư khả dụng
+          {{ $t('ownerDashboard.subtitle') }}
         </p>
       </div>
 
       <div class="flex items-center gap-3">
         <BaseButton variant="outline" size="sm" @click="fetchSummary">
-          🔄 Làm mới
+          🔄 {{ $t('common.refresh') }}
         </BaseButton>
-        <NuxtLink to="/owner/properties" class="btn-primary !text-xs !py-2 !px-4">
-          + Quản lý khu trọ
-        </NuxtLink>
+        <NuxtLinkLocale to="/owner/properties" class="btn-primary !text-xs !py-2 !px-4">
+          + {{ $t('ownerDashboard.manageProperties') }}
+        </NuxtLinkLocale>
       </div>
     </div>
 
@@ -27,9 +27,9 @@
           🏢
         </div>
         <div>
-          <span class="text-xs text-slate-500 dark:text-slate-400 block">Khu trọ hoạt động</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 block">{{ $t('ownerDashboard.activeProperties') }}</span>
           <span class="text-lg font-bold text-slate-900 dark:text-white mt-0.5 block">
-            {{ summary?.totalBoardingHouses ?? 0 }} khu ({{ summary?.totalRooms ?? 0 }} phòng)
+            {{ $t('ownerDashboard.propertiesAndRoomsCount', { houses: summary?.totalBoardingHouses ?? 0, rooms: summary?.totalRooms ?? 0 }) }}
           </span>
         </div>
       </BaseCard>
@@ -39,9 +39,9 @@
           📊
         </div>
         <div>
-          <span class="text-xs text-slate-500 dark:text-slate-400 block">Tỷ lệ lấp đầy</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 block">{{ $t('ownerDashboard.occupancyRate') }}</span>
           <span class="text-lg font-bold text-slate-900 dark:text-white mt-0.5 block">
-            {{ Math.round((summary?.occupancyRate ?? 0) * 100) }}% ({{ summary?.occupiedRooms ?? 0 }} đang thuê)
+            {{ Math.round((summary?.occupancyRate ?? 0) * 100) }}% ({{ $t('ownerDashboard.occupiedCount', { count: summary?.occupiedRooms ?? 0 }) }})
           </span>
         </div>
       </BaseCard>
@@ -51,7 +51,7 @@
           💰
         </div>
         <div>
-          <span class="text-xs text-slate-500 dark:text-slate-400 block">Số dư khả dụng</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 block">{{ $t('ownerDashboard.availableBalance') }}</span>
           <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 block">
             {{ formatCurrency(summary?.availableBalance ?? 0) }}
           </span>
@@ -63,9 +63,9 @@
           📄
         </div>
         <div>
-          <span class="text-xs text-slate-500 dark:text-slate-400 block">HĐ đang thuê</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 block">{{ $t('ownerDashboard.activeLeases') }}</span>
           <span class="text-lg font-bold text-slate-900 dark:text-white mt-0.5 block">
-            {{ summary?.activeLeases ?? 0 }} hợp đồng
+            {{ $t('ownerDashboard.leasesCount', { count: summary?.activeLeases ?? 0 }) }}
           </span>
         </div>
       </BaseCard>
@@ -73,24 +73,24 @@
 
     <!-- Financial & Actions Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <BaseCard title="Doanh thu & Lợi nhuận Tháng này" class="lg:col-span-2">
+      <BaseCard :title="$t('ownerDashboard.monthlyFinanceTitle')" class="lg:col-span-2">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
           <div class="p-4 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl border border-emerald-100 dark:border-emerald-900/40">
-            <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold uppercase block">Doanh thu đã thu</span>
+            <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold uppercase block">{{ $t('ownerDashboard.collectedRevenue') }}</span>
             <span class="text-xl font-extrabold text-emerald-700 dark:text-emerald-300 mt-1 block">
               {{ formatCurrency(summary?.revenueThisMonth ?? 0) }}
             </span>
           </div>
 
           <div class="p-4 bg-rose-50 dark:bg-rose-950/30 rounded-2xl border border-rose-100 dark:border-rose-900/40">
-            <span class="text-[10px] text-rose-600 dark:text-rose-400 font-semibold uppercase block">Chi phí vận hành</span>
+            <span class="text-[10px] text-rose-600 dark:text-rose-400 font-semibold uppercase block">{{ $t('ownerDashboard.operatingExpenses') }}</span>
             <span class="text-xl font-extrabold text-rose-700 dark:text-rose-300 mt-1 block">
               {{ formatCurrency(summary?.expensesThisMonth ?? 0) }}
             </span>
           </div>
 
           <div class="p-4 bg-primary-50 dark:bg-primary-950/30 rounded-2xl border border-primary-100 dark:border-primary-900/40">
-            <span class="text-[10px] text-primary-600 dark:text-primary-400 font-semibold uppercase block">Lợi nhuận ròng</span>
+            <span class="text-[10px] text-primary-600 dark:text-primary-400 font-semibold uppercase block">{{ $t('ownerDashboard.netProfit') }}</span>
             <span class="text-xl font-extrabold text-primary-700 dark:text-primary-300 mt-1 block">
               {{ formatCurrency(summary?.profitThisMonth ?? 0) }}
             </span>
@@ -99,59 +99,59 @@
 
         <div class="flex items-center justify-between pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 text-xs">
           <span class="text-slate-500 dark:text-slate-400">
-            Hóa đơn chưa thu: <strong>{{ summary?.unpaidBillsCount ?? 0 }} hóa đơn ({{ formatCurrency(summary?.unpaidBillsAmount ?? 0) }})</strong>
+            {{ $t('ownerDashboard.unpaidBillsSummary', { count: summary?.unpaidBillsCount ?? 0, amount: formatCurrency(summary?.unpaidBillsAmount ?? 0) }) }}
           </span>
-          <NuxtLink to="/owner/analytics" class="font-semibold text-primary-600 dark:text-primary-400 hover:underline">
-            Xem báo cáo chi tiết →
-          </NuxtLink>
+          <NuxtLinkLocale to="/owner/analytics" class="font-semibold text-primary-600 dark:text-primary-400 hover:underline">
+            {{ $t('ownerDashboard.viewDetailReport') }}
+          </NuxtLinkLocale>
         </div>
       </BaseCard>
 
-      <BaseCard title="Truy cập nhanh">
+      <BaseCard :title="$t('ownerDashboard.quickAccess')">
         <div class="space-y-2.5 pt-2">
-          <NuxtLink
+          <NuxtLinkLocale
             to="/owner/bills"
             class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800 flex items-center justify-between transition-colors"
           >
             <div class="flex items-center gap-2.5">
               <span>⚡</span>
-              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Lập hóa đơn tháng</span>
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ $t('ownerDashboard.generateMonthlyBills') }}</span>
             </div>
             <span class="text-slate-400 text-xs">→</span>
-          </NuxtLink>
+          </NuxtLinkLocale>
 
-          <NuxtLink
+          <NuxtLinkLocale
             to="/owner/expenses"
             class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800 flex items-center justify-between transition-colors"
           >
             <div class="flex items-center gap-2.5">
               <span>🛠️</span>
-              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Ghi nhận chi phí</span>
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ $t('ownerDashboard.recordExpense') }}</span>
             </div>
             <span class="text-slate-400 text-xs">→</span>
-          </NuxtLink>
+          </NuxtLinkLocale>
 
-          <NuxtLink
+          <NuxtLinkLocale
             to="/owner/withdraw"
             class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800 flex items-center justify-between transition-colors"
           >
             <div class="flex items-center gap-2.5">
               <span>🏦</span>
-              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Rút tiền về ngân hàng</span>
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ $t('ownerDashboard.withdrawMoney') }}</span>
             </div>
             <span class="text-slate-400 text-xs">→</span>
-          </NuxtLink>
+          </NuxtLinkLocale>
 
-          <NuxtLink
+          <NuxtLinkLocale
             to="/owner/deposits"
             class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800 flex items-center justify-between transition-colors"
           >
             <div class="flex items-center gap-2.5">
               <span>🔒</span>
-              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Yêu cầu đặt cọc giữ phòng</span>
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ $t('ownerDashboard.holdingDepositRequests') }}</span>
             </div>
             <span class="text-slate-400 text-xs">→</span>
-          </NuxtLink>
+          </NuxtLinkLocale>
         </div>
       </BaseCard>
     </div>

@@ -2,13 +2,13 @@
   <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-xl font-bold text-slate-900 dark:text-white">Duyệt Yêu cầu Rút tiền</h1>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('withdrawals.adminTitle') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Xem xét và phê duyệt các lệnh rút số dư khả dụng về tài khoản ngân hàng của Chủ nhà trọ
+          {{ $t('common.adminWithdrawSubtitle') }}
         </p>
       </div>
       <BaseButton variant="outline" size="sm" @click="fetchWithdrawals">
-        🔄 Làm mới
+        🔄 {{ $t('common.refresh') }}
       </BaseButton>
     </div>
 
@@ -24,7 +24,7 @@
         ]"
         @click="filterStatus = ''"
       >
-        Tất cả ({{ requests.length }})
+        {{ $t('common.allCount', { count: requests.length }) }}
       </button>
       <button
         v-for="st in ['Pending', 'Accepted', 'Rejected']"
@@ -48,19 +48,19 @@
     </div>
 
     <div v-else-if="filteredRequests.length === 0" class="p-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
-      <p class="font-medium text-slate-500 dark:text-slate-400">Không có yêu cầu rút tiền nào.</p>
+      <p class="font-medium text-slate-500 dark:text-slate-400">{{ $t('withdrawals.emptyAdminRequests') }}</p>
     </div>
 
     <div v-else class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-x-auto">
       <table class="w-full text-left text-xs">
         <thead>
           <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
-            <th class="pb-3 font-semibold">Chủ nhà trọ</th>
-            <th class="pb-3 font-semibold">Số tiền yêu cầu</th>
-            <th class="pb-3 font-semibold">Thông tin Ngân hàng</th>
-            <th class="pb-3 font-semibold">Trạng thái</th>
-            <th class="pb-3 font-semibold">Thời gian tạo</th>
-            <th class="pb-3 font-semibold text-right">Hành động</th>
+            <th class="pb-3 font-semibold">{{ $t('roles.Owner') }}</th>
+            <th class="pb-3 font-semibold">{{ $t('common.amount') }}</th>
+            <th class="pb-3 font-semibold">{{ $t('withdrawals.bankNameLabel') }}</th>
+            <th class="pb-3 font-semibold">{{ $t('common.status') }}</th>
+            <th class="pb-3 font-semibold">{{ $t('admin.colTimestamp') }}</th>
+            <th class="pb-3 font-semibold text-right">{{ $t('common.actions') }}</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -83,7 +83,7 @@
             <td class="py-3">
               <StatusBadge type="RequestStatus" :status="r.status" />
               <div v-if="r.rejectReason" class="text-[10px] text-red-500 mt-1 max-w-xs truncate">
-                Lý do: {{ r.rejectReason }}
+                {{ $t('common.rejectionReasonPrefix', { reason: r.rejectReason }) }}
               </div>
             </td>
             <td class="py-3 text-slate-500 dark:text-slate-400">
@@ -97,7 +97,7 @@
                   class="text-red-600 hover:text-red-700 !text-xs !py-1"
                   @click="openRejectModal(r)"
                 >
-                  ✕ Từ chối
+                  ✕ {{ $t('withdrawals.rejectModalTitle') }}
                 </BaseButton>
                 <BaseButton
                   variant="primary"
@@ -106,7 +106,7 @@
                   :loading="isApprovingId === r.id"
                   @click="handleApprove(r.id)"
                 >
-                  ✓ Duyệt lệnh
+                  {{ $t('common.approveOrder') }}
                 </BaseButton>
               </div>
             </td>
@@ -118,23 +118,23 @@
     <!-- MODAL: Reject Withdrawal -->
     <BaseModal
       v-model="isRejectModalOpen"
-      title="Từ chối Yêu cầu Rút tiền"
+      :title="$t('withdrawals.rejectModalTitle')"
       max-width="md"
     >
       <form @submit.prevent="handleConfirmReject" class="space-y-4">
         <p class="text-xs text-slate-600 dark:text-slate-400">
-          Nhập lý do từ chối yêu cầu rút số tiền <strong>{{ formatCurrency(selectedReq?.amount || 0) }}</strong> của chủ nhà <strong>{{ selectedReq?.ownerFullName }}</strong>:
+          {{ $t('common.rejectWithdrawalPrompt', { amount: formatCurrency(selectedReq?.amount || 0), owner: selectedReq?.ownerFullName }) }}
         </p>
 
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Lý do từ chối (Tùy chọn)
+            {{ $t('common.rejectListingReasonOptional') }}
           </label>
           <textarea
             v-model="rejectReason"
             rows="3"
             class="input-field !text-xs !py-2"
-            placeholder="VD: Sai thông tin số tài khoản hoặc tên chủ thẻ..."
+            :placeholder="$t('withdrawals.rejectReasonRequired')"
           />
         </div>
 
@@ -143,7 +143,7 @@
             {{ $t('common.cancel') }}
           </BaseButton>
           <BaseButton variant="danger" size="sm" type="submit" :loading="isRejecting">
-            Xác nhận từ chối
+            {{ $t('withdrawals.confirmRejectWithdraw') }}
           </BaseButton>
         </div>
       </form>
@@ -164,6 +164,7 @@ definePageMeta({
 
 const { get, put } = useApi()
 const { formatCurrency, formatRelativeTime } = useFormat()
+const { t } = useI18n()
 const toast = useToast()
 
 const isLoading = ref(true)
@@ -190,14 +191,14 @@ const fetchWithdrawals = async () => {
 // Approve
 const isApprovingId = ref<string | null>(null)
 const handleApprove = async (id: string) => {
-  if (!confirm('Xác nhận bạn đã chuyển khoản thành công và muốn duyệt yêu cầu rút tiền này?')) return
+  if (!confirm(t('messages.confirmAction'))) return
   isApprovingId.value = id
   try {
     await put(`/withdraw-requests/${id}/approve`, {})
-    toast.success('Duyệt yêu cầu rút tiền thành công!')
+    toast.success(t('messages.approveWithdrawSuccess'))
     await fetchWithdrawals()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể duyệt yêu cầu rút tiền.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isApprovingId.value = null
   }
@@ -222,11 +223,11 @@ const handleConfirmReject = async () => {
     await put(`/withdraw-requests/${selectedReq.value.id}/reject`, {
       reason: rejectReason.value || undefined,
     })
-    toast.success('Đã từ chối yêu cầu rút tiền.')
+    toast.success(t('messages.rejectWithdrawSuccess'))
     isRejectModalOpen.value = false
     await fetchWithdrawals()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể từ chối yêu cầu.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isRejecting.value = false
   }

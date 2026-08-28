@@ -2,8 +2,8 @@
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-xl font-bold text-slate-900 dark:text-white">Lịch hẹn dẫn khách xem phòng</h1>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tiếp nhận và dẫn khách xem phòng tại khu trọ bạn phụ trách</p>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('staffAppointments.title') }}</h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ $t('staffAppointments.subtitle') }}</p>
       </div>
     </div>
 
@@ -17,10 +17,10 @@
         ]"
         @click="changeStatus('')"
       >
-        Tất cả
+        {{ $t('common.allCount', { count: totalCount }) }}
       </button>
       <button
-        v-for="st in ['Pending', 'Approved', 'Rejected', 'Cancelled']"
+        v-for="st in ['Pending', 'Accepted', 'Rejected', 'Cancelled']"
         :key="st"
         type="button"
         :class="[
@@ -40,8 +40,8 @@
 
     <!-- Empty state -->
     <div v-else-if="items.length === 0" class="py-16 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-      <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">Không có yêu cầu hẹn xem phòng nào</p>
-      <p class="text-xs text-slate-400 mt-1">Khi khách thuê đặt lịch xem phòng tại khu trọ được gán cho bạn, thông tin sẽ hiển thị tại đây.</p>
+      <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">{{ $t('staffAppointments.emptyTitle') }}</p>
+      <p class="text-xs text-slate-400 mt-1">{{ $t('staffAppointments.emptySubtitle') }}</p>
     </div>
 
     <!-- Appointments grid -->
@@ -59,7 +59,7 @@
 
           <!-- Tenant Info -->
           <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl space-y-1">
-            <span class="text-[10px] text-slate-400 uppercase font-bold block">Khách hẹn xem</span>
+            <span class="text-[10px] text-slate-400 uppercase font-bold block">{{ $t('staffAppointments.tenantInfoTitle') }}</span>
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-slate-900 dark:text-white">{{ apt.tenantFullName }}</span>
               <a
@@ -76,13 +76,13 @@
           <div>
             <span class="text-xs text-slate-500 block">{{ apt.boardingHouseName }}</span>
             <span class="text-sm font-bold text-slate-900 dark:text-white block mt-0.5">
-              Phòng {{ apt.roomNumber }}
+              {{ $t('property.room') }} {{ apt.roomNumber }}
             </span>
           </div>
 
           <!-- Appointment Date -->
           <div class="p-3 bg-sky-50/50 dark:bg-sky-950/30 rounded-xl border border-sky-100 dark:border-sky-900 space-y-0.5">
-            <span class="text-[10px] text-sky-700 dark:text-sky-400 font-semibold block">Thời gian xem</span>
+            <span class="text-[10px] text-sky-700 dark:text-sky-400 font-semibold block">{{ $t('staffAppointments.viewingTime') }}</span>
             <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">
               📅 {{ formatDate(apt.appointmentDate, { dateStyle: 'full', timeStyle: 'short' }) }}
             </span>
@@ -95,7 +95,7 @@
 
           <!-- Rejection / Cancellation Reason -->
           <div v-if="apt.reasonForCancel" class="p-2.5 bg-red-50 dark:bg-red-950/30 rounded-xl text-xs text-red-700 dark:text-red-400">
-            <span class="font-bold">Lý do từ chối/hủy:</span> {{ apt.reasonForCancel }}
+            <span class="font-bold">{{ $t('staffAppointments.rejectionOrCancelReason') }}</span> {{ apt.reasonForCancel }}
           </div>
         </div>
 
@@ -107,7 +107,7 @@
             class="!text-xs !py-1.5 text-red-600 border-red-200 hover:bg-red-50"
             @click="openRejectModal(apt)"
           >
-            Từ chối
+            {{ $t('staffAppointments.rejectBtn') }}
           </BaseButton>
           <BaseButton
             variant="primary"
@@ -115,7 +115,7 @@
             class="!text-xs !py-1.5 !bg-sky-600 hover:!bg-sky-700"
             @click="handleApprove(apt.id)"
           >
-            ✓ Duyệt hẹn
+            {{ $t('staffAppointments.approveBtn') }}
           </BaseButton>
         </div>
       </div>
@@ -124,23 +124,23 @@
     <!-- MODAL: Reject Appointment -->
     <BaseModal
       v-model="isRejectModalOpen"
-      title="Từ chối lịch hẹn xem phòng"
+      :title="$t('staffAppointments.rejectModalTitle')"
       max-width="sm"
     >
       <form @submit.prevent="handleConfirmReject" class="space-y-4">
         <p class="text-xs text-slate-600 dark:text-slate-300">
-          Vui lòng nhập lý do từ chối lịch hẹn của khách <strong>{{ selectedAppointment?.tenantFullName }}</strong>:
+          {{ $t('staffAppointments.rejectModalPrompt', { name: selectedAppointment?.tenantFullName }) }}
         </p>
 
         <div>
           <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-            Lý do từ chối <span class="text-red-500">*</span>
+            {{ $t('staffAppointments.rejectReasonLabel') }} <span class="text-red-500">*</span>
           </label>
           <textarea
             v-model="rejectReason"
             rows="3"
             class="input-field !text-xs !py-2"
-            placeholder="VD: Nhân viên bận vào khung giờ này, hẹn khách khung giờ khác..."
+            :placeholder="$t('staffAppointments.rejectReasonPlaceholder')"
             required
           />
         </div>
@@ -150,7 +150,7 @@
             {{ $t('common.cancel') }}
           </BaseButton>
           <BaseButton variant="danger" size="sm" type="submit" :loading="isRejecting">
-            Xác nhận từ chối
+            {{ $t('staffAppointments.confirmReject') }}
           </BaseButton>
         </div>
       </form>
@@ -171,10 +171,12 @@ definePageMeta({
 
 const { get, put } = useApi()
 const { formatDate, formatRelativeTime } = useFormat()
+const { t } = useI18n()
 const toast = useToast()
 
 const isLoading = ref(true)
 const items = ref<AppointmentResponse[]>([])
+const totalCount = ref(0)
 const selectedStatus = ref('')
 
 const isRejectModalOpen = ref(false)
@@ -191,6 +193,9 @@ const fetchAppointments = async () => {
       pageSize: 50,
     })
     items.value = data?.items || []
+    if (!selectedStatus.value) {
+      totalCount.value = data?.totalCount ?? items.value.length
+    }
   } catch {
     items.value = []
   } finally {
@@ -206,10 +211,10 @@ const changeStatus = (st: string) => {
 const handleApprove = async (appointmentId: string) => {
   try {
     await put(`/appointments/${appointmentId}/approve`)
-    toast.success('Đã duyệt lịch hẹn xem phòng!')
+    toast.success(t('messages.approveAppointmentSuccess'))
     await fetchAppointments()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể duyệt lịch hẹn.')
+    toast.error(err.message || t('messages.actionFailed'))
   }
 }
 
@@ -226,11 +231,11 @@ const handleConfirmReject = async () => {
     await put(`/appointments/${selectedAppointment.value.id}/reject`, {
       reason: rejectReason.value,
     })
-    toast.success('Đã từ chối lịch hẹn!')
+    toast.success(t('messages.rejectAppointmentSuccess'))
     isRejectModalOpen.value = false
     await fetchAppointments()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể từ chối lịch hẹn.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isRejecting.value = false
   }

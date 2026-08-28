@@ -10,38 +10,38 @@
       </div>
 
       <div class="space-y-1">
-        <h1 class="text-xl font-bold text-slate-900 dark:text-white">Thanh toán Thành công!</h1>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('payments.succeeded') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400">
-          Giao dịch thanh toán của bạn đã được xác nhận và ghi nhận an toàn vào hệ thống.
+          {{ $t('payments.succeededDesc') }}
         </p>
       </div>
 
       <!-- Transaction details box -->
       <div v-if="transaction" class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-800 text-xs space-y-2.5 text-left">
         <div class="flex items-center justify-between">
-          <span class="text-slate-500 dark:text-slate-400">Mã giao dịch:</span>
+          <span class="text-slate-500 dark:text-slate-400">{{ $t('payments.txnId') }}:</span>
           <span class="font-mono font-bold text-slate-800 dark:text-slate-200">{{ transaction.providerOrderId }}</span>
         </div>
         <div class="flex items-center justify-between">
-          <span class="text-slate-500 dark:text-slate-400">Cổng thanh toán:</span>
-          <span class="font-semibold text-slate-800 dark:text-slate-200">{{ transaction.provider }}</span>
+          <span class="text-slate-500 dark:text-slate-400">{{ $t('payments.gateway') }}:</span>
+          <span class="font-semibold text-slate-800 dark:text-slate-200">{{ $t(`enums.PaymentProvider.${transaction.provider}`) }}</span>
         </div>
         <div class="flex items-center justify-between">
-          <span class="text-slate-500 dark:text-slate-400">Thời gian thực hiện:</span>
+          <span class="text-slate-500 dark:text-slate-400">{{ $t('payments.time') }}:</span>
           <span class="text-slate-800 dark:text-slate-200">{{ formatRelativeTime(transaction.completedAt || transaction.initiatedAt) }}</span>
         </div>
         <div class="flex items-center justify-between pt-2 border-t border-slate-200/60 dark:border-slate-700">
-          <span class="text-slate-600 dark:text-slate-400 font-medium">Số tiền thanh toán:</span>
+          <span class="text-slate-600 dark:text-slate-400 font-medium">{{ $t('payments.amount') }}:</span>
           <span class="text-base font-extrabold text-emerald-600 dark:text-emerald-400">{{ formatCurrency(transaction.amount) }}</span>
         </div>
       </div>
 
       <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-        <BaseButton variant="primary" size="md" class="w-full sm:w-auto" @click="navigateTo('/tenant/deposits')">
-          Xem yêu cầu đặt cọc của tôi
+        <BaseButton variant="primary" size="md" class="w-full sm:w-auto" @click="navigateTo(localePath('/tenant/deposits'))">
+          {{ $t('payments.viewDeposits') }}
         </BaseButton>
-        <BaseButton variant="outline" size="md" class="w-full sm:w-auto" @click="navigateTo('/')">
-          Về trang chủ
+        <BaseButton variant="outline" size="md" class="w-full sm:w-auto" @click="navigateTo(localePath('/'))">
+          {{ $t('common.backToHome') }}
         </BaseButton>
       </div>
     </div>
@@ -56,18 +56,18 @@
       </div>
 
       <div class="space-y-1">
-        <h1 class="text-xl font-bold text-slate-900 dark:text-white">Đang xác minh giao dịch...</h1>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('payments.pending') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400">
-          Cổng thanh toán đang xử lý giao dịch của bạn. Hệ thống sẽ tự động cập nhật ngay khi nhận được tín hiệu xác nhận (IPN).
+          {{ $t('payments.pendingDesc') }}
         </p>
       </div>
 
       <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
         <BaseButton variant="primary" size="md" :loading="isRechecking" @click="recheckTransaction">
-          Kiểm tra lại trạng thái
+          {{ $t('common.checkStatusAgain') }}
         </BaseButton>
-        <BaseButton variant="outline" size="md" @click="navigateTo('/tenant/deposits')">
-          Về danh sách đặt cọc
+        <BaseButton variant="outline" size="md" @click="navigateTo(localePath('/tenant/deposits'))">
+          {{ $t('common.backToDepositsList') }}
         </BaseButton>
       </div>
     </div>
@@ -82,18 +82,18 @@
       </div>
 
       <div class="space-y-1">
-        <h1 class="text-xl font-bold text-slate-900 dark:text-white">Thanh toán Không thành công</h1>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('payments.failed') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400">
-          Giao dịch đã bị hủy hoặc gặp lỗi trong quá trình thanh toán tại cổng MoMo/VNPay. Bạn có thể thực hiện lại.
+          {{ $t('payments.failedDesc') }}
         </p>
       </div>
 
       <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-        <BaseButton variant="primary" size="md" @click="navigateTo('/tenant/deposits')">
-          Thử thanh toán lại
+        <BaseButton variant="primary" size="md" @click="navigateTo(localePath('/tenant/deposits'))">
+          {{ $t('payments.retry') }}
         </BaseButton>
-        <BaseButton variant="outline" size="md" @click="navigateTo('/')">
-          Về trang chủ
+        <BaseButton variant="outline" size="md" @click="navigateTo(localePath('/'))">
+          {{ $t('common.backToHome') }}
         </BaseButton>
       </div>
     </div>
@@ -108,15 +108,15 @@
       </div>
 
       <div class="space-y-1">
-        <h1 class="text-xl font-bold text-slate-900 dark:text-white">Không tìm thấy thông tin giao dịch</h1>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('common.noTxnFoundTitle') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400">
-          Yêu cầu thanh toán không hợp lệ hoặc liên kết đã hết hạn.
+          {{ $t('common.noTxnFoundDesc') }}
         </p>
       </div>
 
       <div class="pt-2 flex items-center justify-center gap-3">
-        <BaseButton variant="primary" size="md" @click="navigateTo('/tenant/deposits')">
-          Về trang quản lý đặt cọc
+        <BaseButton variant="primary" size="md" @click="navigateTo(localePath('/tenant/deposits'))">
+          {{ $t('common.backToDepositManagement') }}
         </BaseButton>
       </div>
     </div>
@@ -130,6 +130,7 @@ import type { PaymentTransactionResponse } from '~/types/api'
 const route = useRoute()
 const { get } = useApi()
 const { formatCurrency, formatRelativeTime } = useFormat()
+const localePath = useLocalePath()
 
 const outcome = computed(() => (route.query.outcome as string) || 'Invalid')
 const transactionId = computed(() => route.query.transactionId as string)
@@ -153,7 +154,7 @@ const recheckTransaction = async () => {
     const data = await get<PaymentTransactionResponse>(`/payments/${transactionId.value}`)
     transaction.value = data
     if (data.status === 'Succeeded') {
-      navigateTo(`/payments/result?outcome=Succeeded&transactionId=${transactionId.value}`)
+      navigateTo(localePath(`/payments/result?outcome=Succeeded&transactionId=${transactionId.value}`))
     }
   } catch {
     // Ignore

@@ -73,7 +73,8 @@ export const useAuthStore = defineStore('auth', () => {
       }
     } finally {
       clearAuth()
-      navigateTo('/auth/login')
+      const localePath = useLocalePath()
+      navigateTo(localePath('/auth/login'))
     }
   }
 

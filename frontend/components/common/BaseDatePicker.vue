@@ -22,14 +22,14 @@
           {{ displayValue }}
         </span>
         <span v-else class="text-slate-400 dark:text-slate-500 text-xs">
-          {{ placeholder || (enableTime ? 'Chọn ngày & giờ...' : 'Chọn ngày...') }}
+          {{ placeholder || (enableTime ? $t('common.selectDateTime') : $t('common.selectDate')) }}
         </span>
 
         <div class="flex items-center gap-1.5 text-slate-400 dark:text-slate-500">
           <span
             v-if="modelValue && !disabled"
             class="hover:text-slate-600 dark:hover:text-slate-300 p-0.5 rounded transition-colors"
-            title="Xóa"
+            :title="$t('common.clear')"
             @click.stop="clearDate"
           >
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,7 +71,7 @@
             </button>
 
             <div class="font-bold text-sm text-slate-800 dark:text-slate-100">
-              Tháng {{ currentMonth + 1 }}, {{ currentYear }}
+              {{ $t('common.month') }} {{ currentMonth + 1 }}, {{ currentYear }}
             </div>
 
             <button
@@ -117,7 +117,7 @@
           <!-- Time Picker (if enabled) -->
           <div v-if="enableTime" class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800">
             <div class="flex items-center justify-between gap-2">
-              <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-400">Giờ hẹn:</span>
+              <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-400">{{ $t('common.appointmentTime') }}</span>
               <div class="flex items-center gap-1.5">
                 <select
                   v-model="selectedHour"
@@ -149,14 +149,14 @@
               class="text-primary-600 dark:text-primary-400 hover:underline font-semibold"
               @click="selectToday"
             >
-              Hôm nay
+              {{ $t('common.today') }}
             </button>
             <button
               type="button"
               class="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
               @click="isOpen = false"
             >
-              Đóng
+              {{ $t('common.close') }}
             </button>
           </div>
         </div>
@@ -267,7 +267,7 @@ const displayValue = computed(() => {
     const [dPart, tPart] = props.modelValue.split('T')
     const [y, m, d] = dPart.split('-')
     const timeStr = tPart ? tPart.slice(0, 5) : ''
-    return `${timeStr} ngày ${d}/${m}/${y}`
+    return timeStr ? `${timeStr} - ${d}/${m}/${y}` : `${d}/${m}/${y}`
   }
   const parts = props.modelValue.split('-')
   if (parts.length === 3) {

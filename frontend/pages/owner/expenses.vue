@@ -4,15 +4,15 @@
       <div>
         <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('nav.expenses') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Theo dõi hóa đơn điện nước tổng đầu vào và các khoản chi phí vận hành khu trọ
+          {{ $t('common.ownerExpensesSubtitle') }}
         </p>
       </div>
       <div class="flex items-center gap-2">
         <BaseButton variant="outline" size="sm" @click="fetchExpenses">
-          🔄 Làm mới
+          🔄 {{ $t('common.refresh') }}
         </BaseButton>
         <BaseButton variant="primary" size="sm" @click="openCreateExpenseModal">
-          + Ghi nhận chi phí
+          {{ $t('expenses.createExpense') }}
         </BaseButton>
       </div>
     </div>
@@ -20,7 +20,7 @@
     <!-- Filter Bar: Property, Month, Year -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
       <div class="flex items-center gap-3 w-full sm:w-auto">
-        <label class="text-xs font-semibold text-slate-600 dark:text-slate-400 shrink-0">Khu trọ:</label>
+        <label class="text-xs font-semibold text-slate-600 dark:text-slate-400 shrink-0">{{ $t('ownerProperties.title') }}:</label>
         <select v-model="selectedHouseId" class="input-field !text-xs !py-1.5 w-full sm:w-64" @change="fetchExpenses">
           <option v-for="h in boardingHouses" :key="h.id" :value="h.id">
             {{ h.name }}
@@ -30,8 +30,8 @@
 
       <div class="flex items-center gap-2 shrink-0">
         <select v-model="filterMonth" class="input-field !text-xs !py-1.5 w-28" @change="fetchExpenses">
-          <option :value="null">Tất cả tháng</option>
-          <option v-for="m in 12" :key="m" :value="m">Tháng {{ m }}</option>
+          <option :value="null">{{ $t('common.all') }}</option>
+          <option v-for="m in 12" :key="m" :value="m">{{ $t('common.month') }} {{ m }}</option>
         </select>
         <select v-model="filterYear" class="input-field !text-xs !py-1.5 w-24" @change="fetchExpenses">
           <option :value="2025">2025</option>
@@ -44,25 +44,25 @@
     <!-- Quick Stats Cards for filtered expenses -->
     <div v-if="expenses.length > 0" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
       <div class="p-3.5 bg-rose-50 dark:bg-rose-950/30 rounded-xl border border-rose-100 dark:border-rose-900/40">
-        <span class="text-[10px] text-rose-500 font-semibold uppercase block">Tổng chi phí vận hành</span>
+        <span class="text-[10px] text-rose-500 font-semibold uppercase block">{{ $t('common.totalOperationalExpenses') }}</span>
         <span class="text-base font-extrabold text-rose-700 dark:text-rose-300 mt-0.5 block">
           {{ formatCurrency(totalFilteredExpense) }}
         </span>
       </div>
       <div class="p-3.5 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-100 dark:border-amber-900/40">
-        <span class="text-[10px] text-amber-500 font-semibold uppercase block">⚡ Tiền điện tổng</span>
+        <span class="text-[10px] text-amber-500 font-semibold uppercase block">⚡ {{ $t('ownerProperties.elecPrice') }}</span>
         <span class="text-base font-extrabold text-amber-700 dark:text-amber-300 mt-0.5 block">
           {{ formatCurrency(totalElectricityExpense) }}
         </span>
       </div>
       <div class="p-3.5 bg-blue-50 dark:bg-blue-950/30 rounded-xl border border-blue-100 dark:border-blue-900/40">
-        <span class="text-[10px] text-blue-500 font-semibold uppercase block">💧 Tiền nước tổng</span>
+        <span class="text-[10px] text-blue-500 font-semibold uppercase block">💧 {{ $t('ownerProperties.waterPrice') }}</span>
         <span class="text-base font-extrabold text-blue-700 dark:text-blue-300 mt-0.5 block">
           {{ formatCurrency(totalWaterExpense) }}
         </span>
       </div>
       <div class="p-3.5 bg-purple-50 dark:bg-purple-950/30 rounded-xl border border-purple-100 dark:border-purple-900/40">
-        <span class="text-[10px] text-purple-500 font-semibold uppercase block">🛠️ Chi phí khác</span>
+        <span class="text-[10px] text-purple-500 font-semibold uppercase block">🛠️ {{ $t('bills.otherServices') }}</span>
         <span class="text-base font-extrabold text-purple-700 dark:text-purple-300 mt-0.5 block">
           {{ formatCurrency(totalOtherExpense) }}
         </span>
@@ -78,7 +78,7 @@
       <svg class="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
-      <p class="font-medium text-slate-500 dark:text-slate-400">Chưa ghi nhận chi phí nào cho khu trọ này.</p>
+      <p class="font-medium text-slate-500 dark:text-slate-400">{{ $t('expenses.emptyExpenses') }}</p>
     </div>
 
     <div v-else class="space-y-4">
@@ -93,17 +93,17 @@
             <div class="flex items-center gap-2">
               <span class="text-base font-bold text-slate-900 dark:text-white">{{ e.boardingHouseName }}</span>
               <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
-                Chi phí Tháng {{ e.month }}/{{ e.year }}
+                {{ $t('expenses.title') }} {{ e.month }}/{{ e.year }}
               </span>
             </div>
             <p class="text-xs text-slate-500 dark:text-slate-400">
-              Ghi nhận lúc: {{ formatRelativeTime(e.createdAt) }}
+              {{ $t('common.createdAt', { time: formatRelativeTime(e.createdAt) }) }}
             </p>
           </div>
 
           <div class="flex items-center gap-3">
             <div class="text-right">
-              <span class="text-xs text-slate-400 block">Tổng chi</span>
+              <span class="text-xs text-slate-400 block">{{ $t('common.amount') }}</span>
               <span class="text-base font-extrabold text-rose-600 dark:text-rose-400">{{ formatCurrency(e.totalExpense) }}</span>
             </div>
           </div>
@@ -113,7 +113,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
           <!-- Electricity -->
           <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">⚡ Điện tổng đầu vào</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">⚡ {{ $t('ownerProperties.elecPrice') }}</span>
             <span class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 block">{{ formatCurrency(e.electricityAmount) }}</span>
             <span class="text-[10px] text-slate-400 block mt-0.5">
               {{ e.electricityOld }} ➔ {{ e.electricityNew }} ({{ e.electricityQty }} kWh)
@@ -122,7 +122,7 @@
 
           <!-- Water -->
           <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">💧 Nước tổng đầu vào</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">💧 {{ $t('ownerProperties.waterPrice') }}</span>
             <span class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 block">{{ formatCurrency(e.waterAmount) }}</span>
             <span class="text-[10px] text-slate-400 block mt-0.5">
               {{ e.waterOld }} ➔ {{ e.waterNew }} ({{ e.waterQty }} m³)
@@ -131,15 +131,15 @@
 
           <!-- Other Fees -->
           <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">🛠️ Các khoản chi khác</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">🛠️ {{ $t('bills.otherServices') }}</span>
             <span class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 block">{{ formatCurrency(e.otherExpensesTotal) }}</span>
-            <span class="text-[10px] text-slate-400 block mt-0.5">{{ e.otherExpenses?.length || 0 }} khoản mục</span>
+            <span class="text-[10px] text-slate-400 block mt-0.5">{{ e.otherExpenses?.length || 0 }}</span>
           </div>
         </div>
 
         <!-- Other Expenses List if any -->
         <div v-if="e.otherExpenses && e.otherExpenses.length > 0" class="p-3 bg-slate-50/50 dark:bg-slate-800/30 rounded-xl text-xs space-y-1">
-          <div class="font-semibold text-slate-700 dark:text-slate-300 text-[11px] mb-1">Chi tiết các khoản chi khác:</div>
+          <div class="font-semibold text-slate-700 dark:text-slate-300 text-[11px] mb-1">{{ $t('bills.otherServices') }}:</div>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-slate-600 dark:text-slate-400">
             <div v-for="(fee, idx) in e.otherExpenses" :key="idx" class="flex justify-between">
               <span>• {{ fee.feeName }}:</span>
@@ -151,10 +151,10 @@
         <!-- Actions -->
         <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
           <BaseButton variant="outline" size="sm" @click="openEditExpenseModal(e)">
-            ✏️ Chỉnh sửa
+            ✏️ {{ $t('common.edit') }}
           </BaseButton>
           <BaseButton variant="ghost" size="sm" class="text-red-600 hover:text-red-700" @click="handleDeleteExpense(e.id)">
-            Xóa
+            {{ $t('common.deleteAction') }}
           </BaseButton>
         </div>
       </div>
@@ -163,14 +163,14 @@
     <!-- MODAL: Create / Edit Expense -->
     <BaseModal
       v-model="isModalOpen"
-      :title="isEditing ? 'Chỉnh sửa Chi phí Vận hành' : 'Ghi nhận Chi phí Vận hành Khu trọ'"
+      :title="isEditing ? $t('expenses.modalTitleEdit') : $t('expenses.modalTitleCreate')"
       max-width="lg"
     >
       <form @submit.prevent="handleSubmitExpense" class="space-y-4">
         <!-- Property Selector (only when creating) -->
         <div v-if="!isEditing">
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Khu trọ <span class="text-red-500">*</span>
+            {{ $t('ownerProperties.title') }} <span class="text-red-500">*</span>
           </label>
           <select v-model="form.boardingHouseId" class="input-field !text-xs !py-2" required>
             <option v-for="h in boardingHouses" :key="h.id" :value="h.id">
@@ -183,15 +183,15 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Tháng <span class="text-red-500">*</span>
+              {{ $t('common.month') }} <span class="text-red-500">*</span>
             </label>
             <select v-model.number="form.month" class="input-field !text-xs !py-2" :disabled="isEditing" required>
-              <option v-for="m in 12" :key="m" :value="m">Tháng {{ m }}</option>
+              <option v-for="m in 12" :key="m" :value="m">{{ $t('common.month') }} {{ m }}</option>
             </select>
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Năm <span class="text-red-500">*</span>
+              {{ $t('common.year') }} <span class="text-red-500">*</span>
             </label>
             <input
               v-model.number="form.year"
@@ -205,22 +205,22 @@
 
         <!-- Electricity master bill -->
         <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl space-y-2">
-          <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">⚡ Hóa đơn Điện tổng đầu vào</span>
+          <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">⚡ {{ $t('ownerProperties.elecPrice') }}</span>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <div>
-              <label class="block text-[10px] text-slate-500">Số cũ</label>
+              <label class="block text-[10px] text-slate-500">{{ $t('bills.elecMeterStart') }}</label>
               <input v-model.number="form.electricityOld" type="number" step="0.1" min="0" class="input-field !text-xs !py-1.5" @input="calcElectricityQty" />
             </div>
             <div>
-              <label class="block text-[10px] text-slate-500">Số mới</label>
+              <label class="block text-[10px] text-slate-500">{{ $t('bills.elecMeterEnd') }}</label>
               <input v-model.number="form.electricityNew" type="number" step="0.1" min="0" class="input-field !text-xs !py-1.5" @input="calcElectricityQty" />
             </div>
             <div>
-              <label class="block text-[10px] text-slate-500">Tiêu thụ (kWh)</label>
+              <label class="block text-[10px] text-slate-500">{{ $t('common.unitKwh') }}</label>
               <input v-model.number="form.electricityQty" type="number" step="0.1" min="0" class="input-field !text-xs !py-1.5" />
             </div>
             <div>
-              <label class="block text-[10px] text-slate-500">Tiền điện (VNĐ)</label>
+              <label class="block text-[10px] text-slate-500">{{ $t('ownerProperties.elecPrice') }}</label>
               <input v-model.number="form.electricityAmount" type="number" min="0" class="input-field !text-xs !py-1.5" required />
             </div>
           </div>
@@ -228,22 +228,22 @@
 
         <!-- Water master bill -->
         <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl space-y-2">
-          <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">💧 Hóa đơn Nước tổng đầu vào</span>
+          <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">💧 {{ $t('ownerProperties.waterPrice') }}</span>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <div>
-              <label class="block text-[10px] text-slate-500">Số cũ</label>
+              <label class="block text-[10px] text-slate-500">{{ $t('bills.elecMeterStart') }}</label>
               <input v-model.number="form.waterOld" type="number" step="0.1" min="0" class="input-field !text-xs !py-1.5" @input="calcWaterQty" />
             </div>
             <div>
-              <label class="block text-[10px] text-slate-500">Số mới</label>
+              <label class="block text-[10px] text-slate-500">{{ $t('bills.elecMeterEnd') }}</label>
               <input v-model.number="form.waterNew" type="number" step="0.1" min="0" class="input-field !text-xs !py-1.5" @input="calcWaterQty" />
             </div>
             <div>
-              <label class="block text-[10px] text-slate-500">Tiêu thụ (m³)</label>
+              <label class="block text-[10px] text-slate-500">{{ $t('common.unitM3') }}</label>
               <input v-model.number="form.waterQty" type="number" step="0.1" min="0" class="input-field !text-xs !py-1.5" />
             </div>
             <div>
-              <label class="block text-[10px] text-slate-500">Tiền nước (VNĐ)</label>
+              <label class="block text-[10px] text-slate-500">{{ $t('ownerProperties.waterPrice') }}</label>
               <input v-model.number="form.waterAmount" type="number" min="0" class="input-field !text-xs !py-1.5" required />
             </div>
           </div>
@@ -253,10 +253,10 @@
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <label class="text-xs font-bold text-slate-800 dark:text-slate-200">
-              🛠️ Các khoản chi khác (Bảo trì, vệ sinh, rác, camera...)
+              🛠️ {{ $t('expenses.expenseCategoryLabel') }}
             </label>
             <button type="button" class="text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline" @click="addOtherExpenseRow">
-              + Thêm khoản chi
+              {{ $t('expenses.addNewExpenseBtn') }}
             </button>
           </div>
 
@@ -265,7 +265,7 @@
               v-model="item.feeName"
               type="text"
               class="input-field !text-xs !py-1.5 flex-1"
-              placeholder="Tên khoản chi (VD: Thay bóng đèn hành lang)"
+              :placeholder="$t('expenses.expenseTitlePlaceholder')"
               required
             />
             <input
@@ -273,7 +273,7 @@
               type="number"
               min="0"
               class="input-field !text-xs !py-1.5 w-36"
-              placeholder="Số tiền (VNĐ)"
+              :placeholder="$t('expenses.expenseAmountLabel')"
               required
             />
             <button type="button" class="text-red-500 hover:text-red-700 text-xs px-1" @click="removeOtherExpenseRow(idx)">
@@ -287,7 +287,7 @@
             {{ $t('common.cancel') }}
           </BaseButton>
           <BaseButton variant="primary" size="sm" type="submit" :loading="isSubmitting">
-            {{ isEditing ? 'Cập nhật chi phí' : 'Ghi nhận chi phí' }}
+            {{ isEditing ? $t('common.updateAction') : $t('expenses.confirmSaveExpense') }}
           </BaseButton>
         </div>
       </form>
@@ -307,6 +307,7 @@ definePageMeta({
 
 const { get, post, put, delete: deleteApi } = useApi()
 const { formatCurrency, formatRelativeTime } = useFormat()
+const { t } = useI18n()
 const toast = useToast()
 
 const isLoading = ref(true)
@@ -440,7 +441,7 @@ const handleSubmitExpense = async () => {
         waterAmount: form.waterAmount,
         otherExpenses: form.otherExpenses.filter((o) => o.feeName.trim() && o.feeAmount > 0),
       })
-      toast.success('Cập nhật chi phí thành công!')
+      toast.success(t('messages.updateExpenseSuccess'))
     } else {
       await post(`/my/boarding-houses/${form.boardingHouseId}/expenses`, {
         month: form.month,
@@ -455,25 +456,25 @@ const handleSubmitExpense = async () => {
         waterAmount: form.waterAmount,
         otherExpenses: form.otherExpenses.filter((o) => o.feeName.trim() && o.feeAmount > 0),
       })
-      toast.success('Ghi nhận chi phí vận hành thành công!')
+      toast.success(t('messages.createExpenseSuccess'))
     }
     isModalOpen.value = false
     await fetchExpenses()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể lưu chi phí.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isSubmitting.value = false
   }
 }
 
 const handleDeleteExpense = async (expenseId: string) => {
-  if (!confirm('Bạn có chắc chắn muốn xóa bản ghi chi phí này không?')) return
+  if (!confirm(t('messages.confirmAction'))) return
   try {
     await deleteApi(`/my/boarding-houses/${selectedHouseId.value}/expenses/${expenseId}`)
-    toast.success('Đã xóa chi phí.')
+    toast.success(t('messages.deleteExpenseSuccess'))
     await fetchExpenses()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể xóa chi phí.')
+    toast.error(err.message || t('messages.actionFailed'))
   }
 }
 

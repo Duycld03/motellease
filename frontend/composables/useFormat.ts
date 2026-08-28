@@ -1,5 +1,5 @@
 export const useFormat = () => {
-  const { locale } = useI18n()
+  const { locale, t } = useI18n()
 
   const currentLocale = computed(() => (locale.value === 'en' ? 'en-US' : 'vi-VN'))
 
@@ -42,20 +42,19 @@ export const useFormat = () => {
     if (isNaN(d.getTime())) return ''
 
     const diffInSeconds = Math.floor((Date.now() - d.getTime()) / 1000)
-    const isEn = locale.value === 'en'
 
-    if (diffInSeconds < 60) return isEn ? 'just now' : 'vừa xong'
+    if (diffInSeconds < 60) return t('common.justNow')
     if (diffInSeconds < 3600) {
       const minutes = Math.floor(diffInSeconds / 60)
-      return isEn ? `${minutes}m ago` : `${minutes} phút trước`
+      return t('common.minutesAgo', { m: minutes })
     }
     if (diffInSeconds < 86400) {
       const hours = Math.floor(diffInSeconds / 3600)
-      return isEn ? `${hours}h ago` : `${hours} giờ trước`
+      return t('common.hoursAgo', { h: hours })
     }
     if (diffInSeconds < 2592000) {
       const days = Math.floor(diffInSeconds / 86400)
-      return isEn ? `${days}d ago` : `${days} ngày trước`
+      return t('common.daysAgo', { d: days })
     }
     return formatDate(d)
   }

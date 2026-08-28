@@ -94,6 +94,7 @@ import type { InAppNotification } from '~/types/api'
 const notificationStore = useNotificationStore()
 const { formatRelativeTime } = useFormat()
 const { put } = useApi()
+const localePath = useLocalePath()
 
 const isOpen = ref(false)
 const bellRef = ref<HTMLElement | null>(null)
@@ -121,7 +122,7 @@ const handleClickNotification = async (item: InAppNotification) => {
   }
   if (item.targetUrl) {
     isOpen.value = false
-    navigateTo(item.targetUrl)
+    navigateTo(localePath(item.targetUrl))
   }
 }
 </script>

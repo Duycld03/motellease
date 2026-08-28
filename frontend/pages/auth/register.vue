@@ -64,9 +64,9 @@
     <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 text-center">
       <p class="text-xs text-slate-500 dark:text-slate-400">
         {{ $t('auth.alreadyHaveAccount') }}
-        <NuxtLink to="/auth/login" class="font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 ml-1">
+        <NuxtLinkLocale to="/auth/login" class="font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 ml-1">
           {{ $t('nav.login') }}
-        </NuxtLink>
+        </NuxtLinkLocale>
       </p>
     </div>
   </div>
@@ -86,6 +86,7 @@ definePageMeta({
 const { sendRegistrationOtp } = useAuth()
 const toast = useToast()
 const { t } = useI18n()
+const localePath = useLocalePath()
 
 const roleOptions = computed(() => [
   { label: `${t('roles.Tenant')} (Tenant)`, value: UserRole.Tenant },
@@ -111,10 +112,10 @@ const handleSubmit = async () => {
       window.sessionStorage.setItem('pending_registration', JSON.stringify(form))
     }
     toast.success(t('auth.otpSent'))
-    navigateTo({
+    navigateTo(localePath({
       path: '/auth/verify-otp',
       query: { email: form.email },
-    })
+    }))
   } catch (err: any) {
     toast.error(err.message || t('auth.registerFailed'))
   } finally {

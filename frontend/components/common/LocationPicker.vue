@@ -5,14 +5,14 @@
       <!-- Province -->
       <div>
         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-          Tỉnh / Thành phố <span class="text-red-500">*</span>
+          {{ $t('location.province') }} <span class="text-red-500">*</span>
         </label>
         <select
           :value="province"
           class="input-field !text-xs !py-2"
           @change="onProvinceChange"
         >
-          <option value="" disabled selected>Chọn Tỉnh/Thành phố</option>
+          <option value="" disabled selected>{{ $t('location.selectProvince') }}</option>
           <option v-for="p in provinces" :key="p.code" :value="p.name">
             {{ p.fullName || p.name }}
           </option>
@@ -22,7 +22,7 @@
       <!-- District -->
       <div>
         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-          Quận / Huyện <span class="text-red-500">*</span>
+          {{ $t('location.district') }} <span class="text-red-500">*</span>
         </label>
         <select
           :value="district"
@@ -30,7 +30,7 @@
           class="input-field !text-xs !py-2"
           @change="onDistrictChange"
         >
-          <option value="" disabled selected>Chọn Quận/Huyện</option>
+          <option value="" disabled selected>{{ $t('location.selectDistrict') }}</option>
           <option v-for="d in districts" :key="d.code" :value="d.name">
             {{ d.fullName || d.name }}
           </option>
@@ -40,13 +40,13 @@
       <!-- Ward -->
       <div>
         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-          Phường / Xã <span class="text-red-500">*</span>
+          {{ $t('location.ward') }} <span class="text-red-500">*</span>
         </label>
         <input
           :value="ward"
           type="text"
           class="input-field !text-xs !py-2"
-          placeholder="VD: Phường Dịch Vọng Hậu"
+          :placeholder="$t('location.wardPlaceholder')"
           @input="$emit('update:ward', ($event.target as HTMLInputElement).value)"
         />
       </div>
@@ -55,13 +55,13 @@
     <!-- Address Line -->
     <div>
       <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-        Địa chỉ chi tiết (Số nhà, tên đường, ngõ ngách) <span class="text-red-500">*</span>
+        {{ $t('location.addressLine') }} <span class="text-red-500">*</span>
       </label>
       <input
         :value="addressLine"
         type="text"
         class="input-field !text-xs !py-2"
-        placeholder="VD: Số 18 Ngõ 86 Duy Tân"
+        :placeholder="$t('location.addressLinePlaceholder')"
         @input="$emit('update:addressLine', ($event.target as HTMLInputElement).value)"
       />
     </div>
@@ -70,10 +70,10 @@
     <div class="space-y-2">
       <div class="flex items-center justify-between">
         <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-          Ghim tọa độ chính xác trên bản đồ (Latitude & Longitude)
+          {{ $t('location.pinCoordinates') }}
         </label>
         <span class="text-[11px] text-slate-500 dark:text-slate-400">
-          Tọa độ: {{ latitude.toFixed(5) }}, {{ longitude.toFixed(5) }}
+          {{ $t('location.coordinates') }}: {{ latitude.toFixed(5) }}, {{ longitude.toFixed(5) }}
         </span>
       </div>
 
@@ -88,7 +88,7 @@
           />
           <template #fallback>
             <div class="w-full h-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-xs text-slate-400">
-              Đang tải bản đồ...
+              {{ $t('location.loadingMap') }}
             </div>
           </template>
         </ClientOnly>
@@ -96,7 +96,7 @@
 
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="block text-[11px] text-slate-500 dark:text-slate-400 mb-0.5">Vĩ độ (Latitude)</label>
+          <label class="block text-[11px] text-slate-500 dark:text-slate-400 mb-0.5">{{ $t('location.latitude') }}</label>
           <input
             :value="latitude"
             type="number"
@@ -106,7 +106,7 @@
           />
         </div>
         <div>
-          <label class="block text-[11px] text-slate-500 dark:text-slate-400 mb-0.5">Kinh độ (Longitude)</label>
+          <label class="block text-[11px] text-slate-500 dark:text-slate-400 mb-0.5">{{ $t('location.longitude') }}</label>
           <input
             :value="longitude"
             type="number"

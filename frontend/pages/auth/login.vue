@@ -23,9 +23,9 @@
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
             {{ $t('auth.password') }} <span class="text-red-500">*</span>
           </label>
-          <NuxtLink to="/auth/forgot-password" class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 font-medium">
+          <NuxtLinkLocale to="/auth/forgot-password" class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 font-medium">
             {{ $t('auth.forgotPasswordQuestion') }}
-          </NuxtLink>
+          </NuxtLinkLocale>
         </div>
         <BaseInput
           v-model="form.password"
@@ -51,9 +51,9 @@
     <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 text-center">
       <p class="text-xs text-slate-500 dark:text-slate-400">
         {{ $t('auth.dontHaveAccount') }}
-        <NuxtLink to="/auth/register" class="font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 ml-1">
+        <NuxtLinkLocale to="/auth/register" class="font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 ml-1">
           {{ $t('nav.register') }}
-        </NuxtLink>
+        </NuxtLinkLocale>
       </p>
     </div>
   </div>

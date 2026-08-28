@@ -6,7 +6,7 @@
         'p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500',
         customClass,
       ]"
-      :title="isDark ? 'Chuyển sang giao diện Sáng' : 'Chuyển sang giao diện Tối'"
+      :title="isDark ? $t('common.lightMode') : $t('common.darkMode')"
       @click="toggleTheme"
     >
       <!-- Sun icon (when dark mode is active, click to turn light) -->

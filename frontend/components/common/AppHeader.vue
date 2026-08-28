@@ -2,26 +2,26 @@
   <header class="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-md dark:bg-slate-950/90 dark:border-slate-800 transition-colors">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
       <!-- Logo -->
-      <NuxtLink to="/" class="flex items-center gap-2.5 font-bold text-lg text-slate-900 dark:text-white group">
+      <NuxtLinkLocale to="/" class="flex items-center gap-2.5 font-bold text-lg text-slate-900 dark:text-white group">
         <div class="w-9 h-9 rounded-xl bg-primary-600 flex items-center justify-center text-white shadow-sm shadow-primary-500/20 group-hover:bg-primary-700 transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
           </svg>
         </div>
         <span class="tracking-tight">Motel<span class="text-primary-600">Lease</span></span>
-      </NuxtLink>
+      </NuxtLinkLocale>
 
       <!-- Nav links (Desktop) -->
       <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
-        <NuxtLink to="/" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors" active-class="text-primary-600 dark:text-primary-400 font-semibold">
+        <NuxtLinkLocale to="/" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors" active-class="text-primary-600 dark:text-primary-400 font-semibold">
           {{ $t('nav.home') }}
-        </NuxtLink>
-        <NuxtLink to="/search" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors" active-class="text-primary-600 dark:text-primary-400 font-semibold">
+        </NuxtLinkLocale>
+        <NuxtLinkLocale to="/search" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors" active-class="text-primary-600 dark:text-primary-400 font-semibold">
           {{ $t('nav.search') }}
-        </NuxtLink>
-        <NuxtLink v-if="isAuthenticated && isTenant" to="/tenant/saved" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors" active-class="text-primary-600 dark:text-primary-400 font-semibold">
+        </NuxtLinkLocale>
+        <NuxtLinkLocale v-if="isAuthenticated && isTenant" to="/tenant/saved" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors" active-class="text-primary-600 dark:text-primary-400 font-semibold">
           {{ $t('nav.savedListings') }}
-        </NuxtLink>
+        </NuxtLinkLocale>
       </nav>
 
       <!-- Right controls -->
@@ -63,20 +63,20 @@
             v-if="isUserMenuOpen"
             class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100"
           >
-            <NuxtLink
+            <NuxtLinkLocale
               :to="dashboardRoute"
               class="block px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
               @click="isUserMenuOpen = false"
             >
               {{ $t('nav.dashboard') }}
-            </NuxtLink>
-            <NuxtLink
+            </NuxtLinkLocale>
+            <NuxtLinkLocale
               to="/tenant/profile"
               class="block px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
               @click="isUserMenuOpen = false"
             >
               {{ $t('nav.profile') }}
-            </NuxtLink>
+            </NuxtLinkLocale>
             <div class="border-t border-slate-100 dark:border-slate-800 my-1" />
             <button
               type="button"
@@ -89,12 +89,12 @@
         </div>
 
         <div v-else class="flex items-center gap-2">
-          <NuxtLink to="/auth/login" class="px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+          <NuxtLinkLocale to="/auth/login" class="px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
             {{ $t('nav.login') }}
-          </NuxtLink>
-          <NuxtLink to="/auth/register" class="btn-primary !px-3.5 !py-1.5 !text-xs !rounded-lg">
+          </NuxtLinkLocale>
+          <NuxtLinkLocale to="/auth/register" class="btn-primary !px-3.5 !py-1.5 !text-xs !rounded-lg">
             {{ $t('nav.register') }}
-          </NuxtLink>
+          </NuxtLinkLocale>
         </div>
       </div>
     </div>

@@ -2,17 +2,17 @@
   <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-xl font-bold text-slate-900 dark:text-white">Quản lý Hóa đơn & Tiền phòng</h1>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('common.ownerBillsTitle') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Chốt chỉ số điện nước hàng tháng, phát hành hóa đơn, xuất file PDF và theo dõi thanh toán
+          {{ $t('bills.ownerSubtitle') }}
         </p>
       </div>
       <div class="flex items-center gap-2">
         <BaseButton variant="outline" size="sm" @click="fetchBills">
-          🔄 Làm mới
+          🔄 {{ $t('common.refresh') }}
         </BaseButton>
         <BaseButton variant="primary" size="sm" @click="openCreateBillModal">
-          + Lập hóa đơn tháng
+          {{ $t('bills.createBill') }}
         </BaseButton>
       </div>
     </div>
@@ -31,7 +31,7 @@
           ]"
           @click="filterStatus = ''"
         >
-          Tất cả ({{ bills.length }})
+          {{ $t('common.allCount', { count: bills.length }) }}
         </button>
         <button
           v-for="st in ['Draft', 'Issued', 'Paid', 'Overdue', 'Cancelled']"
@@ -52,8 +52,8 @@
       <!-- Month & Year Selector -->
       <div class="flex items-center gap-2 shrink-0">
         <select v-model="filterMonth" class="input-field !text-xs !py-1.5 w-28" @change="fetchBills">
-          <option :value="null">Tất cả tháng</option>
-          <option v-for="m in 12" :key="m" :value="m">Tháng {{ m }}</option>
+          <option :value="null">{{ $t('common.all') }}</option>
+          <option v-for="m in 12" :key="m" :value="m">{{ $t('common.month') }} {{ m }}</option>
         </select>
         <select v-model="filterYear" class="input-field !text-xs !py-1.5 w-24" @change="fetchBills">
           <option :value="2025">2025</option>
@@ -72,7 +72,7 @@
       <svg class="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
       </svg>
-      <p class="font-medium text-slate-500 dark:text-slate-400">Không tìm thấy hóa đơn nào.</p>
+      <p class="font-medium text-slate-500 dark:text-slate-400">{{ $t('bills.emptyOwnerBills') }}</p>
     </div>
 
     <div v-else class="space-y-4">
@@ -87,22 +87,22 @@
             <div class="flex items-center gap-2">
               <span class="text-base font-bold text-slate-900 dark:text-white">{{ b.boardingHouseName }}</span>
               <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                Phòng {{ b.roomNumber }}
+                {{ $t('property.room') }} {{ b.roomNumber }}
               </span>
               <span class="text-xs font-semibold text-primary-600 dark:text-primary-400">
-                · Hóa đơn Tháng {{ b.month }}/{{ b.year }}
+                · {{ $t('bills.billMonth', { month: b.month, year: b.year }) }}
               </span>
             </div>
             <p class="text-xs text-slate-500 dark:text-slate-400">
-              <span v-if="b.issuedAt">Ngày phát hành: {{ formatRelativeTime(b.issuedAt) }}</span>
-              <span v-if="b.dueDate"> · Hạn thanh toán: <strong :class="isOverdue(b) ? 'text-red-600 dark:text-red-400 font-bold' : 'text-slate-700 dark:text-slate-300'">{{ b.dueDate }}</strong></span>
-              <span v-if="b.paidAt"> · Đã thanh toán: <strong class="text-emerald-600 dark:text-emerald-400">{{ formatRelativeTime(b.paidAt) }}</strong></span>
+              <span v-if="b.issuedAt">{{ $t('common.createdAt', { time: formatRelativeTime(b.issuedAt) }) }}</span>
+              <span v-if="b.dueDate"> · {{ $t('deposits.depositDateLabel') }}: <strong :class="isOverdue(b) ? 'text-red-600 dark:text-red-400 font-bold' : 'text-slate-700 dark:text-slate-300'">{{ b.dueDate }}</strong></span>
+              <span v-if="b.paidAt"> · {{ $t('enums.BillStatus.Paid') }}: <strong class="text-emerald-600 dark:text-emerald-400">{{ formatRelativeTime(b.paidAt) }}</strong></span>
             </p>
           </div>
 
           <div class="flex items-center gap-3">
             <div class="text-right">
-              <span class="text-xs text-slate-400 block">Tổng tiền</span>
+              <span class="text-xs text-slate-400 block">{{ $t('bills.totalAmount') }}</span>
               <span class="text-base font-extrabold text-primary-600 dark:text-primary-400">{{ formatCurrency(b.totalAmount) }}</span>
             </div>
             <StatusBadge type="BillStatus" :status="b.status" />
@@ -113,35 +113,35 @@
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
           <!-- Rent -->
           <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">Tiền phòng</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">{{ $t('bills.roomRateAmount') }}</span>
             <span class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 block">{{ formatCurrency(b.rentAmount) }}</span>
           </div>
 
           <!-- Electricity -->
           <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">⚡ Tiền điện ({{ b.electricityQty }} kWh)</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">⚡ {{ $t('bills.elecAmountTotal', { usage: b.electricityQty }) }}</span>
             <span class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 block">{{ formatCurrency(b.electricityAmount) }}</span>
             <span class="text-[10px] text-slate-400 block mt-0.5">{{ b.electricityOld }} ➔ {{ b.electricityNew }}</span>
           </div>
 
           <!-- Water -->
           <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">💧 Tiền nước ({{ b.waterQty }} m³)</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">💧 {{ $t('bills.waterAmountTotal', { usage: b.waterQty }) }}</span>
             <span class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 block">{{ formatCurrency(b.waterAmount) }}</span>
             <span class="text-[10px] text-slate-400 block mt-0.5">{{ b.waterOld }} ➔ {{ b.waterNew }}</span>
           </div>
 
           <!-- Additional fees -->
           <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">Phụ phí phát sinh</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">{{ $t('bills.otherServices') }}</span>
             <span class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 block">{{ formatCurrency(b.additionalFeeTotal) }}</span>
-            <span class="text-[10px] text-slate-400 block mt-0.5">{{ b.additionalFees?.length || 0 }} khoản mục</span>
+            <span class="text-[10px] text-slate-400 block mt-0.5">{{ b.additionalFees?.length || 0 }}</span>
           </div>
         </div>
 
         <!-- Additional Fees List if any -->
         <div v-if="b.additionalFees && b.additionalFees.length > 0" class="p-3 bg-slate-50/50 dark:bg-slate-800/30 rounded-xl text-xs space-y-1">
-          <div class="font-semibold text-slate-700 dark:text-slate-300 text-[11px] mb-1">Chi tiết các khoản phụ phí:</div>
+          <div class="font-semibold text-slate-700 dark:text-slate-300 text-[11px] mb-1">{{ $t('bills.otherServices') }}:</div>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-slate-600 dark:text-slate-400">
             <div v-for="fee in b.additionalFees" :key="fee.id" class="flex justify-between">
               <span>• {{ fee.feeName }}:</span>
@@ -157,7 +157,7 @@
             size="sm"
             @click="handleDownloadPdf(b.id, b.roomNumber, b.month, b.year)"
           >
-            📥 Xuất PDF
+            📥 {{ $t('bills.downloadInvoicePdf') }}
           </BaseButton>
 
           <BaseButton
@@ -167,7 +167,7 @@
             :loading="isIssuingId === b.id"
             @click="handleIssueDraft(b)"
           >
-            ⚡ Phát hành hóa đơn
+            ⚡ {{ $t('bills.issueBillNowBtn') }}
           </BaseButton>
 
           <BaseButton
@@ -177,7 +177,7 @@
             class="text-red-600 hover:text-red-700"
             @click="handleCancelBill(b.id)"
           >
-            Hủy hóa đơn
+            {{ $t('bills.cancelBillBtn') }}
           </BaseButton>
         </div>
       </div>
@@ -186,19 +186,19 @@
     <!-- MODAL: Create New Bill -->
     <BaseModal
       v-model="isCreateModalOpen"
-      title="Lập Hóa đơn Tiền phòng Hàng tháng"
+      :title="$t('bills.createNewBillModalTitle')"
       max-width="lg"
     >
       <form @submit.prevent="handleSubmitCreateBill" class="space-y-4">
         <!-- Room Selector -->
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Chọn Phòng trọ cần lập hóa đơn <span class="text-red-500">*</span>
+            {{ $t('bills.selectRoom') }} <span class="text-red-500">*</span>
           </label>
           <select v-model="billForm.roomId" class="input-field !text-xs !py-2" @change="onRoomChanged" required>
-            <option value="">-- Chọn phòng đang thuê --</option>
+            <option value="">-- {{ $t('common.select') }} --</option>
             <option v-for="rm in activeLeaseRooms" :key="rm.roomId" :value="rm.roomId">
-              {{ rm.boardingHouseName }} - Phòng {{ rm.roomNumber }} (Khách: {{ rm.primaryTenantFullName }})
+              {{ rm.boardingHouseName }} - {{ $t('property.room') }} {{ rm.roomNumber }} ({{ rm.primaryTenantFullName }})
             </option>
           </select>
         </div>
@@ -207,15 +207,15 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Tháng <span class="text-red-500">*</span>
+              {{ $t('common.month') }} <span class="text-red-500">*</span>
             </label>
             <select v-model.number="billForm.month" class="input-field !text-xs !py-2" @change="fetchBillPreview" required>
-              <option v-for="m in 12" :key="m" :value="m">Tháng {{ m }}</option>
+              <option v-for="m in 12" :key="m" :value="m">{{ $t('common.month') }} {{ m }}</option>
             </select>
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Năm <span class="text-red-500">*</span>
+              {{ $t('common.year') }} <span class="text-red-500">*</span>
             </label>
             <input
               v-model.number="billForm.year"
@@ -231,7 +231,7 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Chỉ số điện mới (kWh) <span class="text-red-500">*</span>
+              {{ $t('bills.elecMeterEnd') }} <span class="text-red-500">*</span>
             </label>
             <input
               v-model.number="billForm.electricityNew"
@@ -245,7 +245,7 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Chỉ số nước mới (m³) <span class="text-red-500">*</span>
+              {{ $t('bills.waterMeterEnd') }} <span class="text-red-500">*</span>
             </label>
             <input
               v-model.number="billForm.waterNew"
@@ -262,7 +262,7 @@
         <!-- Due Date -->
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Hạn nộp tiền phòng (Due Date)
+            {{ $t('deposits.depositDateLabel') }}
           </label>
           <input
             v-model="billForm.dueDate"
@@ -274,28 +274,28 @@
         <!-- Real-time Preview Calculation Box -->
         <div v-if="billPreview" class="p-4 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl border border-emerald-200 dark:border-emerald-800 text-xs space-y-2">
           <h5 class="font-bold text-emerald-900 dark:text-emerald-200 uppercase text-[11px] tracking-wide">
-            Bảng tính toán tạm tính hóa đơn:
+            {{ $t('bills.calculationPreviewTitle') }}:
           </h5>
           <div class="space-y-1 text-slate-700 dark:text-slate-300 text-[11px]">
             <div class="flex justify-between">
-              <span>🏠 Tiền phòng theo hợp đồng:</span>
+              <span>🏠 {{ $t('bills.roomRateAmount') }}</span>
               <span class="font-bold">{{ formatCurrency(billPreview.rentAmount) }}</span>
             </div>
             <div class="flex justify-between">
-              <span>⚡ Tiền điện ({{ billPreview.electricityOld }} ➔ {{ billPreview.electricityNew }} = {{ billPreview.electricityQty }} kWh):</span>
+              <span>⚡ {{ $t('bills.elecAmountTotal', { usage: billPreview.electricityQty }) }}:</span>
               <span>{{ formatCurrency(billPreview.electricityAmount) }}</span>
             </div>
             <div class="flex justify-between">
-              <span>💧 Tiền nước ({{ billPreview.waterOld }} ➔ {{ billPreview.waterNew }} = {{ billPreview.waterQty }} m³):</span>
+              <span>💧 {{ $t('bills.waterAmountTotal', { usage: billPreview.waterQty }) }}:</span>
               <span>{{ formatCurrency(billPreview.waterAmount) }}</span>
             </div>
             <div v-if="billPreview.additionalFeeTotal > 0" class="flex justify-between">
-              <span>📋 Phụ phí kèm theo:</span>
+              <span>📋 {{ $t('bills.otherServices') }}:</span>
               <span>{{ formatCurrency(billPreview.additionalFeeTotal) }}</span>
             </div>
           </div>
           <div class="flex justify-between items-center pt-2 border-t border-emerald-200 dark:border-emerald-800">
-            <span class="font-bold text-slate-900 dark:text-white">Tổng tiền hóa đơn:</span>
+            <span class="font-bold text-slate-900 dark:text-white">{{ $t('bills.grandTotal') }}</span>
             <span class="text-base font-extrabold text-emerald-700 dark:text-emerald-300">{{ formatCurrency(billPreview.totalAmount) }}</span>
           </div>
         </div>
@@ -311,7 +311,7 @@
             :loading="isSubmitting"
             @click="submitBillWithStatus('Draft')"
           >
-            Lưu bản nháp
+            {{ $t('bills.saveAsDraftBtn') }}
           </BaseButton>
           <BaseButton
             variant="primary"
@@ -320,7 +320,7 @@
             :loading="isSubmitting"
             @click="submitBillWithStatus('Issued')"
           >
-            ⚡ Phát hành ngay
+            ⚡ {{ $t('bills.issueBillNowBtn') }}
           </BaseButton>
         </div>
       </form>
@@ -341,6 +341,7 @@ definePageMeta({
 
 const { get, post, put } = useApi()
 const { formatCurrency, formatRelativeTime } = useFormat()
+const { t } = useI18n()
 const toast = useToast()
 
 const isLoading = ref(true)
@@ -366,10 +367,10 @@ const fetchBills = async () => {
   isLoading.value = true
   try {
     const data = await get<PagedResult<BillResponse>>('/bills', {
+      status: filterStatus.value || undefined,
       month: filterMonth.value || undefined,
       year: filterYear.value || undefined,
-      page: 1,
-      pageSize: 100,
+      pageSize: 50,
     })
     bills.value = data.items || []
   } catch {
@@ -387,21 +388,24 @@ const handleDownloadPdf = async (billId: string, roomNumber: string, month: numb
     const response = await fetch(`${config.public.apiBase}/bills/${billId}/pdf`, {
       headers: {
         Authorization: token ? `Bearer ${token}` : '',
+        'Accept-Language': locale.value || 'vi',
       },
     })
-    if (!response.ok) throw new Error('Không thể tải PDF')
+    if (!response.ok) throw new Error('Cannot download PDF')
     const blob = await response.blob()
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `Hoa_don_Phong_${roomNumber}_T${month}_${year}.pdf`
+    a.download = locale.value === 'en'
+      ? `Bill_Room_${roomNumber}_M${month}_${year}.pdf`
+      : `Hoa_don_Phong_${roomNumber}_T${month}_${year}.pdf`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
     window.URL.revokeObjectURL(url)
-    toast.success('Đã tải hóa đơn PDF!')
+    toast.success(t('messages.downloadBillPdfSuccess'))
   } catch (err: any) {
-    toast.error(err.message || 'Lỗi khi tải hóa đơn PDF.')
+    toast.error(err.message || t('messages.actionFailed'))
   }
 }
 
@@ -415,10 +419,10 @@ const handleIssueDraft = async (b: BillResponse) => {
     await put(`/bills/${b.id}/issue`, {
       dueDate: b.dueDate || nextWeek.toISOString().slice(0, 10),
     })
-    toast.success('Phát hành hóa đơn thành công!')
+    toast.success(t('messages.issueBillSuccess'))
     await fetchBills()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể phát hành hóa đơn.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isIssuingId.value = null
   }
@@ -426,13 +430,13 @@ const handleIssueDraft = async (b: BillResponse) => {
 
 // Cancel Bill
 const handleCancelBill = async (billId: string) => {
-  if (!confirm('Bạn có chắc chắn muốn hủy hóa đơn này không?')) return
+  if (!confirm(t('messages.confirmAction'))) return
   try {
     await put(`/bills/${billId}/cancel`, {})
-    toast.success('Đã hủy hóa đơn.')
+    toast.success(t('messages.cancelBillSuccess'))
     await fetchBills()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể hủy hóa đơn.')
+    toast.error(err.message || t('messages.actionFailed'))
   }
 }
 
@@ -492,7 +496,7 @@ const fetchBillPreview = async () => {
 
 const submitBillWithStatus = async (status: 'Draft' | 'Issued') => {
   if (!billForm.roomId) {
-    toast.error('Vui lòng chọn phòng cần lập hóa đơn.')
+    toast.error(t('messages.actionFailed'))
     return
   }
   isSubmitting.value = true
@@ -506,11 +510,11 @@ const submitBillWithStatus = async (status: 'Draft' | 'Issued') => {
       dueDate: billForm.dueDate || undefined,
       status: status,
     })
-    toast.success(status === 'Issued' ? 'Đã phát hành hóa đơn tiền phòng!' : 'Đã lưu hóa đơn nháp!')
+    toast.success(status === 'Issued' ? t('messages.issueBillSuccess') : t('messages.saveDraftBillSuccess'))
     isCreateModalOpen.value = false
     await fetchBills()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể tạo hóa đơn. Vui lòng kiểm tra lại.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isSubmitting.value = false
   }

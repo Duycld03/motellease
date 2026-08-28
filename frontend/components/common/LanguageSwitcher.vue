@@ -37,6 +37,7 @@
 import { onClickOutside } from '@vueuse/core'
 
 const { locale, locales, setLocale } = useI18n()
+const switchLocalePath = useSwitchLocalePath()
 const isOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
 
@@ -50,7 +51,13 @@ const currentLocaleItem = computed(() =>
 )
 
 const changeLanguage = async (newLocale: string) => {
-  await setLocale(newLocale as any)
   isOpen.value = false
+  if (setLocale) {
+    await setLocale(newLocale as any)
+  }
+  const targetPath = switchLocalePath(newLocale as any)
+  if (targetPath) {
+    await navigateTo(targetPath)
+  }
 }
 </script>

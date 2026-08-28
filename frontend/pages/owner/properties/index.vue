@@ -4,12 +4,12 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
         <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('nav.properties') }}</h1>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Danh sách các khu trọ bạn sở hữu hoặc được phân công quản lý</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ $t('common.ownerPropertiesSubtitleFull') }}</p>
       </div>
 
-      <NuxtLink to="/owner/properties/create" class="btn-primary !text-xs !py-2.5 !px-4 !rounded-xl">
-        + Thêm khu trọ mới
-      </NuxtLink>
+      <NuxtLinkLocale to="/owner/properties/create" class="btn-primary !text-xs !py-2.5 !px-4 !rounded-xl">
+        {{ $t('ownerProperties.createNew') }}
+      </NuxtLinkLocale>
     </div>
 
     <!-- Loading -->
@@ -24,14 +24,14 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
         </svg>
       </div>
-      <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200">Bạn chưa có khu trọ nào</h3>
+      <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ $t('common.ownerNoPropertiesTitle') }}</h3>
       <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
-        Tạo khu trọ đầu tiên để bắt đầu thêm loại phòng, danh sách phòng và tiếp cận khách thuê trực tuyến.
+        {{ $t('common.ownerNoPropertiesDesc') }}
       </p>
       <div class="mt-6">
-        <NuxtLink to="/owner/properties/create" class="btn-primary !text-xs !py-2 !px-4">
-          + Thêm khu trọ ngay
-        </NuxtLink>
+        <NuxtLinkLocale to="/owner/properties/create" class="btn-primary !text-xs !py-2 !px-4">
+          {{ $t('common.ownerAddPropertyNow') }}
+        </NuxtLinkLocale>
       </div>
     </div>
 
@@ -82,12 +82,12 @@
             <!-- Stats strip -->
             <div class="grid grid-cols-2 gap-2 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
               <div>
-                <span class="text-[10px] text-slate-400 block">Tổng số phòng</span>
-                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">{{ house.roomCount }} phòng</span>
+                <span class="text-[10px] text-slate-400 block">{{ $t('common.totalRoomsCount') }}</span>
+                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">{{ house.roomCount }} {{ $t('common.roomUnit') }}</span>
               </div>
               <div>
-                <span class="text-[10px] text-slate-400 block">Phòng trống</span>
-                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">{{ house.availableRoomCount }} trống</span>
+                <span class="text-[10px] text-slate-400 block">{{ $t('common.availableCount') }}</span>
+                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">{{ house.availableRoomCount }} {{ $t('common.vacantUnit') }}</span>
               </div>
             </div>
           </div>
@@ -95,22 +95,22 @@
 
         <!-- Footer Actions -->
         <div class="px-5 pb-5 pt-2 flex items-center justify-between gap-2 border-t border-slate-100 dark:border-slate-800 mt-2">
-          <NuxtLink
+          <NuxtLinkLocale
             :to="`/owner/properties/${house.id}`"
             class="flex-1 btn-primary !text-xs !py-2 text-center"
           >
-            Quản lý khu trọ
-          </NuxtLink>
+            {{ $t('common.manageProperty') }}
+          </NuxtLinkLocale>
 
-          <NuxtLink
+          <NuxtLinkLocale
             :to="`/owner/properties/${house.id}/edit`"
             class="p-2 text-slate-500 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            title="Chỉnh sửa thông tin"
+            :title="$t('common.editInfo')"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
-          </NuxtLink>
+          </NuxtLinkLocale>
         </div>
       </div>
     </div>

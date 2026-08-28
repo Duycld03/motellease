@@ -112,19 +112,19 @@
               {{ $t('home.featuredSubtitle') }}
             </p>
           </div>
-          <NuxtLink to="/search" class="text-xs font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 flex items-center gap-1">
+          <NuxtLinkLocale to="/search" class="text-xs font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 flex items-center gap-1">
             {{ $t('home.viewAllListings') }}
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
-          </NuxtLink>
+          </NuxtLinkLocale>
         </div>
 
         <!-- Featured Houses Link -->
         <div class="text-center py-8">
-          <NuxtLink to="/search" class="btn-primary !py-3 !px-8 text-sm">
-            🚀 Khám phá tất cả phòng trọ ngay
-          </NuxtLink>
+          <NuxtLinkLocale to="/search" class="btn-primary !py-3 !px-8 text-sm">
+            {{ $t('home.exploreAllRooms') }}
+          </NuxtLinkLocale>
         </div>
       </div>
     </section>
@@ -135,15 +135,16 @@
 import BaseButton from '~/components/common/BaseButton.vue'
 
 const searchQuery = ref('')
+const localePath = useLocalePath()
 
 const handleSearch = () => {
   if (searchQuery.value.trim()) {
-    navigateTo({
+    navigateTo(localePath({
       path: '/search',
       query: { q: searchQuery.value.trim() },
-    })
+    }))
   } else {
-    navigateTo('/search')
+    navigateTo(localePath('/search'))
   }
 }
 </script>

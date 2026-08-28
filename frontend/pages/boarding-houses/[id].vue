@@ -7,11 +7,11 @@
 
     <!-- Not Found State -->
     <div v-else-if="!house" class="py-20 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
-      <h3 class="text-base font-bold text-slate-800 dark:text-slate-200">Không tìm thấy thông tin khu trọ</h3>
-      <p class="text-xs text-slate-500 mt-1">Khu trọ có thể đã bị gỡ hoặc không tồn tại.</p>
-      <NuxtLink to="/search" class="mt-4 inline-block btn-primary !text-xs !py-2 !px-4">
-        ← Quay lại trang tìm kiếm
-      </NuxtLink>
+      <h3 class="text-base font-bold text-slate-800 dark:text-slate-200">{{ $t('common.houseNotFound') }}</h3>
+      <p class="text-xs text-slate-500 mt-1">{{ $t('common.houseNotFoundHint') }}</p>
+      <NuxtLinkLocale to="/search" class="mt-4 inline-block btn-primary !text-xs !py-2 !px-4">
+        {{ $t('common.backToSearch') }}
+      </NuxtLinkLocale>
     </div>
 
     <!-- Main Detail View -->
@@ -19,9 +19,9 @@
       <!-- Breadcrumb & Title Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <NuxtLink to="/search" class="inline-flex items-center text-xs font-medium text-slate-500 hover:text-primary-600 mb-2 transition-colors">
-            ← Quay lại kết quả tìm kiếm
-          </NuxtLink>
+          <NuxtLinkLocale to="/search" class="inline-flex items-center text-xs font-medium text-slate-500 hover:text-primary-600 mb-2 transition-colors">
+            {{ $t('common.backToSearchResults') }}
+          </NuxtLinkLocale>
           <div class="flex items-center gap-2 mb-1">
             <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-400">
               {{ $t(`enums.BoardingHouseType.${house.type}`) }}
@@ -34,7 +34,7 @@
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-500',
               ]"
             >
-              {{ house.availableRoomsCount > 0 ? `Còn ${house.availableRoomsCount} phòng trống` : 'Hết phòng' }}
+              {{ house.availableRoomsCount > 0 ? $t('property.availableRoomsBadge', { count: house.availableRoomsCount }) : $t('property.outOfRooms') }}
             </span>
           </div>
 
@@ -57,7 +57,7 @@
               <span>★</span>
               <span>{{ house.rating ? house.rating.toFixed(1) : '5.0' }}</span>
             </div>
-            <span class="text-[11px] text-slate-400 block mt-0.5">{{ house.reviewCount || 0 }} đánh giá xác thực</span>
+            <span class="text-[11px] text-slate-400 block mt-0.5">{{ $t('common.reviewCountVerified', { count: house.reviewCount || 0 }) }}</span>
           </div>
 
           <button
@@ -69,7 +69,7 @@
                 ? 'bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800 text-red-600'
                 : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-red-500',
             ]"
-            :title="isSaved ? 'Bỏ lưu tin' : 'Lưu tin yêu thích'"
+            :title="isSaved ? $t('common.unsaveListing') : $t('common.saveListing')"
             @click="toggleSaved"
           >
             <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
@@ -118,18 +118,18 @@
         <!-- Left 2 Columns -->
         <div class="lg:col-span-2 space-y-8">
           <!-- Description -->
-          <BaseCard title="Thông tin mô tả">
+          <BaseCard :title="$t('property.description')">
             <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
-              {{ house.description || 'Chưa có mô tả chi tiết cho khu trọ này.' }}
+              {{ house.description || $t('property.noDescription') }}
             </p>
           </BaseCard>
 
           <!-- Room Types & Features -->
           <div class="space-y-4">
-            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Các loại phòng tại khu trọ</h2>
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white">{{ $t('property.roomTypesAndPrices') }}</h2>
 
             <div v-if="!house.roomTypes || house.roomTypes.length === 0" class="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
-              Chưa có thông tin loại phòng.
+              {{ $t('property.noRoomTypes') }}
             </div>
 
             <div v-else class="space-y-4">
@@ -142,12 +142,12 @@
                   <div>
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ rt.typeName }}</h3>
                     <span class="text-xs text-slate-500 dark:text-slate-400">
-                      📐 {{ rt.roomSizeM2 }} m² · 👥 Tối đa {{ rt.maxOccupants }} người · Còn {{ rt.availableRoomsCount }} phòng trống
+                      📐 {{ rt.roomSizeM2 }} m² · 👥 {{ $t('property.maxOccupants', { n: rt.maxOccupants }) }} · {{ $t('property.availableRoomsBadge', { count: rt.availableRoomsCount }) }}
                     </span>
                   </div>
                   <div class="text-right">
                     <span class="text-base font-extrabold text-primary-600 dark:text-primary-400 block">
-                      {{ formatCurrency(rt.price) }} <span class="text-xs text-slate-400 font-normal">/tháng</span>
+                      {{ formatCurrency(rt.price) }} <span class="text-xs text-slate-400 font-normal">{{ $t('property.perMonth') }}</span>
                     </span>
                   </div>
                 </div>
@@ -174,16 +174,16 @@
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <div>
-                <h2 class="text-lg font-bold text-slate-900 dark:text-white">Danh sách phòng còn trống</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Chọn phòng trống cụ thể để đặt lịch xem trực tiếp</p>
+                <h2 class="text-lg font-bold text-slate-900 dark:text-white">{{ $t('common.vacantRoomsList') }}</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $t('common.vacantRoomsSelectHint') }}</p>
               </div>
               <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                {{ vacantRooms.length }} phòng khả dụng
+                {{ $t('common.availableRoomsCountLabel', { count: vacantRooms.length }) }}
               </span>
             </div>
 
             <div v-if="vacantRooms.length === 0" class="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
-              Hiện tại khu trọ đã kín phòng. Vui lòng quay lại sau hoặc liên hệ chủ trọ để được tư vấn thêm.
+              {{ $t('common.fullyBookedNotice') }}
             </div>
 
             <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -194,7 +194,7 @@
               >
                 <div>
                   <div class="flex items-center justify-between">
-                    <span class="text-sm font-bold text-slate-900 dark:text-white">Phòng {{ rm.roomNumber }}</span>
+                    <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $t('property.room') }} {{ rm.roomNumber }}</span>
                     <span class="text-xs font-bold text-primary-600 dark:text-primary-400">{{ formatCurrency(rm.price) }}/th</span>
                   </div>
                   <span class="text-[11px] text-slate-500 block mt-0.5">{{ rm.roomTypeName }} ({{ rm.roomSizeM2 }} m²)</span>
@@ -208,7 +208,7 @@
                     class="w-full !py-1.5 !text-xs"
                     @click="openAppointmentModal(rm)"
                   >
-                    📅 Xem phòng
+                    {{ $t('common.viewRoomBtn') }}
                   </BaseButton>
                   <BaseButton
                     variant="primary"
@@ -216,7 +216,7 @@
                     class="w-full !py-1.5 !text-xs"
                     @click="openDepositModal(rm)"
                   >
-                    🔒 Cọc giữ phòng
+                    {{ $t('common.depositRoomBtn') }}
                   </BaseButton>
                 </div>
               </div>
@@ -224,7 +224,7 @@
           </div>
 
           <!-- Location Map -->
-          <BaseCard title="Vị trí trên bản đồ">
+          <BaseCard :title="$t('property.mapLocation')">
             <div class="h-72 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800">
               <ClientOnly>
                 <MapView
@@ -235,7 +235,7 @@
                 />
                 <template #fallback>
                   <div class="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs text-slate-400">
-                    Đang tải bản đồ...
+                    {{ $t('location.loadingMap') }}
                   </div>
                 </template>
               </ClientOnly>
@@ -246,13 +246,13 @@
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <h2 class="text-lg font-bold text-slate-900 dark:text-white">
-                Đánh giá từ người thuê thực tế
+                {{ $t('property.verifiedReviewsTitle') }}
                 <span class="text-xs font-normal text-slate-500 ml-1">({{ reviews.length }})</span>
               </h2>
             </div>
 
             <div v-if="reviews.length === 0" class="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
-              Chưa có đánh giá nào cho khu trọ này.
+              {{ $t('property.noReviews') }}
             </div>
 
             <div v-else class="space-y-4">
@@ -270,7 +270,7 @@
                       <div class="flex items-center gap-2">
                         <span class="text-xs font-bold text-slate-900 dark:text-white">{{ rev.userFullName }}</span>
                         <span v-if="rev.isVerified" class="px-1.5 py-0.2 rounded text-[10px] bg-emerald-50 text-emerald-700 font-semibold">
-                          ✓ Đã từng thuê
+                          ✓ {{ $t('property.verifiedTenant') }}
                         </span>
                       </div>
                       <span class="text-[10px] text-slate-400">{{ formatRelativeTime(rev.createdAt) }}</span>
@@ -291,7 +291,7 @@
                 <div v-if="rev.replies && rev.replies.length > 0" class="mt-3 pl-4 border-l-2 border-primary-200 dark:border-primary-800 space-y-2">
                   <div v-for="rep in rev.replies" :key="rep.id" class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl text-xs space-y-1">
                     <div class="flex items-center gap-2">
-                      <span class="font-bold text-slate-800 dark:text-slate-200">Phản hồi từ Chủ nhà</span>
+                      <span class="font-bold text-slate-800 dark:text-slate-200">{{ $t('property.hostReply') }}</span>
                       <span class="text-[10px] text-slate-400">· {{ formatRelativeTime(rep.createdAt) }}</span>
                     </div>
                     <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ rep.content }}</p>
@@ -305,20 +305,20 @@
         <!-- Right 1 Column (Host info, Utilities, Quick Booking Box) -->
         <div class="space-y-6">
           <!-- Host Contact Card -->
-          <BaseCard title="Thông tin Chủ trọ">
+          <BaseCard :title="$t('property.hostInfo')">
             <div class="space-y-4">
               <div class="flex items-center gap-3">
                 <div class="w-12 h-12 rounded-2xl bg-primary-100 dark:bg-primary-950 text-primary-700 dark:text-primary-300 flex items-center justify-center font-bold text-base shadow-sm">
                   {{ house.owner?.fullName ? house.owner.fullName.charAt(0).toUpperCase() : 'H' }}
                 </div>
                 <div>
-                  <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ house.owner?.fullName || 'Chủ trọ' }}</h4>
-                  <span class="text-xs text-slate-400 block mt-0.5">Chủ sở hữu & Quản lý</span>
+                  <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ house.owner?.fullName || $t('roles.Owner') }}</h4>
+                  <span class="text-xs text-slate-400 block mt-0.5">{{ $t('property.ownerAndManager') }}</span>
                 </div>
               </div>
 
               <div v-if="house.owner?.phoneNumber" class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center justify-between">
-                <span class="text-xs text-slate-500">Số điện thoại liên hệ</span>
+                <span class="text-xs text-slate-500">{{ $t('property.contactPhone') }}</span>
                 <a :href="`tel:${house.owner.phoneNumber}`" class="text-xs font-bold text-primary-600 dark:text-primary-400 hover:underline">
                   {{ house.owner.phoneNumber }}
                 </a>
@@ -327,14 +327,14 @@
           </BaseCard>
 
           <!-- Utilities Rate Card -->
-          <BaseCard title="Đơn giá dịch vụ">
+          <BaseCard :title="$t('property.utilityPricing')">
             <div class="space-y-3">
               <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center justify-between">
-                <span class="text-xs text-slate-600 dark:text-slate-400">⚡ Tiền điện</span>
+                <span class="text-xs text-slate-600 dark:text-slate-400">⚡ {{ $t('property.electricity') }}</span>
                 <span class="text-xs font-bold text-slate-900 dark:text-white">{{ formatCurrency(house.electricityUnitPrice) }} / kWh</span>
               </div>
               <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center justify-between">
-                <span class="text-xs text-slate-600 dark:text-slate-400">💧 Tiền nước</span>
+                <span class="text-xs text-slate-600 dark:text-slate-400">💧 {{ $t('property.water') }}</span>
                 <span class="text-xs font-bold text-slate-900 dark:text-white">{{ formatCurrency(house.waterUnitPrice) }} / m³</span>
               </div>
             </div>
@@ -346,21 +346,21 @@
     <!-- MODAL: Book Viewing Appointment -->
     <BaseModal
       v-model="isAppointmentModalOpen"
-      :title="`Đặt lịch xem Phòng ${selectedRoom?.roomNumber}`"
+      :title="$t('property.bookAppointmentModalTitle', { room: selectedRoom?.roomNumber || '' })"
       max-width="md"
     >
       <form @submit.prevent="handleSubmitAppointment" class="space-y-4">
         <div v-if="selectedRoom" class="p-3.5 bg-primary-50 dark:bg-primary-950/40 rounded-xl text-xs space-y-1">
           <div class="flex items-center justify-between font-bold text-primary-900 dark:text-primary-200">
-            <span>Phòng {{ selectedRoom.roomNumber }} ({{ selectedRoom.roomTypeName }})</span>
-            <span>{{ formatCurrency(selectedRoom.price) }}/tháng</span>
+            <span>{{ $t('property.room') }} {{ selectedRoom.roomNumber }} ({{ selectedRoom.roomTypeName }})</span>
+            <span>{{ formatCurrency(selectedRoom.price) }}/{{ $t('common.unitMonth') }}</span>
           </div>
-          <p class="text-primary-700 dark:text-primary-400 text-[11px]">Khu trọ: {{ house?.name }}</p>
+          <p class="text-primary-700 dark:text-primary-400 text-[11px]">{{ $t('property.house') }}: {{ house?.name }}</p>
         </div>
 
         <BaseDatePicker
           v-model="appointmentForm.appointmentDate"
-          label="Ngày & Giờ hẹn xem phòng"
+          :label="$t('property.appointmentDateTime')"
           enable-time
           required
           :min="todayStr"
@@ -368,13 +368,13 @@
 
         <div>
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-            Ghi chú cho chủ nhà (Tùy chọn)
+            {{ $t('property.noteToHostOptional') }}
           </label>
           <textarea
             v-model="appointmentForm.note"
             rows="3"
             class="input-field !text-xs !py-2"
-            placeholder="VD: Em dự kiến xem phòng lúc chiều sau 5h, anh/chị hỗ trợ giúp em..."
+            :placeholder="$t('property.appointmentNotePlaceholder')"
           />
         </div>
 
@@ -383,26 +383,26 @@
             {{ $t('common.cancel') }}
           </BaseButton>
           <BaseButton variant="primary" size="sm" type="submit" :loading="isBookingAppointment">
-            Xác nhận đặt lịch
+            {{ $t('property.sendAppointment') }}
           </BaseButton>
         </div>
       </form>
     </BaseModal>
 
-    <!-- MODAL: Request Deposit (Đặt cọc giữ phòng) -->
+    <!-- MODAL: Request Deposit ({{ $t('property.depositRoom') }}) -->
     <BaseModal
       v-model="isDepositModalOpen"
-      :title="`Yêu cầu Đặt cọc giữ Phòng ${selectedRoom?.roomNumber}`"
+      :title="$t('property.depositModalTitle', { room: selectedRoom?.roomNumber || '' })"
       max-width="lg"
     >
       <form @submit.prevent="handleSubmitDeposit" class="space-y-4">
         <div v-if="selectedRoom" class="p-4 bg-primary-50 dark:bg-primary-950/40 rounded-xl border border-primary-200 dark:border-primary-800 text-xs space-y-2">
           <div class="flex items-center justify-between font-bold text-primary-900 dark:text-primary-200">
-            <span>Phòng {{ selectedRoom.roomNumber }} - {{ selectedRoom.roomTypeName }}</span>
-            <span class="text-sm text-primary-700 dark:text-primary-300">{{ formatCurrency(selectedRoom.price) }}/tháng</span>
+            <span>{{ $t('property.room') }} {{ selectedRoom.roomNumber }} - {{ selectedRoom.roomTypeName }}</span>
+            <span class="text-sm text-primary-700 dark:text-primary-300">{{ formatCurrency(selectedRoom.price) }}/{{ $t('common.unitMonth') }}</span>
           </div>
           <div class="flex items-center justify-between text-slate-600 dark:text-slate-400 text-[11px] pt-1 border-t border-primary-200/60 dark:border-primary-800/60">
-            <span>Tiền cọc giữ chỗ (1 tháng tiền phòng):</span>
+            <span>{{ $t('property.holdingDepositNote') }}</span>
             <span class="font-bold text-slate-900 dark:text-white">{{ formatCurrency(selectedRoom.price) }}</span>
           </div>
         </div>
@@ -410,7 +410,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <BaseDatePicker
             v-model="depositForm.requestedStartDate"
-            label="Ngày dự kiến chuyển vào"
+            :label="$t('property.expectedMoveInDate')"
             required
             :min="todayStr"
           />
@@ -418,17 +418,17 @@
           <BaseSelect
             v-model="depositForm.requestedTermMonths"
             :options="termOptions"
-            label="Thời hạn hợp đồng mong muốn"
+            :label="$t('property.desiredContractTerm')"
             required
           />
         </div>
 
         <div class="p-3 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-200 dark:border-amber-800 text-[11px] text-amber-800 dark:text-amber-300 space-y-1">
-          <p class="font-bold">📌 Quy trình đặt cọc an toàn:</p>
+          <p class="font-bold">{{ $t('property.safeDepositProcessTitle') }}</p>
           <ul class="list-disc list-inside space-y-0.5 text-amber-700 dark:text-amber-400">
-            <li>Sau khi gửi yêu cầu, chủ nhà sẽ duyệt và giữ phòng cho bạn trong <strong>24 giờ</strong>.</li>
-            <li>Khi chủ nhà duyệt, bạn có thể <strong>xem trước dự thảo hợp đồng</strong> và thanh toán cọc qua <strong>MoMo / VNPay</strong>.</li>
-            <li>Số tiền cọc sẽ được chuyển thành khoản cọc hợp đồng chính thức khi nhận phòng.</li>
+            <li>{{ $t('property.safeDepositStep1') }}</li>
+            <li>{{ $t('property.safeDepositStep2') }}</li>
+            <li>{{ $t('property.safeDepositStep3') }}</li>
           </ul>
         </div>
 
@@ -437,7 +437,7 @@
             {{ $t('common.cancel') }}
           </BaseButton>
           <BaseButton variant="primary" size="sm" type="submit" :loading="isSubmittingDeposit">
-            Gửi yêu cầu đặt cọc
+            {{ $t('property.submitDepositRequest') }}
           </BaseButton>
         </div>
       </form>
@@ -467,6 +467,8 @@ const houseId = route.params.id as string
 const { get, post, delete: deleteApi } = useApi()
 const { formatCurrency, formatRelativeTime } = useFormat()
 const { isAuthenticated, isTenant } = useAuth()
+const { t } = useI18n()
+const localePath = useLocalePath()
 const toast = useToast()
 
 const isLoading = ref(true)
@@ -513,14 +515,14 @@ const toggleSaved = async () => {
     if (isSaved.value) {
       await deleteApi(`/me/saved-listings/${houseId}`)
       isSaved.value = false
-      toast.success('Đã bỏ lưu tin!')
+      toast.success(t('messages.unsaveListingSuccess'))
     } else {
       await post('/me/saved-listings', { boardingHouseId: houseId })
       isSaved.value = true
-      toast.success('Đã lưu tin trọ!')
+      toast.success(t('messages.saveListingSuccess'))
     }
   } catch (err: any) {
-    toast.error(err.message || 'Không thể lưu tin.')
+    toast.error(err.message || t('messages.actionFailed'))
   }
 }
 
@@ -536,12 +538,12 @@ const appointmentForm = reactive({
 
 const openAppointmentModal = (rm: PublicVacantRoomResponse) => {
   if (!isAuthenticated.value) {
-    toast.info('Vui lòng đăng nhập tài khoản Người thuê để đặt lịch xem phòng.')
-    navigateTo('/auth/login')
+    toast.info(t('messages.actionFailed'))
+    navigateTo(localePath('/auth/login'))
     return
   }
   if (!isTenant.value) {
-    toast.warning('Chỉ tài khoản Người thuê (Tenant) mới có thể đặt lịch hẹn xem phòng.')
+    toast.warning(t('messages.actionFailed'))
     return
   }
 
@@ -564,10 +566,10 @@ const handleSubmitAppointment = async () => {
       appointmentDate: new Date(appointmentForm.appointmentDate).toISOString(),
       note: appointmentForm.note || undefined,
     })
-    toast.success('Đặt lịch xem phòng thành công! Chủ nhà sẽ xác nhận lịch hẹn của bạn.')
+    toast.success(t('messages.createAppointmentSuccess'))
     isAppointmentModalOpen.value = false
   } catch (err: any) {
-    toast.error(err.message || 'Không thể đặt lịch hẹn. Vui lòng thử lại.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isBookingAppointment.value = false
   }
@@ -582,12 +584,12 @@ const todayStr = computed(() => {
   return d.toISOString().slice(0, 10)
 })
 
-const termOptions = [
-  { label: '3 tháng', value: 3 },
-  { label: '6 tháng', value: 6 },
-  { label: '12 tháng (1 năm)', value: 12 },
-  { label: '24 tháng (2 năm)', value: 24 },
-]
+const termOptions = computed(() => [
+  { label: `3 ${t('common.unitMonth')}`, value: 3 },
+  { label: `6 ${t('common.unitMonth')}`, value: 6 },
+  { label: `12 ${t('common.unitMonth')}`, value: 12 },
+  { label: `24 ${t('common.unitMonth')}`, value: 24 },
+])
 
 const depositForm = reactive({
   requestedStartDate: '',
@@ -596,12 +598,12 @@ const depositForm = reactive({
 
 const openDepositModal = (rm: PublicVacantRoomResponse) => {
   if (!isAuthenticated.value) {
-    toast.info('Vui lòng đăng nhập tài khoản Người thuê để đặt cọc giữ phòng.')
-    navigateTo('/auth/login')
+    toast.info(t('messages.actionFailed'))
+    navigateTo(localePath('/auth/login'))
     return
   }
   if (!isTenant.value) {
-    toast.warning('Chỉ tài khoản Người thuê (Tenant) mới có thể tạo yêu cầu đặt cọc.')
+    toast.warning(t('messages.actionFailed'))
     return
   }
 
@@ -623,11 +625,11 @@ const handleSubmitDeposit = async () => {
       requestedStartDate: depositForm.requestedStartDate,
       requestedTermMonths: Number(depositForm.requestedTermMonths),
     })
-    toast.success('Gửi yêu cầu đặt cọc giữ phòng thành công! Chủ nhà sẽ xem xét và phản hồi cho bạn trong thời gian sớm nhất.')
+    toast.success(t('messages.createDepositSuccess'))
     isDepositModalOpen.value = false
-    navigateTo('/tenant/deposits')
+    navigateTo(localePath('/tenant/deposits'))
   } catch (err: any) {
-    toast.error(err.message || 'Không thể gửi yêu cầu đặt cọc. Vui lòng thử lại.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isSubmittingDeposit.value = false
   }

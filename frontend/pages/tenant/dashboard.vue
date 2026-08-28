@@ -4,16 +4,16 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
-          Xin chào, {{ user?.fullName }}
+          {{ $t('tenantDashboard.welcome', { name: user?.fullName || '' }) }}
         </h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Quản lý thông tin thuê phòng, hợp đồng và hóa đơn điện nước của bạn
+          {{ $t('tenantDashboard.subtitle') }}
         </p>
       </div>
 
-      <NuxtLink to="/search" class="btn-primary !text-xs !py-2 !px-4">
-        + Tìm kiếm phòng mới
-      </NuxtLink>
+      <NuxtLinkLocale to="/search" class="btn-primary !text-xs !py-2 !px-4">
+        + {{ $t('tenantDashboard.findNewRooms') }}
+      </NuxtLinkLocale>
     </div>
 
     <!-- Quick Stats Cards -->
@@ -23,8 +23,8 @@
           🏠
         </div>
         <div>
-          <span class="text-xs text-slate-500 dark:text-slate-400 block">Hợp đồng đang thuê</span>
-          <span class="text-lg font-bold text-slate-900 dark:text-white mt-0.5 block">1 phòng</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 block">{{ $t('tenantDashboard.activeLeases') }}</span>
+          <span class="text-lg font-bold text-slate-900 dark:text-white mt-0.5 block">{{ $t('tenantDashboard.oneRoom', { count: 1 }) }}</span>
         </div>
       </BaseCard>
 
@@ -33,7 +33,7 @@
           💳
         </div>
         <div>
-          <span class="text-xs text-slate-500 dark:text-slate-400 block">Hóa đơn cần thanh toán</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 block">{{ $t('tenantDashboard.billsToPay') }}</span>
           <span class="text-lg font-bold text-slate-900 dark:text-white mt-0.5 block">0</span>
         </div>
       </BaseCard>
@@ -43,7 +43,7 @@
           📅
         </div>
         <div>
-          <span class="text-xs text-slate-500 dark:text-slate-400 block">Lịch hẹn sắp tới</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 block">{{ $t('tenantDashboard.upcomingAppointments') }}</span>
           <span class="text-lg font-bold text-slate-900 dark:text-white mt-0.5 block">0</span>
         </div>
       </BaseCard>
@@ -53,29 +53,29 @@
           🔧
         </div>
         <div>
-          <span class="text-xs text-slate-500 dark:text-slate-400 block">Yêu cầu sửa chữa</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 block">{{ $t('tenantDashboard.maintenanceRequests') }}</span>
           <span class="text-lg font-bold text-slate-900 dark:text-white mt-0.5 block">0</span>
         </div>
       </BaseCard>
     </div>
 
     <!-- Active Lease Section -->
-    <BaseCard title="Hợp đồng thuê hiện tại">
+    <BaseCard :title="$t('tenantDashboard.currentLeaseTitle')">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
         <div>
           <div class="flex items-center gap-2 mb-1">
             <StatusBadge type="LeaseStatus" status="Active" />
-            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Phòng 201 - Nhà trọ MotelLease An Phú</span>
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">{{ $t('property.room') }} 201 - Nhà trọ MotelLease An Phú</span>
           </div>
           <p class="text-xs text-slate-500 dark:text-slate-400">
-            Thời hạn hợp đồng: 01/01/2026 - 31/12/2026 · Tiền thuê: 3.500.000 ₫/tháng
+            {{ $t('tenantDashboard.leaseSampleDesc', { start: '01/01/2026', end: '31/12/2026', price: '3.500.000 ₫' }) }}
           </p>
         </div>
 
         <div class="flex items-center gap-2">
-          <NuxtLink to="/tenant/leases" class="btn-secondary !text-xs !py-1.5 !px-3">
-            Xem hợp đồng
-          </NuxtLink>
+          <NuxtLinkLocale to="/tenant/leases" class="btn-secondary !text-xs !py-1.5 !px-3">
+            {{ $t('tenantDashboard.viewLease') }}
+          </NuxtLinkLocale>
         </div>
       </div>
     </BaseCard>

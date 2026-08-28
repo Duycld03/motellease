@@ -11,7 +11,7 @@ for (const [key, value] of Object.entries(vueExports)) {
 // Global i18n mock for Vue Test Utils
 const translations: Record<string, any> = viLocale
 
-function getNestedValue(obj: any, path: string): string {
+function getNestedValue(obj: any, path: string, params?: Record<string, any>): string {
   const parts = path.split('.')
   let curr = obj
   for (const part of parts) {
@@ -21,7 +21,13 @@ function getNestedValue(obj: any, path: string): string {
       return path
     }
   }
-  return typeof curr === 'string' ? curr : path
+  let result = typeof curr === 'string' ? curr : path
+  if (params && typeof params === 'object') {
+    for (const [k, v] of Object.entries(params)) {
+      result = result.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v))
+    }
+  }
+  return result
 }
 
 function hasNestedValue(obj: any, path: string): boolean {
@@ -38,7 +44,7 @@ function hasNestedValue(obj: any, path: string): boolean {
 }
 
 config.global.mocks = {
-  $t: (key: string) => getNestedValue(translations, key),
+  $t: (key: string, params?: Record<string, any>) => getNestedValue(translations, key, params),
   $te: (key: string) => hasNestedValue(translations, key),
   $localePath: (path: string) => path,
 }
@@ -47,6 +53,10 @@ config.global.stubs = {
   NuxtLink: {
     template: '<a><slot /></a>',
     props: ['to'],
+  },
+  NuxtLinkLocale: {
+    template: '<a><slot /></a>',
+    props: ['to', 'href', 'locale'],
   },
   ClientOnly: {
     template: '<div><slot /></div>',
@@ -61,10 +71,14 @@ config.global.stubs = {
 ;(globalThis as any).definePageMeta = vi.fn()
 ;(globalThis as any).useRoute = () => ({ query: {}, params: { id: '01a047f0-a19c-72aa-99df-5dcae5b61001' } })
 ;(globalThis as any).useRouter = () => ({ push: vi.fn(), replace: vi.fn() })
+;(globalThis as any).useLocalePath = () => (p: any) => typeof p === 'string' ? p : p?.path || '/'
+;(globalThis as any).useSwitchLocalePath = () => (loc: string) => `/${loc}`
+;(globalThis as any).useCookieLocale = () => ({ value: 'vi' })
 ;(globalThis as any).useI18n = () => ({
-  t: (key: string) => getNestedValue(translations, key),
+  t: (key: string, params?: Record<string, any>) => getNestedValue(translations, key, params),
   te: (key: string) => hasNestedValue(translations, key),
   locale: { value: 'vi' },
+  setLocale: vi.fn(),
 })
 ;(globalThis as any).useToast = () => ({
   success: vi.fn(),

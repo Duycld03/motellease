@@ -4,15 +4,15 @@
       <div>
         <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('nav.tasks') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Theo dõi công việc sửa chữa, kiểm tra phòng và hỗ trợ vận hành khu trọ
+          {{ $t('common.staffTasksSubtitle') }}
         </p>
       </div>
       <div class="flex items-center gap-2">
         <BaseButton variant="outline" size="sm" @click="fetchTasks">
-          🔄 Làm mới
+          🔄 {{ $t('common.refresh') }}
         </BaseButton>
         <BaseButton variant="primary" size="sm" @click="openCreateTaskModal">
-          + Tạo công việc mới
+          + {{ $t('tasks.createTask') }}
         </BaseButton>
       </div>
     </div>
@@ -31,7 +31,7 @@
           ]"
           @click="filterStatus = ''"
         >
-          Tất cả ({{ tasks.length }})
+          {{ $t('common.allCount', { count: tasks.length }) }}
         </button>
         <button
           v-for="st in ['Pending', 'InProgress', 'Completed', 'Cancelled']"
@@ -52,11 +52,10 @@
       <!-- Priority Selector -->
       <div class="flex items-center gap-2 shrink-0">
         <select v-model="filterPriority" class="input-field !text-xs !py-1.5 w-36" @change="fetchTasks">
-          <option value="">Tất cả mức ưu tiên</option>
-          <option value="Urgent">Khẩn cấp (Urgent)</option>
-          <option value="High">Cao (High)</option>
-          <option value="Medium">Trung bình (Medium)</option>
-          <option value="Low">Thấp (Low)</option>
+          <option value="">{{ $t('common.all') }}</option>
+          <option value="High">{{ $t('enums.TaskPriority.High') }}</option>
+          <option value="Medium">{{ $t('enums.TaskPriority.Medium') }}</option>
+          <option value="Low">{{ $t('enums.TaskPriority.Low') }}</option>
         </select>
       </div>
     </div>
@@ -70,7 +69,7 @@
       <svg class="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
       </svg>
-      <p class="font-medium text-slate-500 dark:text-slate-400">Không có công việc nào.</p>
+      <p class="font-medium text-slate-500 dark:text-slate-400">{{ $t('tasks.emptyStaffTasks') }}</p>
     </div>
 
     <div v-else class="space-y-4">
@@ -94,8 +93,8 @@
               <span class="text-sm font-bold text-slate-900 dark:text-white">{{ t.title }}</span>
             </div>
             <p class="text-xs text-slate-500 dark:text-slate-400">
-              🏢 {{ t.boardingHouseName }} · Phân công: <strong class="text-slate-800 dark:text-slate-200">{{ t.assignedToFullName }}</strong>
-              <span v-if="t.dueDate"> · Hạn nộp: <strong :class="isOverdue(t) ? 'text-red-600 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'">{{ t.dueDate }}</strong></span>
+              🏢 {{ t.boardingHouseName }} · {{ $t('staff.assignedHouses') }} <strong class="text-slate-800 dark:text-slate-200">{{ t.assignedToFullName }}</strong>
+              <span v-if="t.dueDate"> · {{ $t('deposits.depositDateLabel') }}: <strong :class="isOverdue(t) ? 'text-red-600 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'">{{ t.dueDate }}</strong></span>
             </p>
           </div>
 
@@ -109,7 +108,7 @@
 
         <!-- Footer / Actions -->
         <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-400">
-          <span>Tạo lúc: {{ formatRelativeTime(t.createdAt) }}</span>
+          <span>{{ $t('common.createdAt', { time: formatRelativeTime(t.createdAt) }) }}</span>
 
           <div class="flex items-center gap-2">
             <BaseButton
@@ -119,7 +118,7 @@
               class="!text-xs text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800"
               @click="handleUpdateStatus(t.id, 'InProgress')"
             >
-              ▶ Nhận việc
+              {{ $t('tasks.markInProgressBtn') }}
             </BaseButton>
 
             <BaseButton
@@ -129,7 +128,7 @@
               class="!text-xs"
               @click="handleUpdateStatus(t.id, 'Completed')"
             >
-              ✓ Hoàn thành
+              {{ $t('tasks.markCompletedBtn') }}
             </BaseButton>
 
             <BaseButton
@@ -139,7 +138,7 @@
               class="!text-xs text-red-500 hover:text-red-700"
               @click="handleUpdateStatus(t.id, 'Cancelled')"
             >
-              Hủy việc
+              {{ $t('common.cancel') }}
             </BaseButton>
           </div>
         </div>
@@ -149,16 +148,16 @@
     <!-- MODAL: Create Task -->
     <BaseModal
       v-model="isCreateModalOpen"
-      title="Tạo Công việc mới"
+      :title="$t('tasks.createTask')"
       max-width="md"
     >
       <form @submit.prevent="handleSubmitCreateTask" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Khu trọ áp dụng <span class="text-red-500">*</span>
+            {{ $t('ownerProperties.title') }} <span class="text-red-500">*</span>
           </label>
           <select v-model="taskForm.boardingHouseId" class="input-field !text-xs !py-2" @change="onHouseSelected" required>
-            <option value="">-- Chọn khu trọ --</option>
+            <option value="">-- {{ $t('common.select') }} --</option>
             <option v-for="h in boardingHouses" :key="h.id" :value="h.id">
               {{ h.name }}
             </option>
@@ -167,10 +166,10 @@
 
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Giao cho Nhân viên <span class="text-red-500">*</span>
+            {{ $t('staff.title') }} <span class="text-red-500">*</span>
           </label>
           <select v-model="taskForm.assignedToUserId" class="input-field !text-xs !py-2" required>
-            <option value="">-- Chọn nhân viên phụ trách --</option>
+            <option value="">-- {{ $t('common.select') }} --</option>
             <option v-for="s in houseStaffList" :key="s.staffUserId" :value="s.staffUserId">
               {{ s.staffFullName }}
             </option>
@@ -179,35 +178,34 @@
 
         <BaseInput
           v-model="taskForm.title"
-          label="Tiêu đề công việc"
-          placeholder="VD: Kiểm tra vòi nước rò rỉ phòng 201"
+          :label="$t('tasks.title')"
+          :placeholder="$t('tasks.title')"
           required
         />
 
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Chi tiết công việc
+            {{ $t('common.detail') }}
           </label>
           <textarea
             v-model="taskForm.details"
             rows="3"
             class="input-field !text-xs !py-2"
-            placeholder="Mô tả cụ thể nhiệm vụ cần thực hiện..."
+            :placeholder="$t('common.detail')"
           />
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Mức độ ưu tiên</label>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{{ $t('tasks.taskPriorityLabel') }}</label>
             <select v-model="taskForm.priority" class="input-field !text-xs !py-2">
-              <option value="Low">Thấp (Low)</option>
-              <option value="Medium">Trung bình (Medium)</option>
-              <option value="High">Cao (High)</option>
-              <option value="Urgent">Khẩn cấp (Urgent)</option>
+              <option value="Low">{{ $t('enums.TaskPriority.Low') }}</option>
+              <option value="Medium">{{ $t('enums.TaskPriority.Medium') }}</option>
+              <option value="High">{{ $t('enums.TaskPriority.High') }}</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Hạn hoàn thành</label>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{{ $t('deposits.depositDateLabel') }}</label>
             <input
               v-model="taskForm.dueDate"
               type="date"
@@ -221,7 +219,7 @@
             {{ $t('common.cancel') }}
           </BaseButton>
           <BaseButton variant="primary" size="sm" type="submit" :loading="isSubmittingTask">
-            Tạo công việc
+            {{ $t('tasks.createTask') }}
           </BaseButton>
         </div>
       </form>
@@ -250,6 +248,7 @@ definePageMeta({
 
 const { get, post, put } = useApi()
 const { formatRelativeTime } = useFormat()
+const { t } = useI18n()
 const toast = useToast()
 
 const isLoading = ref(true)
@@ -259,15 +258,13 @@ const filterPriority = ref('')
 
 const isOverdue = (t: TaskResponse) => {
   if (t.status === 'Completed' || t.status === 'Cancelled' || !t.dueDate) return false
-  return new Date(t.dueDate).getTime() < Date.now()
+  return new Date(t.dueDate) < new Date()
 }
 
-const getPriorityBadgeClass = (p: TaskPriority) => {
-  switch (p) {
-    case 'Urgent':
-      return 'bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
+const getPriorityBadgeClass = (priority: TaskPriority) => {
+  switch (priority) {
     case 'High':
-      return 'bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800'
+      return 'bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
     case 'Medium':
       return 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
     default:
@@ -301,10 +298,10 @@ const fetchTasks = async () => {
 const handleUpdateStatus = async (taskId: string, newStatus: WorkTaskStatus) => {
   try {
     await put(`/tasks/${taskId}/status`, { status: newStatus })
-    toast.success('Cập nhật trạng thái công việc thành công!')
+    toast.success(t('messages.updateTaskStatusSuccess'))
     await fetchTasks()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể cập nhật trạng thái.')
+    toast.error(err.message || t('messages.actionFailed'))
   }
 }
 
@@ -365,11 +362,11 @@ const handleSubmitCreateTask = async () => {
       priority: taskForm.priority,
       dueDate: taskForm.dueDate || undefined,
     })
-    toast.success('Tạo công việc thành công!')
+    toast.success(t('messages.createTaskSuccess'))
     isCreateModalOpen.value = false
     await fetchTasks()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể tạo công việc.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isSubmittingTask.value = false
   }

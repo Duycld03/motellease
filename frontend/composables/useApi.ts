@@ -112,7 +112,7 @@ export const useApi = () => {
 
         // 4. Fallback to title or default
         if (!message) {
-          message = problem.title || err.message || t('common.error') || 'Đã xảy ra lỗi'
+          message = problem.title || err.message || t('common.error')
         }
 
         const customError: any = new Error(message)

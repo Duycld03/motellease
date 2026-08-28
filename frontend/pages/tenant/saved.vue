@@ -3,12 +3,12 @@
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('nav.savedListings') }}</h1>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Danh sách các khu trọ bạn đã lưu để theo dõi</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ $t('saved.subtitle') }}</p>
       </div>
 
-      <NuxtLink to="/search" class="btn-primary !text-xs !py-2 !px-4">
-        🔍 Tìm thêm phòng mới
-      </NuxtLink>
+      <NuxtLinkLocale to="/search" class="btn-primary !text-xs !py-2 !px-4">
+        {{ $t('saved.findNewRooms') }}
+      </NuxtLinkLocale>
     </div>
 
     <!-- Loading -->
@@ -23,14 +23,14 @@
           <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
         </svg>
       </div>
-      <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200">Bạn chưa lưu khu trọ nào</h3>
+      <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ $t('saved.emptyTitle') }}</h3>
       <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
-        Khi tìm kiếm, nhấn biểu tượng trái tim trên các thẻ trọ để lưu lại và so sánh giá phòng sau.
+        {{ $t('saved.emptyDesc') }}
       </p>
       <div class="mt-6">
-        <NuxtLink to="/search" class="btn-primary !text-xs !py-2 !px-4">
-          Khám phá phòng trọ ngay
-        </NuxtLink>
+        <NuxtLinkLocale to="/search" class="btn-primary !text-xs !py-2 !px-4">
+          {{ $t('saved.exploreNow') }}
+        </NuxtLinkLocale>
       </div>
     </div>
 
@@ -40,7 +40,7 @@
         v-for="item in items"
         :key="item.id"
         class="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between cursor-pointer"
-        @click="navigateTo(`/boarding-houses/${item.boardingHouseId}`)"
+        @click="navigateTo(localePath(`/boarding-houses/${item.boardingHouseId}`))"
       >
         <div>
           <!-- Thumbnail & Delete Action -->
@@ -59,7 +59,7 @@
             <button
               type="button"
               class="absolute top-3 right-3 p-2 rounded-full bg-white/90 dark:bg-slate-900/90 text-rose-500 hover:bg-rose-500 hover:text-white shadow-sm transition-colors"
-              title="Bỏ lưu tin này"
+              :title="$t('saved.removeSaved')"
               @click.stop="handleRemove(item.boardingHouseId)"
             >
               <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -72,7 +72,7 @@
           <div class="p-5 space-y-2">
             <div class="flex items-center justify-between">
               <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400">
-                {{ item.boardingHouse?.availableRoomsCount > 0 ? `Còn ${item.boardingHouse.availableRoomsCount} phòng trống` : 'Hết phòng' }}
+                {{ item.boardingHouse?.availableRoomsCount > 0 ? $t('property.availableRoomsBadge', { count: item.boardingHouse.availableRoomsCount }) : $t('property.outOfRooms') }}
               </span>
 
               <div class="flex items-center gap-1 text-xs text-amber-500 font-semibold">
@@ -97,11 +97,11 @@
         <!-- Footer -->
         <div class="px-5 pb-5 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <span class="text-xs font-bold text-primary-600 dark:text-primary-400">
-            {{ item.boardingHouse?.minPrice ? formatCurrency(item.boardingHouse.minPrice) : 'Liên hệ' }}
+            {{ item.boardingHouse?.minPrice ? formatCurrency(item.boardingHouse.minPrice) : $t('property.contactPrice') }}
           </span>
 
           <span class="text-xs font-semibold text-primary-600 dark:text-primary-400">
-            Xem chi tiết →
+            {{ $t('common.viewDetail') }}
           </span>
         </div>
       </div>
@@ -119,6 +119,8 @@ definePageMeta({
 
 const { get, delete: deleteApi } = useApi()
 const { formatCurrency } = useFormat()
+const { t } = useI18n()
+const localePath = useLocalePath()
 const toast = useToast()
 
 const isLoading = ref(true)
@@ -140,9 +142,9 @@ const handleRemove = async (houseId: string) => {
   try {
     await deleteApi(`/me/saved-listings/${houseId}`)
     items.value = items.value.filter((i) => i.boardingHouseId !== houseId)
-    toast.success('Đã xóa khỏi danh sách yêu thích!')
+    toast.success(t('messages.unsaveListingSuccess'))
   } catch (err: any) {
-    toast.error(err.message || 'Không thể xóa tin đã lưu.')
+    toast.error(err.message || t('messages.actionFailed'))
   }
 }
 

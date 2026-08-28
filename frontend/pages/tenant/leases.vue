@@ -3,10 +3,10 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
         <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('nav.myLeases') }}</h1>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Danh sách hợp đồng thuê phòng, thông tin thành viên cùng phòng và yêu cầu gia hạn</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ $t('leases.subtitle') }}</p>
       </div>
       <BaseButton variant="outline" size="sm" @click="fetchLeases">
-        🔄 Làm mới
+        🔄 {{ $t('common.refresh') }}
       </BaseButton>
     </div>
 
@@ -22,7 +22,7 @@
         ]"
         @click="filterStatus = ''"
       >
-        Tất cả ({{ leases.length }})
+        {{ $t('common.allCount', { count: leases.length }) }}
       </button>
       <button
         v-for="st in ['Active', 'Expiring', 'Ended', 'Terminated']"
@@ -49,7 +49,7 @@
       <svg class="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
-      <p class="font-medium text-slate-500 dark:text-slate-400">Không có hợp đồng thuê nào.</p>
+      <p class="font-medium text-slate-500 dark:text-slate-400">{{ $t('common.noData') }}</p>
     </div>
 
     <div v-else class="space-y-6">
@@ -64,12 +64,12 @@
             <div class="flex items-center gap-2">
               <span class="text-base font-bold text-slate-900 dark:text-white">{{ l.boardingHouseName }}</span>
               <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-300 border border-primary-200 dark:border-primary-800">
-                Phòng {{ l.roomNumber }}
+                {{ $t('property.room') }} {{ l.roomNumber }}
               </span>
             </div>
             <p class="text-xs text-slate-500 dark:text-slate-400">
-              Thời hạn: <strong class="text-slate-700 dark:text-slate-300">{{ l.startDate }}</strong> đến <strong class="text-slate-700 dark:text-slate-300">{{ l.endDate }}</strong>
-              <span v-if="l.termMonths"> ({{ l.termMonths }} tháng)</span>
+              {{ $t('leases.leasePeriod') }}: <strong class="text-slate-700 dark:text-slate-300">{{ l.startDate }}</strong> - <strong class="text-slate-700 dark:text-slate-300">{{ l.endDate }}</strong>
+              <span v-if="l.termMonths"> ({{ l.termMonths }} {{ $t('common.unitMonth') }})</span>
             </p>
           </div>
 
@@ -85,37 +85,37 @@
         >
           <div class="flex items-center gap-2 text-amber-800 dark:text-amber-300">
             <span>⚠️</span>
-            <span>Hợp đồng của bạn sắp hết hạn vào ngày <strong>{{ l.endDate }}</strong>. Bạn có muốn tiếp tục gia hạn hợp đồng không?</span>
+            <span>{{ $t('common.expiringLeaseNotice', { date: l.endDate }) }}</span>
           </div>
           <BaseButton variant="primary" size="sm" class="shrink-0" @click="openExtensionModal(l)">
-            📝 Gia hạn hợp đồng
+            {{ $t('common.requestExtensionAction') }}
           </BaseButton>
         </div>
 
         <!-- Financial Terms Summary Cards -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800 text-left">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">Giá thuê cố định</span>
-            <span class="text-sm font-bold text-slate-900 dark:text-white mt-0.5 block">{{ formatCurrency(l.monthlyRent) }} / th</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">{{ $t('common.fixedRentPrice') }}</span>
+            <span class="text-sm font-bold text-slate-900 dark:text-white mt-0.5 block">{{ formatCurrency(l.monthlyRent) }}{{ $t('property.perMonth') }}</span>
           </div>
           <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800 text-left">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">Tiền cọc bảo đảm</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">{{ $t('common.securityDeposit') }}</span>
             <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 block">{{ formatCurrency(l.depositHeld) }}</span>
           </div>
           <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800 text-left">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">Người đứng tên HĐ</span>
-            <span class="text-sm font-bold text-slate-900 dark:text-white mt-0.5 block truncate">{{ l.primaryTenantFullName || 'Khách thuê' }}</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">{{ $t('common.primaryTenantLabel') }}</span>
+            <span class="text-sm font-bold text-slate-900 dark:text-white mt-0.5 block truncate">{{ l.primaryTenantFullName || $t('roles.Tenant') }}</span>
           </div>
           <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800 text-left">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">Số người ở cùng</span>
-            <span class="text-sm font-bold text-slate-900 dark:text-white mt-0.5 block">{{ l.tenants?.length || 1 }} người</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">{{ $t('common.occupantsCountLabel') }}</span>
+            <span class="text-sm font-bold text-slate-900 dark:text-white mt-0.5 block">{{ $t('common.occupantsCount', { count: l.tenants?.length || 1 }) }}</span>
           </div>
         </div>
 
         <!-- Co-tenants List Section -->
         <div class="space-y-2">
           <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
-            Danh sách người lưu trú ({{ l.tenants?.length || 0 }})
+            {{ $t('common.occupantsListHeading', { count: l.tenants?.length || 0 }) }}
           </h4>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div
@@ -130,11 +130,11 @@
                     v-if="t.isPrimary"
                     class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-primary-100 dark:bg-primary-950 text-primary-700 dark:text-primary-300"
                   >
-                    Chủ hợp đồng
+                    {{ $t('common.contractHolder') }}
                   </span>
                 </div>
                 <p class="text-[11px] text-slate-500 dark:text-slate-400">
-                  📞 {{ t.phoneNumber || 'Chưa cập nhật' }} · CCCD: {{ t.idCardNumber || 'Chưa cập nhật' }}
+                  📞 {{ t.phoneNumber || $t('common.noPhoneProvided') }} · CCCD: {{ t.idCardNumber || $t('common.noData') }}
                 </p>
               </div>
             </div>
@@ -147,17 +147,17 @@
           class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2 text-xs"
         >
           <div class="flex items-center justify-between font-bold text-slate-900 dark:text-white">
-            <span>📋 Biên bản Quyết toán Bàn giao phòng khi trả phòng</span>
-            <span class="text-slate-500 font-normal">Ngày kết thúc: {{ l.endedAt ? formatRelativeTime(l.endedAt) : l.endDate }}</span>
+            <span>{{ $t('common.settlementHandoverMinutesTitle') }}</span>
+            <span class="text-slate-500 font-normal">{{ $t('common.endedDateLabel', { date: l.endedAt ? formatRelativeTime(l.endedAt) : l.endDate }) }}</span>
           </div>
           <p v-if="l.endReason" class="text-slate-600 dark:text-slate-400">
-            <strong>Lý do kết thúc:</strong> {{ l.endReason }}
+            <strong>{{ $t('common.endReasonLabel', { reason: l.endReason }) }}</strong>
           </p>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-slate-200 dark:border-slate-700 text-[11px]">
-            <div>⚡ Số điện chốt: <strong>{{ l.finalElectricityReading ?? 0 }} kWh</strong></div>
-            <div>💧 Số nước chốt: <strong>{{ l.finalWaterReading ?? 0 }} m³</strong></div>
-            <div>Trừ cọc: <strong class="text-red-600 dark:text-red-400">{{ formatCurrency(l.depositDeducted || 0) }}</strong></div>
-            <div>Hoàn lại cọc: <strong class="text-emerald-600 dark:text-emerald-400">{{ formatCurrency(l.depositRefunded || 0) }}</strong></div>
+            <div>⚡ {{ $t('common.finalElecReadingLabel', { qty: l.finalElectricityReading ?? 0 }) }}</div>
+            <div>💧 {{ $t('common.finalWaterReadingLabel', { qty: l.finalWaterReading ?? 0 }) }}</div>
+            <div>{{ $t('common.depositDeductedLabel', { amount: formatCurrency(l.depositDeducted || 0) }) }}</div>
+            <div>{{ $t('common.depositRefundedLabel', { amount: formatCurrency(l.depositRefunded || 0) }) }}</div>
           </div>
         </div>
 
@@ -166,9 +166,9 @@
           <BaseButton
             variant="outline"
             size="sm"
-            @click="navigateTo('/tenant/bills')"
+            @click="navigateTo(localePath('/tenant/bills'))"
           >
-            💳 Xem hóa đơn tiền nhà
+            {{ $t('common.viewBillsBtn') }}
           </BaseButton>
           <BaseButton
             v-if="l.status === 'Active' || l.status === 'Expiring'"
@@ -176,7 +176,7 @@
             size="sm"
             @click="openExtensionModal(l)"
           >
-            📝 Yêu cầu gia hạn hợp đồng
+            📝 {{ $t('leases.requestExtensionBtn') }}
           </BaseButton>
         </div>
       </div>
@@ -185,23 +185,23 @@
     <!-- MODAL: Request Extension -->
     <BaseModal
       v-model="isExtensionModalOpen"
-      title="Gửi yêu cầu Gia hạn Hợp đồng"
+      :title="$t('leases.extensionModalTitle')"
       max-width="md"
     >
       <form @submit.prevent="handleSubmitExtension" class="space-y-4">
         <div v-if="selectedLease" class="p-3.5 bg-primary-50 dark:bg-primary-950/40 rounded-xl text-xs space-y-1">
           <div class="flex items-center justify-between font-bold text-primary-900 dark:text-primary-200">
             <span>{{ selectedLease.boardingHouseName }} - P.{{ selectedLease.roomNumber }}</span>
-            <span>{{ formatCurrency(selectedLease.monthlyRent) }}/tháng</span>
+            <span>{{ formatCurrency(selectedLease.monthlyRent) }}{{ $t('property.perMonth') }}</span>
           </div>
           <p class="text-primary-700 dark:text-primary-400 text-[11px]">
-            Ngày hết hạn hiện tại: <strong>{{ selectedLease.endDate }}</strong>
+            {{ $t('common.currentExpiryDate', { date: selectedLease.endDate }) }}
           </p>
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Ngày kết thúc hợp đồng mới mong muốn <span class="text-red-500">*</span>
+            {{ $t('common.desiredEndDate') }} <span class="text-red-500">*</span>
           </label>
           <input
             v-model="extensionForm.requestedEndDate"
@@ -213,13 +213,13 @@
 
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Ghi chú gửi chủ nhà (Tùy chọn)
+            {{ $t('common.noteToLandlordOptional') }}
           </label>
           <textarea
             v-model="extensionForm.tenantNote"
             rows="3"
             class="input-field !text-xs !py-2"
-            placeholder="VD: Em muốn gia hạn thêm 6 tháng để tiếp tục học tập và làm việc..."
+            :placeholder="$t('common.noteToLandlordPlaceholder')"
           />
         </div>
 
@@ -228,7 +228,7 @@
             {{ $t('common.cancel') }}
           </BaseButton>
           <BaseButton variant="primary" size="sm" type="submit" :loading="isSubmittingExtension">
-            Gửi yêu cầu gia hạn
+            {{ $t('leases.sendExtensionRequest') }}
           </BaseButton>
         </div>
       </form>
@@ -249,6 +249,8 @@ definePageMeta({
 
 const { get, post } = useApi()
 const { formatCurrency, formatRelativeTime } = useFormat()
+const { t } = useI18n()
+const localePath = useLocalePath()
 const toast = useToast()
 
 const isLoading = ref(true)
@@ -301,10 +303,10 @@ const handleSubmitExtension = async () => {
       requestedEndDate: extensionForm.requestedEndDate,
       tenantNote: extensionForm.tenantNote || undefined,
     })
-    toast.success('Gửi yêu cầu gia hạn hợp đồng thành công! Chủ nhà sẽ xem xét và phản hồi.')
+    toast.success(t('messages.sendExtensionSuccess'))
     isExtensionModalOpen.value = false
   } catch (err: any) {
-    toast.error(err.message || 'Không thể gửi yêu cầu gia hạn.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isSubmittingExtension.value = false
   }

@@ -2,13 +2,13 @@
   <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-xl font-bold text-slate-900 dark:text-white">Nhật ký Hoạt động Hệ thống (Audit Logs)</h1>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('admin.auditLogsTitle') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Theo dõi toàn bộ các thao tác nhạy cảm, thay đổi dữ liệu và truy cập trên nền tảng MotelLease
+          {{ $t('admin.auditLogsSubtitle') }}
         </p>
       </div>
       <BaseButton variant="outline" size="sm" @click="fetchLogs">
-        🔄 Làm mới
+        🔄 {{ $t('common.refresh') }}
       </BaseButton>
     </div>
 
@@ -18,7 +18,7 @@
         v-model="filterEntityType"
         type="text"
         class="input-field !text-xs !py-1.5 w-64"
-        placeholder="🔍 Lọc theo loại đối tượng (VD: Lease, User)..."
+        :placeholder="$t('admin.auditLogsSearchPlaceholder')"
         @input="debounceFetch"
       />
     </div>
@@ -29,18 +29,18 @@
     </div>
 
     <div v-else-if="logs.length === 0" class="p-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
-      <p class="font-medium text-slate-500 dark:text-slate-400">Chưa có nhật ký hoạt động nào.</p>
+      <p class="font-medium text-slate-500 dark:text-slate-400">{{ $t('common.noData') }}</p>
     </div>
 
     <div v-else class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-x-auto">
       <table class="w-full text-left text-xs">
         <thead>
           <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
-            <th class="pb-3 font-semibold">Thời gian</th>
-            <th class="pb-3 font-semibold">Người thực hiện</th>
-            <th class="pb-3 font-semibold">Hành động</th>
-            <th class="pb-3 font-semibold">Đối tượng</th>
-            <th class="pb-3 font-semibold">Địa chỉ IP</th>
+            <th class="pb-3 font-semibold">{{ $t('admin.colTimestamp') }}</th>
+            <th class="pb-3 font-semibold">{{ $t('admin.colActor') }}</th>
+            <th class="pb-3 font-semibold">{{ $t('admin.colAction') }}</th>
+            <th class="pb-3 font-semibold">{{ $t('admin.colTarget') }}</th>
+            <th class="pb-3 font-semibold">{{ $t('admin.colIp') }}</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100 dark:divide-slate-800 font-mono text-[11px]">

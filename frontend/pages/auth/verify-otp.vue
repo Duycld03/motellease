@@ -59,6 +59,7 @@ const route = useRoute()
 const { sendRegistrationOtp, verifyRegistrationOtp, register } = useAuth()
 const toast = useToast()
 const { t } = useI18n()
+const localePath = useLocalePath()
 
 const email = computed(() => (route.query.email as string) || '')
 const otpCode = ref('')
@@ -73,10 +74,10 @@ const handleSubmit = async () => {
 
     let pendingData: any = null
     if (typeof window !== 'undefined' && window.sessionStorage) {
-      const raw = window.sessionStorage.getItem('pending_registration')
-      if (raw) {
+      const stored = window.sessionStorage.getItem('pending_registration')
+      if (stored) {
         try {
-          pendingData = JSON.parse(raw)
+          pendingData = JSON.parse(stored)
         } catch {
           // ignore
         }
@@ -90,7 +91,7 @@ const handleSubmit = async () => {
       await register(pendingData)
     } else {
       toast.success(t('auth.otpVerifySuccess'))
-      navigateTo('/auth/login')
+      navigateTo(localePath('/auth/login'))
     }
   } catch (err: any) {
     toast.error(err.message || t('auth.otpInvalid'))

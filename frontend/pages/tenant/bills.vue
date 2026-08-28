@@ -4,11 +4,11 @@
       <div>
         <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('nav.myBills') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Theo dõi hóa đơn tiền nhà, chỉ số điện nước hàng tháng và thanh toán online qua MoMo / VNPay
+          {{ $t('bills.subtitle') }}
         </p>
       </div>
       <BaseButton variant="outline" size="sm" @click="fetchBills">
-        🔄 Làm mới
+        🔄 {{ $t('common.refresh') }}
       </BaseButton>
     </div>
 
@@ -25,7 +25,7 @@
           ]"
           @click="filterStatus = ''"
         >
-          Tất cả ({{ bills.length }})
+          {{ $t('common.allCount', { count: bills.length }) }}
         </button>
         <button
           v-for="st in ['Issued', 'Overdue', 'Paid', 'Cancelled']"
@@ -45,8 +45,8 @@
 
       <div class="flex items-center gap-2 shrink-0">
         <select v-model="filterMonth" class="input-field !text-xs !py-1.5 w-28" @change="fetchBills">
-          <option :value="null">Tất cả tháng</option>
-          <option v-for="m in 12" :key="m" :value="m">Tháng {{ m }}</option>
+          <option :value="null">{{ $t('common.all') }}</option>
+          <option v-for="m in 12" :key="m" :value="m">{{ $t('common.month') }} {{ m }}</option>
         </select>
         <select v-model="filterYear" class="input-field !text-xs !py-1.5 w-24" @change="fetchBills">
           <option :value="2025">2025</option>
@@ -65,7 +65,7 @@
       <svg class="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
       </svg>
-      <p class="font-medium text-slate-500 dark:text-slate-400">Không tìm thấy hóa đơn nào.</p>
+      <p class="font-medium text-slate-500 dark:text-slate-400">{{ $t('bills.emptyTenantBills') }}</p>
     </div>
 
     <div v-else class="space-y-6">
@@ -80,22 +80,22 @@
             <div class="flex items-center gap-2">
               <span class="text-base font-bold text-slate-900 dark:text-white">{{ b.boardingHouseName }}</span>
               <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-300 border border-primary-200 dark:border-primary-800">
-                Phòng {{ b.roomNumber }}
+                {{ $t('property.room') }} {{ b.roomNumber }}
               </span>
               <span class="text-xs font-bold text-primary-600 dark:text-primary-400">
-                · Hóa đơn Tháng {{ b.month }}/{{ b.year }}
+                · {{ $t('bills.billMonth', { month: b.month, year: b.year }) }}
               </span>
             </div>
             <p class="text-xs text-slate-500 dark:text-slate-400">
-              <span v-if="b.issuedAt">Ngày tạo: {{ formatRelativeTime(b.issuedAt) }}</span>
-              <span v-if="b.dueDate"> · Hạn nộp: <strong :class="isOverdue(b) ? 'text-red-600 dark:text-red-400 font-bold' : 'text-slate-700 dark:text-slate-300'">{{ b.dueDate }}</strong></span>
-              <span v-if="b.paidAt"> · Đã thanh toán: <strong class="text-emerald-600 dark:text-emerald-400">{{ formatRelativeTime(b.paidAt) }}</strong></span>
+              <span v-if="b.issuedAt">{{ $t('common.createdAt', { time: formatRelativeTime(b.issuedAt) }) }}</span>
+              <span v-if="b.dueDate"> · {{ $t('deposits.depositDateLabel') }}: <strong :class="isOverdue(b) ? 'text-red-600 dark:text-red-400 font-bold' : 'text-slate-700 dark:text-slate-300'">{{ b.dueDate }}</strong></span>
+              <span v-if="b.paidAt"> · {{ $t('enums.BillStatus.Paid') }}: <strong class="text-emerald-600 dark:text-emerald-400">{{ formatRelativeTime(b.paidAt) }}</strong></span>
             </p>
           </div>
 
           <div class="flex items-center gap-3">
             <div class="text-right">
-              <span class="text-xs text-slate-400 block">Số tiền cần đóng</span>
+              <span class="text-xs text-slate-400 block">{{ $t('common.totalAmountDue') }}</span>
               <span class="text-base font-extrabold text-primary-600 dark:text-primary-400">{{ formatCurrency(b.totalAmount) }}</span>
             </div>
             <StatusBadge type="BillStatus" :status="b.status" />
@@ -109,39 +109,39 @@
         >
           <div class="flex items-center gap-2">
             <span>⚠️</span>
-            <span>Hóa đơn này đã quá hạn thanh toán ngày <strong>{{ b.dueDate }}</strong>. Vui lòng thanh toán sớm để tránh phát sinh gián đoạn dịch vụ.</span>
+            <span>{{ $t('common.overdueWarning', { date: b.dueDate }) }}</span>
           </div>
         </div>
 
         <!-- Breakdown Grid -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
           <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">Tiền phòng cố định</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">{{ $t('bills.roomRateAmount') }}</span>
             <span class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 block">{{ formatCurrency(b.rentAmount) }}</span>
           </div>
 
           <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">⚡ Tiền điện ({{ b.electricityQty }} kWh)</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">⚡ {{ $t('bills.elecAmountTotal', { usage: b.electricityQty }) }}</span>
             <span class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 block">{{ formatCurrency(b.electricityAmount) }}</span>
             <span class="text-[10px] text-slate-400 block mt-0.5">{{ b.electricityOld }} ➔ {{ b.electricityNew }}</span>
           </div>
 
           <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">💧 Tiền nước ({{ b.waterQty }} m³)</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">💧 {{ $t('bills.waterAmountTotal', { usage: b.waterQty }) }}</span>
             <span class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 block">{{ formatCurrency(b.waterAmount) }}</span>
             <span class="text-[10px] text-slate-400 block mt-0.5">{{ b.waterOld }} ➔ {{ b.waterNew }}</span>
           </div>
 
           <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">Phụ phí kèm theo</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">{{ $t('bills.otherServices') }}</span>
             <span class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 block">{{ formatCurrency(b.additionalFeeTotal) }}</span>
-            <span class="text-[10px] text-slate-400 block mt-0.5">{{ b.additionalFees?.length || 0 }} khoản mục</span>
+            <span class="text-[10px] text-slate-400 block mt-0.5">{{ b.additionalFees?.length || 0 }}</span>
           </div>
         </div>
 
         <!-- Additional Fees List if any -->
         <div v-if="b.additionalFees && b.additionalFees.length > 0" class="p-3 bg-slate-50/50 dark:bg-slate-800/30 rounded-xl text-xs space-y-1">
-          <div class="font-semibold text-slate-700 dark:text-slate-300 text-[11px] mb-1">Các khoản phụ phí:</div>
+          <div class="font-semibold text-slate-700 dark:text-slate-300 text-[11px] mb-1">{{ $t('bills.otherServices') }}:</div>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-slate-600 dark:text-slate-400">
             <div v-for="fee in b.additionalFees" :key="fee.id" class="flex justify-between">
               <span>• {{ fee.feeName }}:</span>
@@ -154,7 +154,7 @@
         <div v-if="b.tenantSplits && b.tenantSplits.length > 1" class="p-3.5 bg-primary-50/40 dark:bg-primary-950/20 rounded-xl border border-primary-100 dark:border-primary-900/40 space-y-2 text-xs">
           <div class="flex items-center justify-between">
             <span class="font-bold text-primary-900 dark:text-primary-200 text-[11px] uppercase tracking-wide">
-              👥 Phân chia chi phí theo đầu người ({{ b.tenantSplits.length }} người):
+              👥 {{ $t('common.splitCostPerHead', { count: b.tenantSplits.length }) }}
             </span>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -165,7 +165,7 @@
             >
               <div class="flex items-center gap-1.5 truncate">
                 <span class="font-semibold text-slate-800 dark:text-slate-200 truncate">{{ ts.fullName }}</span>
-                <span v-if="ts.isPrimary" class="text-[9px] font-bold text-primary-600 dark:text-primary-400">(Chủ HĐ)</span>
+                <span v-if="ts.isPrimary" class="text-[9px] font-bold text-primary-600 dark:text-primary-400">{{ $t('common.primaryTenantBadge') }}</span>
               </div>
               <span class="font-bold text-primary-600 dark:text-primary-400 ml-2">{{ formatCurrency(ts.amount) }}</span>
             </div>
@@ -179,7 +179,7 @@
             size="sm"
             @click="handleDownloadPdf(b.id, b.roomNumber, b.month, b.year)"
           >
-            📥 Xuất PDF hóa đơn
+            📥 {{ $t('bills.downloadInvoicePdf') }}
           </BaseButton>
 
           <BaseButton
@@ -188,7 +188,7 @@
             size="sm"
             @click="openCheckoutModal(b)"
           >
-            💳 Thanh toán ngay ({{ formatCurrency(b.totalAmount) }})
+            💳 {{ $t('common.payAmountBtn', { amount: formatCurrency(b.totalAmount) }) }}
           </BaseButton>
         </div>
       </div>
@@ -197,29 +197,29 @@
     <!-- MODAL: Pay Rent Online (MoMo / VNPay) -->
     <BaseModal
       v-model="isCheckoutModalOpen"
-      title="Thanh toán Tiền phòng Online"
+      :title="$t('common.payOnlineModalTitle')"
       max-width="md"
     >
       <div v-if="selectedBill" class="space-y-5">
         <!-- Summary Box -->
         <div class="p-4 bg-primary-50 dark:bg-primary-950/40 rounded-xl border border-primary-200 dark:border-primary-800 space-y-2 text-xs">
           <div class="flex items-center justify-between">
-            <span class="text-slate-600 dark:text-slate-400">Kỳ thanh toán:</span>
-            <span class="font-bold text-slate-900 dark:text-white">Tháng {{ selectedBill.month }}/{{ selectedBill.year }}</span>
+            <span class="text-slate-600 dark:text-slate-400">{{ $t('common.paymentPeriod') }}</span>
+            <span class="font-bold text-slate-900 dark:text-white">{{ $t('bills.billMonth', { month: selectedBill.month, year: selectedBill.year }) }}</span>
           </div>
           <div class="flex items-center justify-between">
-            <span class="text-slate-600 dark:text-slate-400">Khu trọ / Phòng:</span>
+            <span class="text-slate-600 dark:text-slate-400">{{ $t('property.room') }}:</span>
             <span class="font-bold text-slate-900 dark:text-white">{{ selectedBill.boardingHouseName }} - P.{{ selectedBill.roomNumber }}</span>
           </div>
           <div class="flex items-center justify-between pt-2 border-t border-primary-200/60 dark:border-primary-800/60">
-            <span class="text-slate-600 dark:text-slate-400 font-medium">Tổng tiền cần thanh toán:</span>
+            <span class="text-slate-600 dark:text-slate-400 font-medium">{{ $t('common.totalToPay') }}</span>
             <span class="text-base font-extrabold text-primary-600 dark:text-primary-400">{{ formatCurrency(selectedBill.totalAmount) }}</span>
           </div>
         </div>
 
         <!-- Gateway Selector -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">Chọn cổng thanh toán:</label>
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">{{ $t('deposits.selectGatewayModalTitle') }}:</label>
           <div class="grid grid-cols-2 gap-3">
             <label
               :class="[
@@ -231,8 +231,8 @@
             >
               <input type="radio" value="MoMo" v-model="selectedGateway" class="sr-only" />
               <span class="text-2xl mb-1">🌸</span>
-              <span class="text-xs">Ví MoMo</span>
-              <span class="text-[10px] text-slate-400 font-normal mt-0.5">Quét mã QR MoMo</span>
+              <span class="text-xs">{{ $t('common.momoWallet') }}</span>
+              <span class="text-[10px] text-slate-400 font-normal mt-0.5">{{ $t('common.scanQrMomo') }}</span>
             </label>
 
             <label
@@ -245,7 +245,7 @@
             >
               <input type="radio" value="VNPay" v-model="selectedGateway" class="sr-only" />
               <span class="text-2xl mb-1">🏦</span>
-              <span class="text-xs">Cổng VNPay</span>
+              <span class="text-xs">{{ $t('common.vnpayGateway') }}</span>
               <span class="text-[10px] text-slate-400 font-normal mt-0.5">ATM / Visa / QR VNPay</span>
             </label>
           </div>
@@ -256,7 +256,7 @@
             {{ $t('common.cancel') }}
           </BaseButton>
           <BaseButton variant="primary" size="sm" :loading="isProcessingCheckout" @click="handleStartCheckout">
-            Thanh toán {{ formatCurrency(selectedBill.totalAmount) }}
+            {{ $t('common.payAmountBtn', { amount: formatCurrency(selectedBill.totalAmount) }) }}
           </BaseButton>
         </div>
       </div>
@@ -277,6 +277,7 @@ definePageMeta({
 
 const { get, post } = useApi()
 const { formatCurrency, formatRelativeTime } = useFormat()
+const { t } = useI18n()
 const toast = useToast()
 
 const isLoading = ref(true)
@@ -306,6 +307,7 @@ const fetchBills = async () => {
   isLoading.value = true
   try {
     const data = await get<PagedResult<BillResponse>>('/bills', {
+      status: filterStatus.value && filterStatus.value !== 'Overdue' ? filterStatus.value : undefined,
       month: filterMonth.value || undefined,
       year: filterYear.value || undefined,
       page: 1,
@@ -327,21 +329,24 @@ const handleDownloadPdf = async (billId: string, roomNumber: string, month: numb
     const response = await fetch(`${config.public.apiBase}/bills/${billId}/pdf`, {
       headers: {
         Authorization: token ? `Bearer ${token}` : '',
+        'Accept-Language': locale.value || 'vi',
       },
     })
-    if (!response.ok) throw new Error('Không thể tải PDF')
+    if (!response.ok) throw new Error('Cannot download PDF')
     const blob = await response.blob()
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `Hoa_don_Phong_${roomNumber}_T${month}_${year}.pdf`
+    a.download = locale.value === 'en'
+      ? `Bill_Room_${roomNumber}_M${month}_${year}.pdf`
+      : `Hoa_don_Phong_${roomNumber}_T${month}_${year}.pdf`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
     window.URL.revokeObjectURL(url)
-    toast.success('Đã tải hóa đơn PDF!')
+    toast.success(t('messages.downloadBillPdfSuccess'))
   } catch (err: any) {
-    toast.error(err.message || 'Lỗi khi tải hóa đơn PDF.')
+    toast.error(err.message || t('messages.actionFailed'))
   }
 }
 
@@ -365,11 +370,11 @@ const handleStartCheckout = async () => {
       provider: selectedGateway.value,
     })
     if (res.paymentUrl) {
-      toast.success('Đang chuyển hướng đến cổng thanh toán...')
+      toast.success(t('messages.redirectingToPayment'))
       window.location.href = res.paymentUrl
     }
   } catch (err: any) {
-    toast.error(err.message || 'Không thể khởi tạo thanh toán. Vui lòng thử lại.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isProcessingCheckout.value = false
   }

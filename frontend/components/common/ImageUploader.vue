@@ -29,10 +29,10 @@
         </div>
         <div>
           <p class="text-sm font-semibold text-slate-700">
-            Kéo thả ảnh vào đây, hoặc <span class="text-primary-600">chọn từ thiết bị</span>
+            {{ $t('common.dragDropImages') }} <span class="text-primary-600">{{ $t('common.chooseFromDevice') }}</span>
           </p>
           <p class="text-xs text-slate-400 mt-0.5">
-            Hỗ trợ PNG, JPG, WEBP (tối đa 5MB mỗi ảnh)
+            {{ $t('common.uploadFormatsHint') }}
           </p>
         </div>
       </div>
@@ -41,7 +41,7 @@
     <!-- Uploading Progress / Indicator -->
     <div v-if="isUploading" class="p-4 bg-primary-50 rounded-xl flex items-center gap-3 text-primary-800 text-xs font-medium">
       <LoadingSpinner size="sm" />
-      <span>Đang tải lên ảnh...</span>
+      <span>{{ $t('common.uploadingImages') }}</span>
     </div>
 
     <!-- Preview Grid -->
@@ -55,7 +55,7 @@
 
         <!-- Primary Badge -->
         <div v-if="img.isPrimary" class="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-primary-600 text-white text-[10px] font-bold shadow-sm">
-          Ảnh chính
+          {{ $t('common.primaryImage') }}
         </div>
 
         <!-- Action Overlay -->
@@ -67,7 +67,7 @@
             v-if="!img.isPrimary && boardingHouseId"
             type="button"
             class="p-1.5 bg-white/90 text-slate-700 hover:text-primary-600 rounded-lg text-xs font-semibold shadow-sm transition-colors"
-            title="Đặt làm ảnh chính"
+            :title="$t('common.setAsPrimary')"
             @click.stop="setPrimary(img.id)"
           >
             ★
@@ -75,7 +75,7 @@
           <button
             type="button"
             class="p-1.5 bg-red-600/90 text-white hover:bg-red-700 rounded-lg text-xs font-semibold shadow-sm transition-colors"
-            title="Xóa ảnh"
+            :title="$t('common.deleteImage')"
             @click.stop="deleteImage(img.id)"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,6 +114,7 @@ const emit = defineEmits<{
 }>()
 
 const { $api, put, delete: deleteApi } = useApi()
+const { t } = useI18n()
 const toast = useToast()
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
@@ -146,7 +147,7 @@ const uploadFiles = async (files: File[]) => {
   try {
     for (const file of files) {
       if (file.size > 5 * 1024 * 1024) {
-        toast.error(`File ${file.name} vượt quá dung lượng tối đa 5MB.`)
+        toast.error(t('messages.actionFailed'))
         continue
       }
 
@@ -179,9 +180,9 @@ const uploadFiles = async (files: File[]) => {
         emit('uploaded', newImg)
       }
     }
-    toast.success('Tải ảnh lên thành công!')
+    toast.success(t('messages.uploadImageSuccess'))
   } catch (err: any) {
-    toast.error(err.message || 'Tải ảnh lên thất bại.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isUploading.value = false
   }
@@ -196,9 +197,9 @@ const setPrimary = async (imageId: string) => {
       isPrimary: img.id === imageId,
     }))
     emit('update:images', updated)
-    toast.success('Đã cập nhật ảnh chính!')
+    toast.success(t('messages.setPrimaryImageSuccess'))
   } catch (err: any) {
-    toast.error(err.message || 'Không thể đổi ảnh chính.')
+    toast.error(err.message || t('messages.actionFailed'))
   }
 }
 
@@ -212,9 +213,9 @@ const deleteImage = async (imageId: string) => {
     const updated = props.images.filter((img) => img.id !== imageId)
     emit('update:images', updated)
     emit('deleted', imageId)
-    toast.success('Đã xóa ảnh!')
+    toast.success(t('messages.deleteImageSuccess'))
   } catch (err: any) {
-    toast.error(err.message || 'Xóa ảnh không thành công.')
+    toast.error(err.message || t('messages.actionFailed'))
   }
 }
 </script>

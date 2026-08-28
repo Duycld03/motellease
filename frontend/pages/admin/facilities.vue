@@ -4,15 +4,15 @@
       <div>
         <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('nav.facilities') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Danh mục tiện ích chuẩn của toàn hệ thống phục vụ tìm kiếm và niêm yết phòng trọ
+          {{ $t('admin.facilitiesSubtitle') }}
         </p>
       </div>
       <div class="flex items-center gap-2">
         <BaseButton variant="outline" size="sm" @click="fetchFacilities">
-          🔄 Làm mới
+          🔄 {{ $t('common.refresh') }}
         </BaseButton>
         <BaseButton variant="primary" size="sm" @click="openCreateModal">
-          + Thêm tiện ích
+          {{ $t('admin.addFacilityBtn') }}
         </BaseButton>
       </div>
     </div>
@@ -23,7 +23,7 @@
     </div>
 
     <div v-else-if="facilities.length === 0" class="p-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
-      <p class="font-medium text-slate-500 dark:text-slate-400">Chưa có tiện ích nào trong danh mục.</p>
+      <p class="font-medium text-slate-500 dark:text-slate-400">{{ $t('common.noData') }}</p>
     </div>
 
     <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -44,7 +44,7 @@
           </div>
 
           <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
-            {{ f.inUseByRoomTypesCount }} loại phòng
+            {{ $t('common.facilityInUseBy', { count: f.inUseByRoomTypesCount }) }}
           </span>
         </div>
 
@@ -54,10 +54,10 @@
 
         <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
           <BaseButton variant="outline" size="sm" class="!text-xs" @click="openEditModal(f)">
-            ✏️ Sửa
+            {{ $t('common.editAction') }}
           </BaseButton>
           <BaseButton variant="ghost" size="sm" class="!text-xs text-red-500 hover:text-red-700" @click="handleDelete(f)">
-            Xóa
+            {{ $t('common.deleteAction') }}
           </BaseButton>
         </div>
       </div>
@@ -66,21 +66,21 @@
     <!-- MODAL: Create / Edit Facility -->
     <BaseModal
       v-model="isModalOpen"
-      :title="isEditing ? 'Chỉnh sửa Tiện ích' : 'Thêm Tiện ích mới vào Danh mục'"
+      :title="isEditing ? $t('common.editFacilityModalTitle') : $t('common.createFacilityModalTitle')"
       max-width="md"
     >
       <form @submit.prevent="handleSubmitFacility" class="space-y-4">
         <BaseInput
           v-model="facilityForm.name"
-          label="Tên tiện ích"
-          placeholder="VD: Điều hòa hai chiều"
+          :label="$t('admin.facilityNameLabel')"
+          :placeholder="$t('common.facilityNamePlaceholder')"
           required
         />
 
         <div class="grid grid-cols-2 gap-3">
           <BaseInput
             v-model="facilityForm.codeName"
-            label="Mã định danh (CodeName)"
+            :label="$t('common.facilityCodeLabel')"
             placeholder="air_conditioner"
             required
           />
@@ -93,13 +93,13 @@
 
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Mô tả tiện ích
+            {{ $t('common.facilityDescLabel') }}
           </label>
           <textarea
             v-model="facilityForm.description"
             rows="3"
             class="input-field !text-xs !py-2"
-            placeholder="Mô tả công năng của tiện ích..."
+            :placeholder="$t('common.facilityDescPlaceholder')"
           />
         </div>
 
@@ -108,7 +108,7 @@
             {{ $t('common.cancel') }}
           </BaseButton>
           <BaseButton variant="primary" size="sm" type="submit" :loading="isSubmitting">
-            {{ isEditing ? 'Cập nhật' : 'Tạo tiện ích' }}
+            {{ isEditing ? $t('common.updateAction') : $t('common.createFacilityBtn') }}
           </BaseButton>
         </div>
       </form>
@@ -128,6 +128,7 @@ definePageMeta({
 })
 
 const { get, post, put, delete: deleteApi } = useApi()
+const { t } = useI18n()
 const toast = useToast()
 
 const isLoading = ref(true)
@@ -188,7 +189,7 @@ const handleSubmitFacility = async () => {
         iconKey: facilityForm.iconKey || undefined,
         description: facilityForm.description || undefined,
       })
-      toast.success('Cập nhật tiện ích thành công!')
+      toast.success(t('messages.updateFacilitySuccess'))
     } else {
       await post('/admin/facilities', {
         name: facilityForm.name,
@@ -196,25 +197,25 @@ const handleSubmitFacility = async () => {
         iconKey: facilityForm.iconKey || undefined,
         description: facilityForm.description || undefined,
       })
-      toast.success('Thêm tiện ích mới thành công!')
+      toast.success(t('messages.createFacilitySuccess'))
     }
     isModalOpen.value = false
     await fetchFacilities()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể lưu tiện ích.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isSubmitting.value = false
   }
 }
 
 const handleDelete = async (f: FacilityDetailResponse) => {
-  if (!confirm(`Xóa tiện ích "${f.name}" khỏi danh mục hệ thống?`)) return
+  if (!confirm(t('messages.confirmAction'))) return
   try {
     await deleteApi(`/admin/facilities/${f.id}`)
-    toast.success('Đã xóa tiện ích.')
+    toast.success(t('messages.deleteFacilitySuccess'))
     await fetchFacilities()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể xóa tiện ích.')
+    toast.error(err.message || t('messages.actionFailed'))
   }
 }
 

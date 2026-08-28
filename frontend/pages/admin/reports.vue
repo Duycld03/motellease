@@ -2,13 +2,13 @@
   <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-xl font-bold text-slate-900 dark:text-white">Báo cáo Vi phạm & Khiếu nại</h1>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('admin.reportsTitle') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Tiếp nhận và xử lý các báo cáo vi phạm nội dung đối với tin đăng khu trọ và đánh giá của người dùng
+          {{ $t('admin.reportsSubtitle') }}
         </p>
       </div>
       <BaseButton variant="outline" size="sm" @click="fetchReports">
-        🔄 Làm mới
+        🔄 {{ $t('common.refresh') }}
       </BaseButton>
     </div>
 
@@ -25,7 +25,7 @@
           ]"
           @click="filterStatus = ''"
         >
-          Tất cả ({{ reports.length }})
+          {{ $t('common.allCount', { count: reports.length }) }}
         </button>
         <button
           v-for="st in ['Pending', 'Resolved', 'Dismissed']"
@@ -44,9 +44,9 @@
       </div>
 
       <select v-model="filterTargetType" class="input-field !text-xs !py-1.5 w-44" @change="fetchReports">
-        <option value="">Tất cả đối tượng</option>
-        <option value="Listing">Bài đăng (Listing)</option>
-        <option value="Review">Đánh giá (Review)</option>
+        <option value="">{{ $t('common.allObjects') }}</option>
+        <option value="Listing">{{ $t('enums.ImageOwnerType.BoardingHouse') }}</option>
+        <option value="Review">{{ $t('enums.ImageOwnerType.Review') }}</option>
       </select>
     </div>
 
@@ -56,7 +56,7 @@
     </div>
 
     <div v-else-if="filteredReports.length === 0" class="p-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
-      <p class="font-medium text-slate-500 dark:text-slate-400">Không có báo cáo vi phạm nào.</p>
+      <p class="font-medium text-slate-500 dark:text-slate-400">{{ $t('common.noData') }}</p>
     </div>
 
     <div v-else class="space-y-4">
@@ -74,7 +74,7 @@
               <span class="text-sm font-bold text-slate-900 dark:text-white">{{ rep.reason }}</span>
             </div>
             <p class="text-xs text-slate-500 dark:text-slate-400">
-              Người báo cáo: <strong class="text-slate-800 dark:text-slate-200">{{ rep.reporterFullName }}</strong> · Gửi lúc: {{ formatRelativeTime(rep.createdAt) }}
+              {{ $t('common.reporterPrefix', { name: rep.reporterFullName }) }} · {{ $t('common.sentAtPrefix', { time: formatRelativeTime(rep.createdAt) }) }}
             </p>
           </div>
 
@@ -86,9 +86,9 @@
         </p>
 
         <div v-if="rep.resolution" class="p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl text-xs text-emerald-800 dark:text-emerald-300">
-          <strong>Kết quả xử lý:</strong> {{ rep.resolution }}
+          <strong>{{ $t('common.resolutionPrefix', { resolution: rep.resolution }) }}</strong>
           <span v-if="rep.processedByFullName" class="block text-[11px] text-emerald-600 dark:text-emerald-400 mt-0.5">
-            Bởi: {{ rep.processedByFullName }} ({{ rep.processedAt ? formatRelativeTime(rep.processedAt) : '' }})
+            {{ $t('common.processedBy', { name: rep.processedByFullName }) }}
           </span>
         </div>
 
@@ -100,7 +100,7 @@
             class="!text-xs"
             @click="openResolutionModal(rep, 'dismiss')"
           >
-            ✕ Bác bỏ báo cáo
+            ✕ {{ $t('admin.dismissReport') }}
           </BaseButton>
           <BaseButton
             variant="danger"
@@ -108,7 +108,7 @@
             class="!text-xs"
             @click="openResolutionModal(rep, 'resolve')"
           >
-            ⚡ Xử lý vi phạm
+            ⚡ {{ $t('admin.resolveReport') }}
           </BaseButton>
         </div>
       </div>
@@ -117,19 +117,19 @@
     <!-- MODAL: Resolve / Dismiss -->
     <BaseModal
       v-model="isModalOpen"
-      :title="actionType === 'resolve' ? 'Xử lý Vi phạm Báo cáo' : 'Bác bỏ Báo cáo'"
+      :title="actionType === 'resolve' ? $t('common.resolveReportModalTitle') : $t('common.dismissReportModalTitle')"
       max-width="md"
     >
       <form @submit.prevent="handleSubmitResolution" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Ghi chú kết quả xử lý
+            {{ $t('common.resolutionNoteLabel') }}
           </label>
           <textarea
             v-model="resolutionNote"
             rows="3"
             class="input-field !text-xs !py-2"
-            :placeholder="actionType === 'resolve' ? 'VD: Đã ẩn bài đăng và cảnh cáo chủ phòng trọ...' : 'VD: Báo cáo không đủ căn cứ vi phạm...'"
+            :placeholder="actionType === 'resolve' ? $t('common.resolveReportPlaceholder') : $t('common.dismissReportPlaceholder')"
           />
         </div>
 
@@ -143,7 +143,7 @@
             type="submit"
             :loading="isSubmitting"
           >
-            {{ actionType === 'resolve' ? 'Xác nhận xử lý' : 'Xác nhận bác bỏ' }}
+            {{ actionType === 'resolve' ? $t('common.confirmResolveReport') : $t('common.confirmDismissReport') }}
           </BaseButton>
         </div>
       </form>
@@ -164,6 +164,7 @@ definePageMeta({
 
 const { get, put } = useApi()
 const { formatRelativeTime } = useFormat()
+const { t } = useI18n()
 const toast = useToast()
 
 const isLoading = ref(true)
@@ -216,11 +217,11 @@ const handleSubmitResolution = async () => {
     await put(`/reports/${selectedReport.value.id}/${endpoint}`, {
       resolution: resolutionNote.value || undefined,
     })
-    toast.success(actionType.value === 'resolve' ? 'Đã xử lý vi phạm thành công!' : 'Đã bác bỏ báo cáo.')
+    toast.success(actionType.value === 'resolve' ? t('messages.resolveReportSuccess') : t('messages.dismissReportSuccess'))
     isModalOpen.value = false
     await fetchReports()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể xử lý báo cáo.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isSubmitting.value = false
   }

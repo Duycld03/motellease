@@ -29,8 +29,14 @@ const props = withDefaults(
   }
 )
 
+const { t } = useI18n()
+
 const chartData = computed(() => ({
-  labels: ['Đang thuê (Occupied)', 'Đã cọc (Reserved)', 'Phòng trống (Available)'],
+  labels: [
+    t('ownerAnalytics.occupiedRoomsLabel'),
+    t('ownerAnalytics.reservedRoomsLabel'),
+    t('ownerAnalytics.vacantRoomsLabel'),
+  ],
   datasets: [
     {
       backgroundColor: ['#3b82f6', '#f59e0b', '#10b981'],

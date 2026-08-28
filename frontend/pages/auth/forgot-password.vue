@@ -64,9 +64,9 @@
     </form>
 
     <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 text-center">
-      <NuxtLink to="/auth/login" class="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+      <NuxtLinkLocale to="/auth/login" class="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
         ← {{ $t('common.back') }} {{ $t('nav.login') }}
-      </NuxtLink>
+      </NuxtLinkLocale>
     </div>
   </div>
 </template>
@@ -83,6 +83,7 @@ definePageMeta({
 const { post } = useApi()
 const toast = useToast()
 const { t } = useI18n()
+const localePath = useLocalePath()
 
 const step = ref(1)
 const email = ref('')
@@ -114,7 +115,7 @@ const handleResetPassword = async () => {
       newPassword: newPassword.value,
     })
     toast.success(t('auth.passwordResetSuccess'))
-    navigateTo('/auth/login')
+    navigateTo(localePath('/auth/login'))
   } catch (err: any) {
     toast.error(err.message || t('auth.otpInvalid'))
   } finally {

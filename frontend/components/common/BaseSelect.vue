@@ -22,7 +22,7 @@
           {{ selectedLabel }}
         </span>
         <span v-else class="text-slate-400 dark:text-slate-500 text-xs truncate">
-          {{ placeholder || 'Chọn...' }}
+          {{ placeholder || $t('common.select') }}
         </span>
 
         <svg

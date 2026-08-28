@@ -4,7 +4,7 @@
 
     <!-- Current coordinates or helper overlay -->
     <div v-if="selectable" class="absolute bottom-3 left-3 z-20 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-slate-200 text-[11px] text-slate-600 font-medium shadow-sm pointer-events-none">
-      <span>📍 Nhấp vào bản đồ để chọn tọa độ vị trí</span>
+      <span>{{ $t('location.clickMapPrompt') }}</span>
     </div>
   </div>
 </template>

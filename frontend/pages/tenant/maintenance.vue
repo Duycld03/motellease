@@ -4,15 +4,15 @@
       <div>
         <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('nav.myMaintenance') }}</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Gửi yêu cầu sửa chữa cơ sở vật chất (điện, nước, khóa cửa, wifi, điều hòa) đến chủ nhà
+          {{ $t('common.tenantMaintenanceSubtitle') }}
         </p>
       </div>
       <div class="flex items-center gap-2">
         <BaseButton variant="outline" size="sm" @click="fetchRequests">
-          🔄 Làm mới
+          🔄 {{ $t('common.refresh') }}
         </BaseButton>
         <BaseButton variant="primary" size="sm" @click="openCreateModal">
-          + Báo sự cố mới
+          {{ $t('maintenance.addNewRequestBtn') }}
         </BaseButton>
       </div>
     </div>
@@ -29,10 +29,10 @@
         ]"
         @click="filterStatus = ''"
       >
-        Tất cả ({{ requests.length }})
+        {{ $t('common.allCount', { count: requests.length }) }}
       </button>
       <button
-        v-for="st in ['Pending', 'Accepted', 'Resolved', 'Rejected']"
+        v-for="st in ['Open', 'InProgress', 'Resolved', 'Rejected']"
         :key="st"
         type="button"
         :class="[
@@ -56,7 +56,7 @@
       <svg class="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
       </svg>
-      <p class="font-medium text-slate-500 dark:text-slate-400">Không có yêu cầu sự cố nào.</p>
+      <p class="font-medium text-slate-500 dark:text-slate-400">{{ $t('maintenance.emptyTenantRequests') }}</p>
     </div>
 
     <div v-else class="space-y-4">
@@ -70,14 +70,14 @@
             <div class="flex items-center gap-2">
               <span class="text-base font-bold text-slate-900 dark:text-white">{{ r.boardingHouseName }}</span>
               <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                Phòng {{ r.roomNumber }}
+                {{ $t('property.room') }} {{ r.roomNumber }}
               </span>
               <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-primary-50 dark:bg-primary-950 text-primary-700 dark:text-primary-300 border border-primary-200 dark:border-primary-800">
                 {{ getCategoryLabel(r.category) }}
               </span>
             </div>
             <p class="text-xs text-slate-500 dark:text-slate-400">
-              Gửi lúc: {{ formatRelativeTime(r.createdAt) }}
+              {{ $t('common.sentAtPrefix', { time: formatRelativeTime(r.createdAt) }) }}
             </p>
           </div>
 
@@ -104,45 +104,45 @@
     <!-- MODAL: Create Maintenance Request -->
     <BaseModal
       v-model="isCreateModalOpen"
-      title="Báo cáo Sự cố Phòng trọ"
+      :title="$t('maintenance.createModalTitle')"
       max-width="md"
     >
       <form @submit.prevent="handleSubmitCreate" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Chọn Phòng trọ bạn đang thuê <span class="text-red-500">*</span>
+            {{ $t('property.room') }} <span class="text-red-500">*</span>
           </label>
           <select v-model="form.leaseId" class="input-field !text-xs !py-2" required>
-            <option value="">-- Chọn phòng --</option>
+            <option value="">-- {{ $t('common.select') }} --</option>
             <option v-for="l in activeLeases" :key="l.id" :value="l.id">
-              {{ l.boardingHouseName }} - Phòng {{ l.roomNumber }}
+              {{ l.boardingHouseName }} - {{ $t('property.room') }} {{ l.roomNumber }}
             </option>
           </select>
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Loại sự cố <span class="text-red-500">*</span>
+            {{ $t('maintenance.categorySelect') }} <span class="text-red-500">*</span>
           </label>
           <select v-model="form.category" class="input-field !text-xs !py-2" required>
-            <option value="Electrical">⚡ Điện (Mất điện, cháy bóng, chập ổ cắm)</option>
-            <option value="Plumbing">💧 Nước (Rò rỉ nước, vòi hỏng, nghẹt bồn cầu)</option>
-            <option value="Furniture">🪑 Nội thất (Hỏng giường, tủ, cửa, ổ khóa)</option>
-            <option value="Appliances">❄️ Thiết bị gia dụng (Điều hòa, nóng lạnh, máy giặt)</option>
-            <option value="Internet">🌐 Mạng / Wifi (Mất kết nối mạng, wifi yếu)</option>
-            <option value="Other">🛠️ Khác (Tường ẩm mốc, dột, vệ sinh...)</option>
+            <option value="Electricity">{{ $t('enums.MaintenanceCategory.Electricity') }}</option>
+            <option value="Water">{{ $t('enums.MaintenanceCategory.Water') }}</option>
+            <option value="Furniture">{{ $t('enums.MaintenanceCategory.Furniture') }}</option>
+            <option value="Door">{{ $t('enums.MaintenanceCategory.Door') }}</option>
+            <option value="Internet">{{ $t('enums.MaintenanceCategory.Internet') }}</option>
+            <option value="Other">{{ $t('enums.MaintenanceCategory.Other') }}</option>
           </select>
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Mô tả chi tiết tình trạng sự cố <span class="text-red-500">*</span>
+            {{ $t('maintenance.description') }} <span class="text-red-500">*</span>
           </label>
           <textarea
             v-model="form.description"
             rows="4"
             class="input-field !text-xs !py-2"
-            placeholder="Mô tả cụ thể hiện tượng gặp phải để chủ nhà / nhân viên dễ dàng chuẩn bị đồ nghề sửa chữa..."
+            :placeholder="$t('maintenance.descriptionPlaceholder')"
             required
           />
         </div>
@@ -152,7 +152,7 @@
             {{ $t('common.cancel') }}
           </BaseButton>
           <BaseButton variant="primary" size="sm" type="submit" :loading="isSubmitting">
-            Gửi báo cáo sự cố
+            {{ $t('maintenance.submitRequestBtn') }}
           </BaseButton>
         </div>
       </form>
@@ -178,6 +178,7 @@ definePageMeta({
 
 const { get, post } = useApi()
 const { formatRelativeTime } = useFormat()
+const { t } = useI18n()
 const toast = useToast()
 
 const isLoading = ref(true)
@@ -188,17 +189,21 @@ const activeLeases = ref<LeaseResponse[]>([])
 const getCategoryLabel = (cat: MaintenanceCategory) => {
   switch (cat) {
     case 'Electrical':
-      return '⚡ Điện'
+    case 'Electricity' as any:
+      return `⚡ ${t('enums.MaintenanceCategory.Electricity')}`
     case 'Plumbing':
-      return '💧 Nước'
+    case 'Water' as any:
+      return `💧 ${t('enums.MaintenanceCategory.Water')}`
     case 'Furniture':
-      return '🪑 Nội thất'
+      return `🪑 ${t('enums.MaintenanceCategory.Furniture')}`
     case 'Appliances':
-      return '❄️ Thiết bị'
+      return `❄️ ${t('enums.MaintenanceCategory.Other')}`
     case 'Internet':
-      return '🌐 Wifi'
+      return `🌐 ${t('enums.MaintenanceCategory.Internet')}`
+    case 'Door':
+      return `🚪 ${t('enums.MaintenanceCategory.Door')}`
     default:
-      return '🛠️ Khác'
+      return `🛠️ ${t('enums.MaintenanceCategory.Other')}`
   }
 }
 
@@ -246,7 +251,7 @@ const openCreateModal = async () => {
 
 const handleSubmitCreate = async () => {
   if (!form.leaseId) {
-    toast.error('Bạn cần có hợp đồng thuê phòng đang hiệu lực để gửi báo cáo.')
+    toast.error(t('messages.actionFailed'))
     return
   }
   isSubmitting.value = true
@@ -256,11 +261,11 @@ const handleSubmitCreate = async () => {
       category: form.category,
       description: form.description,
     })
-    toast.success('Gửi báo cáo sự cố thành công! Chủ trọ sẽ liên hệ hỗ trợ sớm.')
+    toast.success(t('messages.sendMaintenanceSuccess'))
     isCreateModalOpen.value = false
     await fetchRequests()
   } catch (err: any) {
-    toast.error(err.message || 'Không thể gửi báo cáo sự cố.')
+    toast.error(err.message || t('messages.actionFailed'))
   } finally {
     isSubmitting.value = false
   }

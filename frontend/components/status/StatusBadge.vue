@@ -17,6 +17,9 @@ const props = defineProps<{
     | 'ListingStatus'
     | 'TaskPriority'
     | 'MaintenanceStatus'
+    | 'WorkTaskStatus'
+    | 'ReportStatus'
+    | 'UserRole'
   status: string
 }>()
 
@@ -65,9 +68,9 @@ const badgeColorClass = computed(() => {
       break
 
     case 'RequestStatus':
-      if (s === 'Approved') return 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+      if (s === 'Accepted' || s === 'Completed' || s === 'Approved') return 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
       if (s === 'Pending') return 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
-      if (s === 'Rejected' || s === 'Cancelled') return 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
+      if (s === 'Rejected' || s === 'Cancelled' || s === 'Expired') return 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
       break
 
     case 'TaskPriority':
@@ -81,6 +84,24 @@ const badgeColorClass = computed(() => {
       if (s === 'Open') return 'bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800'
       if (s === 'Rejected') return 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
       break
+
+    case 'WorkTaskStatus':
+      if (s === 'Completed') return 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+      if (s === 'InProgress') return 'bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800'
+      if (s === 'Cancelled') return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+      break
+
+    case 'ReportStatus':
+      if (s === 'Resolved') return 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+      if (s === 'Pending') return 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
+      if (s === 'Dismissed') return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+      break
+
+    case 'UserRole':
+      if (s === 'Admin') return 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
+      if (s === 'Owner') return 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+      if (s === 'Staff') return 'bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800'
+      return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
   }
 
   return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
@@ -88,16 +109,16 @@ const badgeColorClass = computed(() => {
 
 const dotColorClass = computed(() => {
   const s = props.status
-  if (['Available', 'Paid', 'Completed', 'Active', 'Published', 'Resolved'].includes(s)) {
+  if (['Available', 'Paid', 'Completed', 'Active', 'Published', 'Resolved', 'Accepted', 'Approved'].includes(s)) {
     return 'bg-emerald-500'
   }
   if (['Reserved', 'Pending', 'Expiring', 'InProgress', 'Medium', 'PendingReview'].includes(s)) {
     return 'bg-amber-500'
   }
-  if (['Occupied', 'Accepted', 'Issued', 'Open'].includes(s)) {
+  if (['Occupied', 'Issued', 'Open'].includes(s)) {
     return 'bg-sky-500'
   }
-  if (['Maintenance', 'Rejected', 'Overdue', 'Terminated', 'High', 'Expired'].includes(s)) {
+  if (['Maintenance', 'Rejected', 'Overdue', 'Terminated', 'High', 'Expired', 'Cancelled'].includes(s)) {
     return 'bg-red-500'
   }
   return 'bg-slate-400'
