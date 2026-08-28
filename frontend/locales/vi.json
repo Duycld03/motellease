@@ -326,5 +326,22 @@
     "time": "Thời gian thực hiện",
     "retry": "Thử thanh toán lại",
     "viewDeposits": "Xem yêu cầu đặt cọc"
+  },
+  "leases": {
+    "title": "Hợp đồng thuê phòng",
+    "subtitle": "Danh sách hợp đồng thuê phòng, thông tin thành viên cùng phòng và yêu cầu gia hạn",
+    "ownerTitle": "Quản lý Hợp đồng thuê & Gia hạn",
+    "ownerSubtitle": "Theo dõi hợp đồng đang thuê, quản lý người lưu trú, duyệt gia hạn và thực hiện thủ tục trả phòng quyết toán cọc",
+    "activeLeases": "Danh sách Hợp đồng",
+    "extensions": "Yêu cầu Gia hạn",
+    "addTenant": "Thêm người lưu trú",
+    "terminate": "Trả phòng & Quyết toán cọc",
+    "terminateSuccess": "Thanh lý hợp đồng thành công!",
+    "addTenantSuccess": "Thêm người lưu trú thành công!",
+    "removeTenantSuccess": "Đã xóa người lưu trú.",
+    "requestExtension": "Yêu cầu gia hạn hợp đồng",
+    "requestExtensionSuccess": "Gửi yêu cầu gia hạn hợp đồng thành công!",
+    "approveExtensionSuccess": "Đã duyệt gia hạn hợp đồng!",
+    "rejectExtensionSuccess": "Đã từ chối yêu cầu gia hạn."
   }
 }

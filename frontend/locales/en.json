@@ -326,5 +326,22 @@
     "time": "Timestamp",
     "retry": "Try Payment Again",
     "viewDeposits": "View My Deposits"
+  },
+  "leases": {
+    "title": "Rental Leases",
+    "subtitle": "Rental leases, co-tenants directory and contract extension requests",
+    "ownerTitle": "Lease Management & Extensions",
+    "ownerSubtitle": "Monitor active leases, manage co-tenants, review extensions, and conduct move-out deposit settlements",
+    "activeLeases": "Active Leases",
+    "extensions": "Extension Requests",
+    "addTenant": "Add Co-tenant",
+    "terminate": "Move-out Settlement & Terminate",
+    "terminateSuccess": "Lease terminated successfully!",
+    "addTenantSuccess": "Co-tenant added successfully!",
+    "removeTenantSuccess": "Co-tenant removed successfully.",
+    "requestExtension": "Request Lease Extension",
+    "requestExtensionSuccess": "Extension request submitted successfully!",
+    "approveExtensionSuccess": "Lease extension approved!",
+    "rejectExtensionSuccess": "Lease extension rejected."
   }
 }
