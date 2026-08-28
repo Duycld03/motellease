@@ -8,6 +8,8 @@
     "build": "nuxt build",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "postinstall": "nuxt prepare",
     "codegen": "openapi-typescript http://localhost:5004/swagger/v1/swagger.json -o types/schema.d.ts"
   },
@@ -33,6 +35,10 @@
   },
   "devDependencies": {
     "@lucide/vue": "^1.34.0",
-    "openapi-typescript": "^7.13.0"
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/test-utils": "^2.5.0",
+    "happy-dom": "^20.11.12",
+    "openapi-typescript": "^7.13.0",
+    "vitest": "^4.1.11"
   }
 }

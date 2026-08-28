@@ -107,8 +107,8 @@ const handleSubmit = async () => {
   isLoading.value = true
   try {
     await sendRegistrationOtp(form.email)
-    if (import.meta.client) {
-      sessionStorage.setItem('pending_registration', JSON.stringify(form))
+    if (typeof window !== 'undefined' && window.sessionStorage) {
+      window.sessionStorage.setItem('pending_registration', JSON.stringify(form))
     }
     toast.success(t('auth.otpSent'))
     navigateTo({

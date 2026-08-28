@@ -72,8 +72,8 @@ const handleSubmit = async () => {
     await verifyRegistrationOtp(email.value, otpCode.value)
 
     let pendingData: any = null
-    if (import.meta.client) {
-      const raw = sessionStorage.getItem('pending_registration')
+    if (typeof window !== 'undefined' && window.sessionStorage) {
+      const raw = window.sessionStorage.getItem('pending_registration')
       if (raw) {
         try {
           pendingData = JSON.parse(raw)
@@ -84,8 +84,8 @@ const handleSubmit = async () => {
     }
 
     if (pendingData && pendingData.email === email.value) {
-      if (import.meta.client) {
-        sessionStorage.removeItem('pending_registration')
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        window.sessionStorage.removeItem('pending_registration')
       }
       await register(pendingData)
     } else {
