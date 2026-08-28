@@ -343,5 +343,27 @@
     "requestExtensionSuccess": "Extension request submitted successfully!",
     "approveExtensionSuccess": "Lease extension approved!",
     "rejectExtensionSuccess": "Lease extension rejected."
+  },
+  "bills": {
+    "title": "Rental Bills",
+    "subtitle": "Track monthly rent bills, meter readings and pay online via MoMo / VNPay",
+    "ownerTitle": "Bills & Rent Collection",
+    "ownerSubtitle": "Record monthly meter readings, issue rent bills, export PDF and monitor payments",
+    "createBill": "Create Monthly Bill",
+    "previewCalculation": "Provisional Bill Calculation",
+    "issueImmediately": "Issue Immediately",
+    "saveDraft": "Save as Draft",
+    "issueSuccess": "Rent bill issued successfully!",
+    "cancelSuccess": "Rent bill cancelled.",
+    "downloadPdf": "Download Bill PDF",
+    "payBill": "Pay Bill Online"
+  },
+  "expenses": {
+    "title": "Operating Expenses",
+    "subtitle": "Track master utility bills and operating expenses of your properties",
+    "createExpense": "Record Expense",
+    "saveSuccess": "Expense record saved successfully!",
+    "updateSuccess": "Expense record updated successfully!",
+    "deleteSuccess": "Expense record deleted."
   }
 }

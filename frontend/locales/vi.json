@@ -343,5 +343,27 @@
     "requestExtensionSuccess": "Gửi yêu cầu gia hạn hợp đồng thành công!",
     "approveExtensionSuccess": "Đã duyệt gia hạn hợp đồng!",
     "rejectExtensionSuccess": "Đã từ chối yêu cầu gia hạn."
+  },
+  "bills": {
+    "title": "Hóa đơn tiền nhà",
+    "subtitle": "Theo dõi hóa đơn tiền nhà, chỉ số điện nước hàng tháng và thanh toán online qua MoMo / VNPay",
+    "ownerTitle": "Quản lý Hóa đơn & Tiền phòng",
+    "ownerSubtitle": "Chốt chỉ số điện nước hàng tháng, phát hành hóa đơn, xuất file PDF và theo dõi thanh toán",
+    "createBill": "Lập hóa đơn tháng",
+    "previewCalculation": "Bảng tính toán tạm tính hóa đơn",
+    "issueImmediately": "Phát hành ngay",
+    "saveDraft": "Lưu bản nháp",
+    "issueSuccess": "Phát hành hóa đơn thành công!",
+    "cancelSuccess": "Đã hủy hóa đơn.",
+    "downloadPdf": "Tải hóa đơn PDF",
+    "payBill": "Thanh toán hóa đơn"
+  },
+  "expenses": {
+    "title": "Chi phí vận hành",
+    "subtitle": "Theo dõi hóa đơn điện nước tổng đầu vào và các khoản chi phí vận hành khu trọ",
+    "createExpense": "Ghi nhận chi phí",
+    "saveSuccess": "Ghi nhận chi phí thành công!",
+    "updateSuccess": "Cập nhật chi phí thành công!",
+    "deleteSuccess": "Đã xóa bản ghi chi phí."
   }
 }
