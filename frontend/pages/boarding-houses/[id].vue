@@ -412,29 +412,19 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Ngày dự kiến chuyển vào <span class="text-red-500">*</span>
-            </label>
-            <input
-              v-model="depositForm.requestedStartDate"
-              type="date"
-              class="input-field !text-xs !py-2"
-              required
-            />
-          </div>
+          <BaseDatePicker
+            v-model="depositForm.requestedStartDate"
+            label="Ngày dự kiến chuyển vào"
+            required
+            :min="todayStr"
+          />
 
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Thời hạn hợp đồng mong muốn <span class="text-red-500">*</span>
-            </label>
-            <select v-model="depositForm.requestedTermMonths" class="input-field !text-xs !py-2" required>
-              <option :value="3">3 tháng</option>
-              <option :value="6">6 tháng</option>
-              <option :value="12">12 tháng (1 năm)</option>
-              <option :value="24">24 tháng (2 năm)</option>
-            </select>
-          </div>
+          <BaseSelect
+            v-model="depositForm.requestedTermMonths"
+            :options="termOptions"
+            label="Thời hạn hợp đồng mong muốn"
+            required
+          />
         </div>
 
         <div class="p-3 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-200 dark:border-amber-800 text-[11px] text-amber-800 dark:text-amber-300 space-y-1">
@@ -462,7 +452,9 @@
 <script setup lang="ts">
 import BaseButton from '~/components/common/BaseButton.vue'
 import BaseCard from '~/components/common/BaseCard.vue'
+import BaseDatePicker from '~/components/common/BaseDatePicker.vue'
 import BaseModal from '~/components/common/BaseModal.vue'
+import BaseSelect from '~/components/common/BaseSelect.vue'
 import LoadingSpinner from '~/components/common/LoadingSpinner.vue'
 import MapView from '~/components/common/MapView.client.vue'
 import type {
@@ -588,6 +580,18 @@ const handleSubmitAppointment = async () => {
 // Deposit Booking (Đặt cọc giữ phòng)
 const isDepositModalOpen = ref(false)
 const isSubmittingDeposit = ref(false)
+
+const todayStr = computed(() => {
+  const d = new Date()
+  return d.toISOString().slice(0, 10)
+})
+
+const termOptions = [
+  { label: '3 tháng', value: 3 },
+  { label: '6 tháng', value: 6 },
+  { label: '12 tháng (1 năm)', value: 12 },
+  { label: '24 tháng (2 năm)', value: 24 },
+]
 
 const depositForm = reactive({
   requestedStartDate: '',
