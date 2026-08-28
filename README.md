@@ -5,7 +5,7 @@ A comprehensive boarding house search and property management platform built wit
 | Layer | Technology |
 |---|---|
 | **Backend** | ASP.NET Core (.NET 10), EF Core 10 + Npgsql, SignalR Hubs, QuestPDF |
-| **Frontend** | Nuxt 3 (Single app serving 4 role portals), Vue 3, Tailwind CSS, `@nuxtjs/i18n` (vi/en), Leaflet / OpenStreetMap |
+| **Frontend** | Nuxt 4 (Single app serving 4 role portals), Vue 3, Tailwind CSS, `@nuxtjs/i18n` (vi/en), Leaflet / OpenStreetMap |
 | **Database** | PostgreSQL 17 + PostGIS 3.5 Extension |
 | **Media** | Cloudinary (Signed Direct Uploads) |
 | **Payments** | MoMo & VNPay (Sandbox / Server-to-Server IPN Confirmation) |
@@ -24,7 +24,7 @@ A comprehensive boarding house search and property management platform built wit
 - **Transactional & Idempotent Financial Operations**: Payment confirmation happens exclusively via server-to-server IPN callbacks with verified HMAC signatures. `PaymentTransaction.ProviderTxnId` is unique, guaranteeing replayed callbacks never move balance twice.
 - **Frozen Historical Documents**: Invoices and contracts freeze historical room/utility rates at issuance time, ensuring subsequent property price updates never alter tenant dues.
 - **PostGIS Spatial Database Queries**: Boarding house coordinates are stored as `geography(Point, 4326)` in STORED generated columns with GiST indexes, queried using longitude-first `ST_DWithin` and `ST_Distance`.
-- **Single Nuxt 3 App for 4 Roles**: Role-based layouts (`default`, `tenant`, `owner`, `staff`, `admin`) with route middleware, responsive mobile-first UI, full bilingual support (`vi` default, `en`), and persistent Dark Mode.
+- **Single Nuxt 4 App for 4 Roles**: Role-based layouts (`default`, `tenant`, `owner`, `staff`, `admin`) with route middleware, responsive mobile-first UI, full bilingual support (`vi` default, `en`), and persistent Dark Mode.
 
 ---
 
@@ -106,7 +106,7 @@ The system is fully developed across 8 major phases:
 
 ### Option A: One-Command Run with Docker Compose (Recommended)
 
-Start the complete application stack (PostGIS Database + .NET 10 API + Nuxt 3 Frontend) with one command:
+Start the complete application stack (PostGIS Database + .NET 10 API + Nuxt 4 Frontend) with one command:
 
 ```bash
 docker compose up --build -d
