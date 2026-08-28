@@ -1,14 +1,15 @@
 # MotelLease — Boarding House Search & Management Platform
 
-A comprehensive boarding house search and property management platform built with modern enterprise standards: tenants find and book rooms via spatial search, owners and their staff run properties, and the monthly billing, contract and payment cycle is handled end to end.
+A comprehensive boarding house search and property management platform built with modern enterprise standards: tenants find and book rooms via spatial search, owners and their staff run properties, and the monthly billing, contract, and payment lifecycle is handled end to end.
 
 | Layer | Technology |
 |---|---|
 | **Backend** | ASP.NET Core (.NET 10), EF Core 10 + Npgsql, SignalR Hubs, QuestPDF |
-| **Frontend** | Nuxt 4 (Single app serving all 4 roles), Vue 3, Tailwind CSS, `@nuxtjs/i18n` (vi/en), Leaflet / OpenStreetMap |
+| **Frontend** | Nuxt 3 (Single app serving 4 role portals), Vue 3, Tailwind CSS, `@nuxtjs/i18n` (vi/en), Leaflet / OpenStreetMap |
 | **Database** | PostgreSQL 17 + PostGIS 3.5 Extension |
 | **Media** | Cloudinary (Signed Direct Uploads) |
 | **Payments** | MoMo & VNPay (Sandbox / Server-to-Server IPN Confirmation) |
+| **Containers** | Docker & Docker Compose (Multi-stage build) |
 
 ---
 
@@ -23,7 +24,7 @@ A comprehensive boarding house search and property management platform built wit
 - **Transactional & Idempotent Financial Operations**: Payment confirmation happens exclusively via server-to-server IPN callbacks with verified HMAC signatures. `PaymentTransaction.ProviderTxnId` is unique, guaranteeing replayed callbacks never move balance twice.
 - **Frozen Historical Documents**: Invoices and contracts freeze historical room/utility rates at issuance time, ensuring subsequent property price updates never alter tenant dues.
 - **PostGIS Spatial Database Queries**: Boarding house coordinates are stored as `geography(Point, 4326)` in STORED generated columns with GiST indexes, queried using longitude-first `ST_DWithin` and `ST_Distance`.
-- **Single Nuxt 4 App for 4 Roles**: Role-based layouts (`default`, `tenant`, `owner`, `staff`, `admin`) with route middleware, responsive mobile-first UI, and comprehensive Dark Mode support.
+- **Single Nuxt 3 App for 4 Roles**: Role-based layouts (`default`, `tenant`, `owner`, `staff`, `admin`) with route middleware, responsive mobile-first UI, full bilingual support (`vi` default, `en`), and persistent Dark Mode.
 
 ---
 
@@ -88,31 +89,56 @@ The system is fully developed across 8 major phases:
 
 - **Backend Integration Test Suite**:
   - Powered by **Testcontainers** running a real `postgis/postgis:17-3.5` PostgreSQL instance.
-  - **143 / 143 tests passed (100%)**.
-  - All 12 domain invariants from `docs/domain-rules.md` §9 are verified by automated tests.
+  - **144 / 144 tests passed (100%)**.
+  - All 12 domain invariants from `docs/domain-rules.md` §9 and PDF document generation are verified by automated tests.
   - Run command: `dotnet test backend/MotelLease.slnx`
 - **Frontend Automated Test Suite**:
   - Powered by **Vitest** + **@vue/test-utils** + **happy-dom**.
-  - **58 / 58 tests passed across 28 test suites (100%)**.
+  - **67 / 67 tests passed across 29 test suites (100%)**.
   - Covers end-to-end form validation, DOM input events, modal workflows, API DTO payload assertions, and lifecycle state across all 8 stages.
   - Run command: `npm --prefix frontend test`
 - **Frontend Production Build**:
-  - `npm --prefix frontend run build` compiles cleanly with **0 errors / 0 warnings**.
+  - `npm --prefix frontend run build` compiles cleanly with **0 errors / 0 warnings** (~1.1 MB client gzip payload).
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- [Node.js 24+](https://nodejs.org/)
-- [Docker & Docker Compose](https://www.docker.com/)
+### Option A: One-Command Run with Docker Compose (Recommended)
 
-### 1. Database & Backend API Setup
+Start the complete application stack (PostGIS Database + .NET 10 API + Nuxt 3 Frontend) with one command:
+
+```bash
+docker compose up --build -d
+```
+
+- **Frontend App**: `http://localhost:3000`
+- **Backend API & Swagger**: `http://localhost:5004/swagger`
+- **PostGIS Database**: `localhost:5432` (`motellease` / `motellease`)
+
+*(Optional)* Start management tools:
+```bash
+# Start pgAdmin web management UI on http://localhost:5050
+docker compose --profile tools up -d
+
+# Start ngrok tunnel for public IPN payment callbacks on http://localhost:4040
+docker compose --profile tunnel up -d
+```
+
+---
+
+### Option B: Local Manual Development
+
+#### Prerequisites
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [Node.js 22+](https://nodejs.org/)
+- [Docker](https://www.docker.com/) (for PostgreSQL / PostGIS)
+
+#### 1. Database & Backend API Setup
 
 ```bash
 # 1. Start PostgreSQL with PostGIS
-docker compose up -d
+docker compose up db -d
 
 # 2. Configure JWT secret in user-secrets
 cd backend/MotelLease.Api
@@ -125,14 +151,14 @@ dotnet user-secrets set "MoMo:PartnerCode" "MOMO"
 dotnet user-secrets set "MoMo:AccessKey" "<your-access-key>"
 dotnet user-secrets set "MoMo:SecretKey" "<your-secret-key>"
 
-# 4. Run database migrations & start API
+# 4. Run API (Database will auto-migrate & seed)
 dotnet run
 ```
 
-- Swagger UI available at `http://localhost:5004/swagger` in Development mode.
+- Swagger UI available at `http://localhost:5004/swagger`.
 - Run tests: `dotnet test backend/MotelLease.slnx`
 
-### 2. Frontend Setup
+#### 2. Frontend Setup
 
 ```bash
 # Navigate to frontend
@@ -143,9 +169,6 @@ npm install
 
 # Run frontend tests
 npm test
-
-# Build production bundle
-npm run build
 
 # Start development server
 npm run dev
@@ -165,3 +188,4 @@ npm run dev
 | [docs/api-design.md](docs/api-design.md) | Complete REST API endpoint contracts (~150 endpoints) |
 | [docs/seed-plan.md](docs/seed-plan.md) | Seed data specification and coordinate anchors |
 | [AGENTS.md](AGENTS.md) | Architecture rules & AI agent conventions |
+
