@@ -87,7 +87,17 @@ export const useApi = () => {
       // Parse RFC 7807 problem+json
       const problem = err?.data as ProblemDetails | undefined
       if (problem) {
-        const message = problem.detail || problem.title || err.message || 'An error occurred'
+        let message = problem.detail
+        if (!message && problem.errors && Object.keys(problem.errors).length > 0) {
+          const firstKey = Object.keys(problem.errors)[0]
+          const firstList = problem.errors[firstKey]
+          if (Array.isArray(firstList) && firstList.length > 0) {
+            message = firstList[0]
+          }
+        }
+        if (!message) {
+          message = problem.title || err.message || 'Đã xảy ra lỗi'
+        }
         const customError: any = new Error(message)
         customError.status = err?.response?.status || problem.status
         customError.problem = problem

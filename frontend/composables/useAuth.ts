@@ -44,7 +44,7 @@ export const useAuth = () => {
       refreshToken: string
       expiresIn: number
       user: User
-    }>('/auth/login', { email, password })
+    }>('/auth/login', { login: email, password })
 
     authStore.setAuth(data)
     toast.success(t('auth.loginSuccess'))
