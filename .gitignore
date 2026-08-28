@@ -1,39 +1,79 @@
-# .NET
-bin/
-obj/
-publish/
-TestResults/
+# =============================================================================
+# .NET / C#
+# =============================================================================
+**/[Bb]in/
+**/[Oo]bj/
+**/[Pp]ublish/
+**/[Tt]est[Rr]esults/
 *.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.userprefs
 appsettings.Development.json
 appsettings.Local.json
+appsettings.*.local.json
+_ReSharper*/
+*.DotSettings.user
 
-# Node / Nuxt
-node_modules/
-.nuxt/
-.output/
-.nitro/
-dist/
-coverage/
+# =============================================================================
+# Node / Nuxt 4 / Vite / Vitest / TypeScript
+# =============================================================================
+**/node_modules/
+**/.nuxt/
+**/.output/
+**/.nitro/
+**/dist/
+**/.cache/
+**/.vite/
+**/coverage/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 *.tmp
+*.tsbuildinfo
 
-# Env & secrets
+# =============================================================================
+# Environment & Local Secrets
+# =============================================================================
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+*.cert
 
-# Database
+# =============================================================================
+# Database & Dumps
+# =============================================================================
 *.dump
 *.sql.gz
+*.sqlite
+*.sqlite3
+*.db
 
-# IDE / OS
+# =============================================================================
+# IDE & Operating System
+# =============================================================================
+.DS_Store
+Thumbs.db
 .vs/
-.idea/
+**/.idea/
+*.sln.iml
+*.iml
 .vscode/*
 !.vscode/extensions.json
-.DS_Store
+!.vscode/settings.json
+!.vscode/launch.json
+
+# =============================================================================
+# AI Assistant & Spec Artifacts
+# =============================================================================
 .agents/
 .claude/
+.gemini/
 openspec/
 AGENTS.md
 CLAUDE.md
