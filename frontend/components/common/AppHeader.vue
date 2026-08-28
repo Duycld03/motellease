@@ -39,21 +39,21 @@
         <div v-if="isAuthenticated" class="relative" ref="userDropdownRef">
           <button
             type="button"
-            class="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-200"
+            class="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-100"
             @click="isUserMenuOpen = !isUserMenuOpen"
           >
-            <div class="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-xs">
+            <div class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-950/80 text-primary-700 dark:text-primary-300 flex items-center justify-center font-bold text-xs">
               {{ userInitials }}
             </div>
             <div class="hidden sm:block text-left">
-              <span class="block text-xs font-semibold text-slate-800 leading-tight max-w-[100px] truncate">
+              <span class="block text-xs font-semibold text-slate-800 dark:text-white leading-tight max-w-[120px] truncate">
                 {{ user?.fullName }}
               </span>
-              <span class="block text-[10px] text-slate-400 font-medium">
+              <span class="block text-[10px] text-slate-500 dark:text-slate-400 font-medium">
                 {{ roleLabel }}
               </span>
             </div>
-            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 text-slate-400 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>

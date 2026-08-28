@@ -4,7 +4,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <!-- Province -->
       <div>
-        <label class="block text-sm font-medium text-slate-700 mb-1">
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
           Tỉnh / Thành phố <span class="text-red-500">*</span>
         </label>
         <select
@@ -21,7 +21,7 @@
 
       <!-- District -->
       <div>
-        <label class="block text-sm font-medium text-slate-700 mb-1">
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
           Quận / Huyện <span class="text-red-500">*</span>
         </label>
         <select
@@ -39,7 +39,7 @@
 
       <!-- Ward -->
       <div>
-        <label class="block text-sm font-medium text-slate-700 mb-1">
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
           Phường / Xã <span class="text-red-500">*</span>
         </label>
         <input
@@ -54,7 +54,7 @@
 
     <!-- Address Line -->
     <div>
-      <label class="block text-sm font-medium text-slate-700 mb-1">
+      <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
         Địa chỉ chi tiết (Số nhà, tên đường, ngõ ngách) <span class="text-red-500">*</span>
       </label>
       <input
@@ -69,15 +69,15 @@
     <!-- Map and Coordinates Picker -->
     <div class="space-y-2">
       <div class="flex items-center justify-between">
-        <label class="block text-xs font-semibold text-slate-700">
+        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
           Ghim tọa độ chính xác trên bản đồ (Latitude & Longitude)
         </label>
-        <span class="text-[11px] text-slate-500">
+        <span class="text-[11px] text-slate-500 dark:text-slate-400">
           Tọa độ: {{ latitude.toFixed(5) }}, {{ longitude.toFixed(5) }}
         </span>
       </div>
 
-      <div class="h-64 rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+      <div class="h-64 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm">
         <ClientOnly>
           <MapView
             :latitude="latitude || 21.0285"
@@ -87,7 +87,7 @@
             @select-location="handleMapSelect"
           />
           <template #fallback>
-            <div class="w-full h-full bg-slate-100 flex items-center justify-center text-xs text-slate-400">
+            <div class="w-full h-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-xs text-slate-400">
               Đang tải bản đồ...
             </div>
           </template>
@@ -96,7 +96,7 @@
 
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="block text-[11px] text-slate-500 mb-0.5">Vĩ độ (Latitude)</label>
+          <label class="block text-[11px] text-slate-500 dark:text-slate-400 mb-0.5">Vĩ độ (Latitude)</label>
           <input
             :value="latitude"
             type="number"
@@ -106,7 +106,7 @@
           />
         </div>
         <div>
-          <label class="block text-[11px] text-slate-500 mb-0.5">Kinh độ (Longitude)</label>
+          <label class="block text-[11px] text-slate-500 dark:text-slate-400 mb-0.5">Kinh độ (Longitude)</label>
           <input
             :value="longitude"
             type="number"
