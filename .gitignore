@@ -1,6 +1,8 @@
 # .NET
 bin/
 obj/
+publish/
+TestResults/
 *.user
 appsettings.Development.json
 appsettings.Local.json
@@ -11,7 +13,9 @@ node_modules/
 .output/
 .nitro/
 dist/
+coverage/
 *.log
+*.tmp
 
 # Env & secrets
 .env
