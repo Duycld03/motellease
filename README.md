@@ -90,8 +90,14 @@ The system is fully developed across 8 major phases:
   - Powered by **Testcontainers** running a real `postgis/postgis:17-3.5` PostgreSQL instance.
   - **143 / 143 tests passed (100%)**.
   - All 12 domain invariants from `docs/domain-rules.md` §9 are verified by automated tests.
+  - Run command: `dotnet test backend/MotelLease.slnx`
+- **Frontend Automated Test Suite**:
+  - Powered by **Vitest** + **@vue/test-utils** + **happy-dom**.
+  - **58 / 58 tests passed across 28 test suites (100%)**.
+  - Covers end-to-end form validation, DOM input events, modal workflows, API DTO payload assertions, and lifecycle state across all 8 stages.
+  - Run command: `npm --prefix frontend test`
 - **Frontend Production Build**:
-  - `npm run build` compiles with **0 errors**.
+  - `npm --prefix frontend run build` compiles cleanly with **0 errors / 0 warnings**.
 
 ---
 
@@ -134,6 +140,12 @@ cd frontend
 
 # Install dependencies
 npm install
+
+# Run frontend tests
+npm test
+
+# Build production bundle
+npm run build
 
 # Start development server
 npm run dev
