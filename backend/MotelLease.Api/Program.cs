@@ -84,6 +84,12 @@ builder.Services.AddRequestLocalization(options =>
 
 var app = builder.Build();
 
+if (args.Contains("seed") || args.Contains("--seed"))
+{
+    await MotelLease.Infrastructure.Persistence.DbSeeder.SeedAsync(app.Services);
+    return;
+}
+
 app.UseRequestLocalization();
 
 // First in the pipeline, so it also covers anything the later middleware throws.
