@@ -389,5 +389,19 @@
     "assignSuccess": "Property assignment updated successfully!",
     "unassignSuccess": "Property assignment removed.",
     "lockSuccess": "Staff account status updated."
+  },
+  "withdrawals": {
+    "title": "Withdraw Balance",
+    "subtitle": "Manage available earnings balance and request payout to your bank account",
+    "adminTitle": "Review Withdrawal Requests",
+    "adminSubtitle": "Review and approve withdrawal requests from property owners",
+    "createRequest": "Request Withdrawal",
+    "createSuccess": "Withdrawal request submitted successfully!",
+    "approveSuccess": "Withdrawal request approved and processed!",
+    "rejectSuccess": "Withdrawal request rejected."
+  },
+  "analytics": {
+    "title": "Revenue & Profit Analytics",
+    "subtitle": "Comprehensive analytics for revenue, occupancy rates and net operating income"
   }
 }
