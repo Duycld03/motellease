@@ -155,6 +155,7 @@
           <BaseButton
             variant="outline"
             size="sm"
+            :loading="isDownloadingPdfId === b.id"
             @click="handleDownloadPdf(b.id, b.roomNumber, b.month, b.year)"
           >
             📥 {{ $t('bills.downloadInvoicePdf') }}
@@ -341,7 +342,7 @@ definePageMeta({
 
 const { get, post, put } = useApi()
 const { formatCurrency, formatRelativeTime } = useFormat()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const toast = useToast()
 
 const isLoading = ref(true)
@@ -381,17 +382,28 @@ const fetchBills = async () => {
 }
 
 // PDF Download
+const isDownloadingPdfId = ref<string | null>(null)
 const handleDownloadPdf = async (billId: string, roomNumber: string, month: number, year: number) => {
+  isDownloadingPdfId.value = billId
   try {
     const config = useRuntimeConfig()
-    const token = useCookie('auth_token').value
+    const authStore = useAuthStore()
+    const token = authStore.accessToken || useCookie('ml_access_token').value
     const response = await fetch(`${config.public.apiBase}/bills/${billId}/pdf`, {
       headers: {
         Authorization: token ? `Bearer ${token}` : '',
         'Accept-Language': locale.value || 'vi',
       },
     })
-    if (!response.ok) throw new Error('Cannot download PDF')
+    if (!response.ok) {
+      let errorMsg = t('messages.actionFailed')
+      try {
+        const problem = await response.json()
+        if (problem.detail) errorMsg = problem.detail
+        else if (problem.title) errorMsg = problem.title
+      } catch {}
+      throw new Error(errorMsg)
+    }
     const blob = await response.blob()
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -406,6 +418,8 @@ const handleDownloadPdf = async (billId: string, roomNumber: string, month: numb
     toast.success(t('messages.downloadBillPdfSuccess'))
   } catch (err: any) {
     toast.error(err.message || t('messages.actionFailed'))
+  } finally {
+    isDownloadingPdfId.value = null
   }
 }
 

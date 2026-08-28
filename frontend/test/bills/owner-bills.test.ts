@@ -134,4 +134,34 @@ describe('OwnerBillsPage.vue', () => {
 
     expect(mockPut).toHaveBeenCalledWith('/bills/bill-draft-1/cancel', {})
   })
+
+  it('downloads bill PDF without error', async () => {
+    const mockBlob = new Blob(['pdf-content'], { type: 'application/pdf' })
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      blob: () => Promise.resolve(mockBlob),
+    })
+    vi.stubGlobal('fetch', mockFetch)
+    if (!window.URL.createObjectURL) {
+      window.URL.createObjectURL = vi.fn().mockReturnValue('blob:http://localhost/test')
+    }
+    if (!window.URL.revokeObjectURL) {
+      window.URL.revokeObjectURL = vi.fn()
+    }
+
+    const wrapper = mount(OwnerBillsPage)
+    await new Promise(r => setTimeout(r, 50))
+    await wrapper.vm.$nextTick()
+
+    const vm = wrapper.vm as any
+    await expect(vm.handleDownloadPdf('bill-1', '101', 8, 2026)).resolves.not.toThrow()
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('/bills/bill-1/pdf'),
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: 'Bearer test-access-token',
+        }),
+      })
+    )
+  })
 })

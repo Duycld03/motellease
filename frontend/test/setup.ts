@@ -92,3 +92,25 @@ config.global.stubs = {
   formatDateTime: (d: any) => '2026-08-29 09:00',
   formatDate: (d: any) => '29/08/2026',
 })
+;(globalThis as any).useRuntimeConfig = () => ({
+  public: {
+    apiBase: 'http://localhost:5004/api/v1',
+  },
+})
+;(globalThis as any).useCookie = () => ({ value: 'test-token' })
+;(globalThis as any).useAuthStore = () => ({
+  accessToken: 'test-access-token',
+  refreshToken: 'test-refresh-token',
+  user: { id: 'test-user', fullName: 'Test User', role: 'Owner' },
+  isAuthenticated: true,
+  isOwner: true,
+  isTenant: false,
+  isStaff: false,
+  isAdmin: false,
+  setAuth: vi.fn(),
+  setTokens: vi.fn(),
+  setUser: vi.fn(),
+  clearAuth: vi.fn(),
+  logout: vi.fn(),
+})
+
