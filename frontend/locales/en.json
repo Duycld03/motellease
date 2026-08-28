@@ -365,5 +365,29 @@
     "saveSuccess": "Expense record saved successfully!",
     "updateSuccess": "Expense record updated successfully!",
     "deleteSuccess": "Expense record deleted."
+  },
+  "maintenance": {
+    "title": "Maintenance Requests",
+    "subtitle": "Submit repair requests for facilities (power, water, locks, wifi, AC) to the owner",
+    "createRequest": "Report Incident",
+    "createSuccess": "Maintenance request submitted successfully!",
+    "category": "Incident Category",
+    "description": "Incident Description"
+  },
+  "tasks": {
+    "title": "Assigned Tasks",
+    "subtitle": "Track maintenance, room inspections and property operations tasks",
+    "createTask": "Create New Task",
+    "createSuccess": "Task created successfully!",
+    "updateSuccess": "Task status updated successfully!"
+  },
+  "staff": {
+    "title": "Staff Management",
+    "subtitle": "Create staff accounts, assign property management access and manage account status",
+    "createStaff": "Add Staff Member",
+    "createSuccess": "Staff account created successfully!",
+    "assignSuccess": "Property assignment updated successfully!",
+    "unassignSuccess": "Property assignment removed.",
+    "lockSuccess": "Staff account status updated."
   }
 }

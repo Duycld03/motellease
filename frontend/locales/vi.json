@@ -365,5 +365,29 @@
     "saveSuccess": "Ghi nhận chi phí thành công!",
     "updateSuccess": "Cập nhật chi phí thành công!",
     "deleteSuccess": "Đã xóa bản ghi chi phí."
+  },
+  "maintenance": {
+    "title": "Yêu cầu sửa chữa",
+    "subtitle": "Gửi yêu cầu sửa chữa cơ sở vật chất (điện, nước, khóa cửa, wifi, điều hòa) đến chủ nhà",
+    "createRequest": "Báo sự cố mới",
+    "createSuccess": "Gửi yêu cầu sửa chữa thành công!",
+    "category": "Danh mục sự cố",
+    "description": "Mô tả chi tiết sự cố"
+  },
+  "tasks": {
+    "title": "Công việc được giao",
+    "subtitle": "Theo dõi công việc sửa chữa, kiểm tra phòng và hỗ trợ vận hành khu trọ",
+    "createTask": "Tạo công việc mới",
+    "createSuccess": "Tạo công việc thành công!",
+    "updateSuccess": "Cập nhật trạng thái công việc thành công!"
+  },
+  "staff": {
+    "title": "Quản lý nhân viên",
+    "subtitle": "Tạo tài khoản nhân viên, phân công quyền quản lý theo khu trọ và quản lý trạng thái tài khoản",
+    "createStaff": "Thêm nhân viên",
+    "createSuccess": "Tạo tài khoản nhân viên thành công!",
+    "assignSuccess": "Phân công khu trọ thành công!",
+    "unassignSuccess": "Đã hủy phân công khu trọ.",
+    "lockSuccess": "Đã cập nhật trạng thái tài khoản nhân viên."
   }
 }
