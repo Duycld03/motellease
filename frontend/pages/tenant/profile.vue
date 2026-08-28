@@ -2,7 +2,7 @@
   <div class="max-w-3xl mx-auto space-y-6">
     <div>
       <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('nav.profile') }}</h1>
-      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Quản lý thông tin cá nhân, bảo mật mật khẩu và các phiên đăng nhập</p>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ $t('profile.subtitle') }}</p>
     </div>
 
     <!-- Profile Header Card -->
@@ -19,10 +19,10 @@
               {{ roleLabel }}
             </span>
             <span
-              v-if="user?.isEmailVerified"
+              v-if="user?.emailConfirmed"
               class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300"
             >
-              ✓ Email đã xác minh
+              ✓ {{ $t('profile.emailVerified') }}
             </span>
           </div>
         </div>
@@ -40,7 +40,7 @@
           ]"
           @click="activeTab = 'info'"
         >
-          Thông tin cá nhân
+          {{ $t('profile.personalInfo') }}
         </button>
         <button
           type="button"
@@ -50,7 +50,7 @@
           ]"
           @click="activeTab = 'security'"
         >
-          Đổi mật khẩu
+          {{ $t('profile.security') }}
         </button>
         <button
           type="button"
@@ -60,31 +60,32 @@
           ]"
           @click="activeTab = 'sessions'"
         >
-          Thiết bị đăng nhập ({{ sessions.length }})
+          {{ $t('profile.sessions') }} ({{ sessions.length }})
         </button>
       </nav>
     </div>
 
     <!-- TAB 1: Personal Info -->
     <div v-if="activeTab === 'info'">
-      <BaseCard title="Thông tin chi tiết">
-        <form @submit.prevent="handleSaveProfile" class="space-y-4">
+      <BaseCard :title="$t('profile.personalInfo')">
+        <form @submit.prevent="handleSaveProfile" class="space-y-4 max-w-lg">
           <BaseInput
             v-model="profileForm.fullName"
-            label="Họ và tên"
+            :label="$t('auth.fullName')"
             required
           />
 
           <BaseInput
             v-model="profileForm.phoneNumber"
-            label="Số điện thoại"
+            :label="$t('auth.phoneNumber')"
             placeholder="0912345678"
           />
 
-          <BaseInput
-            v-model="profileForm.idCardNumber"
-            label="Số CCCD / CMND"
-            placeholder="001203004567"
+          <BaseSelect
+            v-model="profileForm.gender"
+            :label="$t('auth.gender')"
+            :options="genderOptions"
+            required
           />
 
           <div class="pt-2">
@@ -98,35 +99,35 @@
 
     <!-- TAB 2: Change Password -->
     <div v-if="activeTab === 'security'">
-      <BaseCard title="Đổi mật khẩu tài khoản">
+      <BaseCard :title="$t('profile.security')">
         <form @submit.prevent="handleChangePassword" class="space-y-4 max-w-md">
           <BaseInput
-            v-model="passwordForm.oldPassword"
+            v-model="passwordForm.currentPassword"
             type="password"
-            label="Mật khẩu hiện tại"
-            placeholder="••••••••"
+            :label="$t('auth.currentPassword')"
+            :placeholder="$t('auth.passwordPlaceholder')"
             required
           />
 
           <BaseInput
             v-model="passwordForm.newPassword"
             type="password"
-            label="Mật khẩu mới"
-            placeholder="••••••••"
+            :label="$t('auth.newPassword')"
+            :placeholder="$t('auth.passwordPlaceholder')"
             required
           />
 
           <BaseInput
             v-model="passwordForm.confirmNewPassword"
             type="password"
-            label="Xác nhận mật khẩu mới"
-            placeholder="••••••••"
+            :label="$t('auth.confirmNewPassword')"
+            :placeholder="$t('auth.passwordPlaceholder')"
             required
           />
 
           <div class="pt-2">
             <BaseButton type="submit" variant="primary" size="md" :loading="isSavingPassword">
-              Cập nhật mật khẩu
+              {{ $t('profile.security') }}
             </BaseButton>
           </div>
         </form>
@@ -135,9 +136,9 @@
 
     <!-- TAB 3: Active Sessions -->
     <div v-if="activeTab === 'sessions'">
-      <BaseCard title="Danh sách các phiên đăng nhập">
-        <p class="text-xs text-slate-500 mb-4">
-          Mỗi thiết bị đăng nhập duy trì một phiên làm việc riêng biệt. Bạn có thể thu hồi phiên từ xa để đăng xuất khỏi thiết bị đó.
+      <BaseCard :title="$t('profile.sessions')">
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+          {{ $t('profile.sessionsDescription') }}
         </p>
 
         <div v-if="isLoadingSessions" class="py-8 text-center">
@@ -145,7 +146,7 @@
         </div>
 
         <div v-else-if="sessions.length === 0" class="py-8 text-center text-slate-400 text-xs">
-          Không có thông tin phiên làm việc.
+          {{ $t('profile.noSessions') }}
         </div>
 
         <div v-else class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -160,16 +161,16 @@
               </div>
               <div>
                 <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold text-slate-800 dark:text-slate-200">{{ s.deviceInfo || 'Thiết bị Web Browser' }}</span>
+                  <span class="text-xs font-bold text-slate-800 dark:text-slate-200">{{ s.deviceInfo || 'Web Browser' }}</span>
                   <span
                     v-if="s.isCurrent"
                     class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300"
                   >
-                    Thiết bị này
+                    {{ $t('profile.currentDevice') }}
                   </span>
                 </div>
                 <span class="text-[11px] text-slate-400 block mt-0.5">
-                  IP: {{ s.ipAddress || '127.0.0.1' }} · Hoạt động: {{ formatRelativeTime(s.lastActiveAt) }}
+                  IP: {{ s.ipAddress || '127.0.0.1' }} · {{ formatRelativeTime(s.lastActiveAt) }}
                 </span>
               </div>
             </div>
@@ -180,7 +181,7 @@
               class="text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 px-3 py-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
               @click="revokeSession(s.id)"
             >
-              Thu hồi
+              {{ $t('profile.revokeSession') }}
             </button>
           </div>
         </div>
@@ -193,6 +194,7 @@
 import BaseButton from '~/components/common/BaseButton.vue'
 import BaseCard from '~/components/common/BaseCard.vue'
 import BaseInput from '~/components/common/BaseInput.vue'
+import BaseSelect from '~/components/common/BaseSelect.vue'
 import LoadingSpinner from '~/components/common/LoadingSpinner.vue'
 import type { User, SessionInfo } from '~/types/api'
 
@@ -211,10 +213,16 @@ const activeTab = ref('info')
 
 const roleLabel = computed(() => (role.value ? t(`roles.${role.value}`) : ''))
 
+const genderOptions = computed(() => [
+  { label: t('auth.genderMale'), value: 'Male' },
+  { label: t('auth.genderFemale'), value: 'Female' },
+  { label: t('auth.genderOther'), value: 'Other' },
+])
+
 const profileForm = reactive({
   fullName: user.value?.fullName || '',
   phoneNumber: user.value?.phoneNumber || '',
-  idCardNumber: user.value?.idCardNumber || '',
+  gender: 'Other',
 })
 
 watch(
@@ -223,21 +231,26 @@ watch(
     if (u) {
       profileForm.fullName = u.fullName || ''
       profileForm.phoneNumber = u.phoneNumber || ''
-      profileForm.idCardNumber = u.idCardNumber || ''
     }
-  }
+  },
+  { immediate: true }
 )
 
 const isSavingProfile = ref(false)
 
 const handleSaveProfile = async () => {
+  if (!profileForm.fullName) return
   isSavingProfile.value = true
   try {
-    const updated = await put<User>('/me', profileForm)
+    const updated = await put<User>('/me', {
+      fullName: profileForm.fullName,
+      phoneNumber: profileForm.phoneNumber || null,
+      gender: profileForm.gender,
+    })
     authStore.setUser(updated)
-    toast.success('Cập nhật hồ sơ thành công!')
+    toast.success(t('profile.updateSuccess'))
   } catch (err: any) {
-    toast.error(err.message || 'Cập nhật thất bại.')
+    toast.error(err.message || t('profile.updateFailed'))
   } finally {
     isSavingProfile.value = false
   }
@@ -245,29 +258,30 @@ const handleSaveProfile = async () => {
 
 // Password change
 const passwordForm = reactive({
-  oldPassword: '',
+  currentPassword: '',
   newPassword: '',
   confirmNewPassword: '',
 })
 const isSavingPassword = ref(false)
 
 const handleChangePassword = async () => {
+  if (!passwordForm.currentPassword || !passwordForm.newPassword) return
   if (passwordForm.newPassword !== passwordForm.confirmNewPassword) {
-    toast.error('Mật khẩu xác nhận không khớp.')
+    toast.error(t('auth.passwordMismatch'))
     return
   }
   isSavingPassword.value = true
   try {
     await put('/auth/password', {
-      oldPassword: passwordForm.oldPassword,
+      currentPassword: passwordForm.currentPassword,
       newPassword: passwordForm.newPassword,
     })
-    toast.success('Đổi mật khẩu thành công!')
-    passwordForm.oldPassword = ''
+    toast.success(t('auth.passwordChangeSuccess'))
+    passwordForm.currentPassword = ''
     passwordForm.newPassword = ''
     passwordForm.confirmNewPassword = ''
   } catch (err: any) {
-    toast.error(err.message || 'Đổi mật khẩu thất bại.')
+    toast.error(err.message || t('auth.passwordChangeFailed'))
   } finally {
     isSavingPassword.value = false
   }
@@ -291,10 +305,10 @@ const fetchSessions = async () => {
 const revokeSession = async (sessionId: string) => {
   try {
     await deleteApi(`/me/sessions/${sessionId}`)
-    toast.success('Đã thu hồi phiên đăng nhập!')
+    toast.success(t('profile.revokeSessionSuccess'))
     await fetchSessions()
   } catch (err: any) {
-    toast.error(err.message || 'Thu hồi phiên thất bại.')
+    toast.error(err.message || t('profile.updateFailed'))
   }
 }
 

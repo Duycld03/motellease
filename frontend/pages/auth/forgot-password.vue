@@ -37,7 +37,7 @@
       <BaseInput
         v-model="otpCode"
         type="text"
-        label="Mã OTP (6 chữ số)"
+        :label="$t('auth.verifyOtpTitle')"
         placeholder="123456"
         required
       />
@@ -45,8 +45,8 @@
       <BaseInput
         v-model="newPassword"
         type="password"
-        label="Mật khẩu mới"
-        placeholder="••••••••"
+        :label="$t('auth.newPassword')"
+        :placeholder="$t('auth.passwordPlaceholder')"
         required
       />
 
@@ -63,8 +63,8 @@
       </div>
     </form>
 
-    <div class="mt-6 pt-6 border-t border-slate-100 text-center">
-      <NuxtLink to="/auth/login" class="text-xs font-semibold text-slate-600 hover:text-slate-900">
+    <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 text-center">
+      <NuxtLink to="/auth/login" class="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
         ← {{ $t('common.back') }} {{ $t('nav.login') }}
       </NuxtLink>
     </div>
@@ -98,7 +98,7 @@ const handleSendOtp = async () => {
     toast.success(t('auth.otpSent'))
     step.value = 2
   } catch (err: any) {
-    toast.error(err.message || 'Không thể gửi yêu cầu.')
+    toast.error(err.message || t('auth.otpInvalid'))
   } finally {
     isLoading.value = false
   }
@@ -110,13 +110,13 @@ const handleResetPassword = async () => {
   try {
     await post('/auth/password/reset', {
       email: email.value,
-      token: otpCode.value,
+      code: otpCode.value,
       newPassword: newPassword.value,
     })
     toast.success(t('auth.passwordResetSuccess'))
     navigateTo('/auth/login')
   } catch (err: any) {
-    toast.error(err.message || 'Đặt lại mật khẩu thất bại.')
+    toast.error(err.message || t('auth.otpInvalid'))
   } finally {
     isLoading.value = false
   }

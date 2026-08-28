@@ -24,7 +24,8 @@
           <div
             v-if="modelValue"
             :class="[
-              'w-full bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden transform border border-slate-100 dark:border-slate-800',
+              'w-full bg-white dark:bg-slate-900 rounded-2xl shadow-xl transform border border-slate-100 dark:border-slate-800',
+              overflowVisible ? 'overflow-visible' : 'overflow-hidden',
               maxWidthClass,
             ]"
           >
@@ -45,12 +46,17 @@
             </div>
 
             <!-- Body -->
-            <div class="px-6 py-4 max-h-[70vh] overflow-y-auto text-slate-700 dark:text-slate-200">
+            <div
+              :class="[
+                'px-6 py-4 text-slate-700 dark:text-slate-200',
+                overflowVisible ? 'overflow-visible' : 'max-h-[70vh] overflow-y-auto',
+              ]"
+            >
               <slot />
             </div>
 
             <!-- Footer -->
-            <div v-if="$slots.footer" class="px-6 py-3 bg-slate-50 dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
+            <div v-if="$slots.footer" class="px-6 py-3 bg-slate-50 dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 rounded-b-2xl">
               <slot name="footer" />
             </div>
           </div>
@@ -67,11 +73,13 @@ const props = withDefaults(
     title?: string
     maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
     closeOnBackdrop?: boolean
+    overflowVisible?: boolean
   }>(),
   {
     title: '',
     maxWidth: 'md',
     closeOnBackdrop: true,
+    overflowVisible: true,
   }
 )
 

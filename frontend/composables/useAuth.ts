@@ -70,15 +70,50 @@ export const useAuth = () => {
     return data
   }
 
+  const sendRegistrationOtp = async (email: string) => {
+    return await post<{ message: string; expiresInMinutes: number }>('/auth/register/send-otp', { email })
+  }
+
+  const verifyRegistrationOtp = async (email: string, code: string) => {
+    return await post<{ email: string; isVerified: boolean }>('/auth/register/verify-otp', { email, code })
+  }
+
   const register = async (payload: {
+    username?: string
     email: string
     password: string
     fullName: string
     phoneNumber?: string
+    gender?: string
     role: UserRole
+    preferredLanguage?: string
   }) => {
-    const data = await post('/auth/register', payload)
+    const rawUsername = payload.username || payload.email.split('@')[0].replace(/[^a-zA-Z0-9._-]/g, '')
+    const username = rawUsername.length >= 3 ? rawUsername : `user_${Date.now().toString().slice(-6)}`
+
+    const body = {
+      username,
+      email: payload.email,
+      password: payload.password,
+      fullName: payload.fullName,
+      phoneNumber: payload.phoneNumber || null,
+      gender: payload.gender || 'Other',
+      role: payload.role,
+      preferredLanguage: payload.preferredLanguage || 'vi',
+    }
+
+    const data = await post<{
+      accessToken: string
+      refreshToken: string
+      expiresIn: number
+      user: User
+    }>('/auth/register', body)
+
+    authStore.setAuth(data)
     toast.success(t('auth.registerSuccess'))
+
+    const target = getDefaultRouteForRole(data.user.role)
+    await navigateTo(target)
     return data
   }
 
@@ -109,6 +144,8 @@ export const useAuth = () => {
     getDefaultRouteForRole,
     login,
     loginWithGoogle,
+    sendRegistrationOtp,
+    verifyRegistrationOtp,
     register,
     fetchProfile,
     logout,

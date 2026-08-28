@@ -70,6 +70,7 @@ definePageMeta({
 
 const { login } = useAuth()
 const toast = useToast()
+const { t } = useI18n()
 
 const form = reactive({
   email: '',
@@ -84,7 +85,7 @@ const handleSubmit = async () => {
   try {
     await login(form.email, form.password)
   } catch (err: any) {
-    toast.error(err.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.')
+    toast.error(err.message || t('auth.loginFailed'))
   } finally {
     isLoading.value = false
   }

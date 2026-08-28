@@ -22,14 +22,14 @@
           {{ displayValue }}
         </span>
         <span v-else class="text-slate-400 dark:text-slate-500 text-xs">
-          {{ placeholder || 'Chọn ngày...' }}
+          {{ placeholder || (enableTime ? 'Chọn ngày & giờ...' : 'Chọn ngày...') }}
         </span>
 
         <div class="flex items-center gap-1.5 text-slate-400 dark:text-slate-500">
           <span
             v-if="modelValue && !disabled"
             class="hover:text-slate-600 dark:hover:text-slate-300 p-0.5 rounded transition-colors"
-            title="Xóa ngày"
+            title="Xóa"
             @click.stop="clearDate"
           >
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,7 +53,10 @@
       >
         <div
           v-if="isOpen"
-          class="absolute z-50 left-0 mt-1.5 w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-4 text-xs select-none"
+          :class="[
+            'absolute z-50 left-0 mt-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-4 text-xs select-none',
+            enableTime ? 'w-80 sm:w-84' : 'w-72',
+          ]"
         >
           <!-- Header (Month & Year Selector) -->
           <div class="flex items-center justify-between mb-3">
@@ -111,6 +114,34 @@
             </button>
           </div>
 
+          <!-- Time Picker (if enabled) -->
+          <div v-if="enableTime" class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-400">Giờ hẹn:</span>
+              <div class="flex items-center gap-1.5">
+                <select
+                  v-model="selectedHour"
+                  class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs px-2 py-1 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                  @change="onTimeChange"
+                >
+                  <option v-for="h in 24" :key="h - 1" :value="String(h - 1).padStart(2, '0')">
+                    {{ String(h - 1).padStart(2, '0') }}
+                  </option>
+                </select>
+                <span class="text-slate-400 font-bold">:</span>
+                <select
+                  v-model="selectedMinute"
+                  class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs px-2 py-1 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                  @change="onTimeChange"
+                >
+                  <option v-for="m in ['00', '15', '30', '45']" :key="m" :value="m">
+                    {{ m }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
           <!-- Quick Action Footer -->
           <div class="flex items-center justify-between pt-3 mt-3 border-t border-slate-100 dark:border-slate-800 text-[11px]">
             <button
@@ -155,17 +186,19 @@ const props = withDefaults(
     disabled?: boolean
     min?: string
     max?: string
+    enableTime?: boolean
   }>(),
   {
     modelValue: '',
     label: undefined,
-    placeholder: 'Chọn ngày...',
+    placeholder: undefined,
     error: undefined,
     hint: undefined,
     required: false,
     disabled: false,
     min: undefined,
     max: undefined,
+    enableTime: false,
   }
 )
 
@@ -182,17 +215,38 @@ const weekDays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
 const currentDate = new Date()
 const currentYear = ref(currentDate.getFullYear())
 const currentMonth = ref(currentDate.getMonth())
+const selectedDateOnly = ref('')
+const selectedHour = ref('09')
+const selectedMinute = ref('00')
 
-// Sync view with modelValue when opened
+// Parse modelValue into date and time
 watch(
   () => props.modelValue,
   (val) => {
     if (val) {
-      const parsed = new Date(val)
-      if (!isNaN(parsed.getTime())) {
-        currentYear.value = parsed.getFullYear()
-        currentMonth.value = parsed.getMonth()
+      if (val.includes('T')) {
+        const [dPart, tPart] = val.split('T')
+        selectedDateOnly.value = dPart
+        if (tPart) {
+          const [h, m] = tPart.split(':')
+          if (h) selectedHour.value = h.slice(0, 2)
+          if (m) selectedMinute.value = m.slice(0, 2)
+        }
+        const parsed = new Date(val)
+        if (!isNaN(parsed.getTime())) {
+          currentYear.value = parsed.getFullYear()
+          currentMonth.value = parsed.getMonth()
+        }
+      } else {
+        selectedDateOnly.value = val
+        const parsed = new Date(val)
+        if (!isNaN(parsed.getTime())) {
+          currentYear.value = parsed.getFullYear()
+          currentMonth.value = parsed.getMonth()
+        }
       }
+    } else {
+      selectedDateOnly.value = ''
     }
   },
   { immediate: true }
@@ -209,6 +263,12 @@ onClickOutside(datePickerRef, () => {
 
 const displayValue = computed(() => {
   if (!props.modelValue) return ''
+  if (props.modelValue.includes('T')) {
+    const [dPart, tPart] = props.modelValue.split('T')
+    const [y, m, d] = dPart.split('-')
+    const timeStr = tPart ? tPart.slice(0, 5) : ''
+    return `${timeStr} ngày ${d}/${m}/${y}`
+  }
   const parts = props.modelValue.split('-')
   if (parts.length === 3) {
     const [y, m, d] = parts
@@ -252,10 +312,8 @@ const calendarDays = computed<CalendarDay[]>(() => {
   const firstDayOfMonth = new Date(year, month, 1)
   const lastDayOfMonth = new Date(year, month + 1, 0)
   
-  // In JS, 0 is Sunday, 1 is Monday. We want Monday to be 0
   let startDayOfWeek = (firstDayOfMonth.getDay() + 6) % 7
   
-  // Previous month trailing days
   const prevMonthLastDay = new Date(year, month, 0).getDate()
   for (let i = startDayOfWeek - 1; i >= 0; i--) {
     const d = prevMonthLastDay - i
@@ -266,26 +324,24 @@ const calendarDays = computed<CalendarDay[]>(() => {
       day: d,
       dateStr,
       isCurrentMonth: false,
-      isSelected: dateStr === props.modelValue,
+      isSelected: dateStr === selectedDateOnly.value,
       isToday: isToday(prevYear, prevMonthIdx, d),
       isDisabled: checkDisabled(dateStr),
     })
   }
 
-  // Current month days
   for (let d = 1; d <= lastDayOfMonth.getDate(); d++) {
     const dateStr = formatDateStr(year, month, d)
     days.push({
       day: d,
       dateStr,
       isCurrentMonth: true,
-      isSelected: dateStr === props.modelValue,
+      isSelected: dateStr === selectedDateOnly.value,
       isToday: isToday(year, month, d),
       isDisabled: checkDisabled(dateStr),
     })
   }
 
-  // Next month leading days to complete grid (42 cells)
   const remaining = 42 - days.length
   for (let d = 1; d <= remaining; d++) {
     const nextMonthIdx = month === 11 ? 0 : month + 1
@@ -295,7 +351,7 @@ const calendarDays = computed<CalendarDay[]>(() => {
       day: d,
       dateStr,
       isCurrentMonth: false,
-      isSelected: dateStr === props.modelValue,
+      isSelected: dateStr === selectedDateOnly.value,
       isToday: isToday(nextYear, nextMonthIdx, d),
       isDisabled: checkDisabled(dateStr),
     })
@@ -316,27 +372,50 @@ const isToday = (y: number, m: number, d: number) => {
 }
 
 const checkDisabled = (dateStr: string) => {
-  if (props.min && dateStr < props.min) return true
-  if (props.max && dateStr > props.max) return true
+  const minDateOnly = props.min ? (props.min.includes('T') ? props.min.split('T')[0] : props.min) : null
+  const maxDateOnly = props.max ? (props.max.includes('T') ? props.max.split('T')[0] : props.max) : null
+  if (minDateOnly && dateStr < minDateOnly) return true
+  if (maxDateOnly && dateStr > maxDateOnly) return true
   return false
+}
+
+const emitValue = (dateStr: string) => {
+  if (props.enableTime) {
+    emit('update:modelValue', `${dateStr}T${selectedHour.value}:${selectedMinute.value}`)
+  } else {
+    emit('update:modelValue', dateStr)
+  }
 }
 
 const selectDay = (day: CalendarDay) => {
   if (day.isDisabled) return
-  emit('update:modelValue', day.dateStr)
-  isOpen.value = false
+  selectedDateOnly.value = day.dateStr
+  emitValue(day.dateStr)
+  if (!props.enableTime) {
+    isOpen.value = false
+  }
+}
+
+const onTimeChange = () => {
+  if (selectedDateOnly.value) {
+    emitValue(selectedDateOnly.value)
+  }
 }
 
 const selectToday = () => {
   const today = new Date()
   const dateStr = formatDateStr(today.getFullYear(), today.getMonth(), today.getDate())
   if (!checkDisabled(dateStr)) {
-    emit('update:modelValue', dateStr)
-    isOpen.value = false
+    selectedDateOnly.value = dateStr
+    emitValue(dateStr)
+    if (!props.enableTime) {
+      isOpen.value = false
+    }
   }
 }
 
 const clearDate = () => {
+  selectedDateOnly.value = ''
   emit('update:modelValue', '')
 }
 </script>

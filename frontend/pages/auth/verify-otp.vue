@@ -16,7 +16,7 @@
       <BaseInput
         v-model="otpCode"
         type="text"
-        label="Mã OTP (6 chữ số)"
+        :label="$t('auth.verifyOtpTitle')"
         placeholder="123456"
         required
       />
@@ -56,7 +56,7 @@ definePageMeta({
 })
 
 const route = useRoute()
-const { post } = useApi()
+const { sendRegistrationOtp, verifyRegistrationOtp, register } = useAuth()
 const toast = useToast()
 const { t } = useI18n()
 
@@ -69,14 +69,31 @@ const handleSubmit = async () => {
   if (!otpCode.value || !email.value) return
   isLoading.value = true
   try {
-    await post('/auth/register/verify-otp', {
-      email: email.value,
-      code: otpCode.value,
-    })
-    toast.success('Xác thực email thành công! Vui lòng đăng nhập.')
-    navigateTo('/auth/login')
+    await verifyRegistrationOtp(email.value, otpCode.value)
+
+    let pendingData: any = null
+    if (import.meta.client) {
+      const raw = sessionStorage.getItem('pending_registration')
+      if (raw) {
+        try {
+          pendingData = JSON.parse(raw)
+        } catch {
+          // ignore
+        }
+      }
+    }
+
+    if (pendingData && pendingData.email === email.value) {
+      if (import.meta.client) {
+        sessionStorage.removeItem('pending_registration')
+      }
+      await register(pendingData)
+    } else {
+      toast.success(t('auth.otpVerifySuccess'))
+      navigateTo('/auth/login')
+    }
   } catch (err: any) {
-    toast.error(err.message || 'Mã xác thực không hợp lệ.')
+    toast.error(err.message || t('auth.otpInvalid'))
   } finally {
     isLoading.value = false
   }
@@ -86,10 +103,10 @@ const handleResend = async () => {
   if (!email.value) return
   isResending.value = true
   try {
-    await post('/auth/register/send-otp', { email: email.value })
+    await sendRegistrationOtp(email.value)
     toast.success(t('auth.otpSent'))
   } catch (err: any) {
-    toast.error(err.message || 'Không thể gửi lại mã OTP.')
+    toast.error(err.message || t('auth.otpInvalid'))
   } finally {
     isResending.value = false
   }

@@ -83,13 +83,14 @@ definePageMeta({
   guestOnly: true,
 })
 
-const { register } = useAuth()
+const { sendRegistrationOtp } = useAuth()
 const toast = useToast()
+const { t } = useI18n()
 
-const roleOptions = [
-  { label: 'Người thuê (Tenant)', value: UserRole.Tenant },
-  { label: 'Chủ nhà trọ (Owner)', value: UserRole.Owner },
-]
+const roleOptions = computed(() => [
+  { label: `${t('roles.Tenant')} (Tenant)`, value: UserRole.Tenant },
+  { label: `${t('roles.Owner')} (Owner)`, value: UserRole.Owner },
+])
 
 const form = reactive({
   fullName: '',
@@ -105,13 +106,17 @@ const handleSubmit = async () => {
   if (!form.email || !form.password || !form.fullName) return
   isLoading.value = true
   try {
-    await register(form)
+    await sendRegistrationOtp(form.email)
+    if (import.meta.client) {
+      sessionStorage.setItem('pending_registration', JSON.stringify(form))
+    }
+    toast.success(t('auth.otpSent'))
     navigateTo({
       path: '/auth/verify-otp',
       query: { email: form.email },
     })
   } catch (err: any) {
-    toast.error(err.message || 'Đăng ký không thành công.')
+    toast.error(err.message || t('auth.registerFailed'))
   } finally {
     isLoading.value = false
   }

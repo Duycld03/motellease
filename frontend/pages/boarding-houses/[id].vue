@@ -358,17 +358,13 @@
           <p class="text-primary-700 dark:text-primary-400 text-[11px]">Khu trọ: {{ house?.name }}</p>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-            Ngày & Giờ hẹn xem phòng <span class="text-red-500">*</span>
-          </label>
-          <input
-            v-model="appointmentForm.appointmentDate"
-            type="datetime-local"
-            class="input-field !text-xs !py-2"
-            required
-          />
-        </div>
+        <BaseDatePicker
+          v-model="appointmentForm.appointmentDate"
+          label="Ngày & Giờ hẹn xem phòng"
+          enable-time
+          required
+          :min="todayStr"
+        />
 
         <div>
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
