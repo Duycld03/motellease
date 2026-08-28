@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copy package manifests for efficient layer caching
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm install
 
 # Copy source code and build Nuxt app
 COPY . .
