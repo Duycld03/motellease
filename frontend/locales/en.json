@@ -403,5 +403,17 @@
   "analytics": {
     "title": "Revenue & Profit Analytics",
     "subtitle": "Comprehensive analytics for revenue, occupancy rates and net operating income"
+  },
+  "admin": {
+    "usersTitle": "User Accounts Management",
+    "usersSubtitle": "Monitor user accounts across the platform: Tenants, Owners, Staff and Administrators",
+    "moderationTitle": "Listing Moderation",
+    "moderationSubtitle": "Approve or reject property listings before they are published publicly",
+    "facilitiesTitle": "Standard Facilities",
+    "facilitiesSubtitle": "System-wide facility catalog for property listings and search filters",
+    "reportsTitle": "Violation Reports & Appeals",
+    "reportsSubtitle": "Handle user reports regarding inappropriate content on listings or reviews",
+    "auditLogsTitle": "System Audit Logs",
+    "auditLogsSubtitle": "Complete audit trail of data modifications and administrative actions"
   }
 }

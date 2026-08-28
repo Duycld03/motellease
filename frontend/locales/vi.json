@@ -403,5 +403,17 @@
   "analytics": {
     "title": "Thống kê doanh thu & Lợi nhuận",
     "subtitle": "Báo cáo doanh thu, tỷ lệ lấp đầy phòng và phân tích lợi nhuận toàn diện"
+  },
+  "admin": {
+    "usersTitle": "Quản lý Người dùng",
+    "usersSubtitle": "Theo dõi toàn bộ tài khoản người dùng trên hệ thống: Khách thuê, Chủ trọ, Nhân viên và Quản trị viên",
+    "moderationTitle": "Kiểm duyệt Tin đăng",
+    "moderationSubtitle": "Duyệt hoặc từ chối bài đăng niêm yết khu trọ của chủ nhà trước khi hiển thị công khai trên hệ thống",
+    "facilitiesTitle": "Danh mục Tiện ích",
+    "facilitiesSubtitle": "Danh mục tiện ích chuẩn của toàn hệ thống phục vụ tìm kiếm và niêm yết phòng trọ",
+    "reportsTitle": "Báo cáo Vi phạm & Khiếu nại",
+    "reportsSubtitle": "Tiếp nhận và xử lý các báo cáo vi phạm nội dung đối với tin đăng khu trọ và đánh giá",
+    "auditLogsTitle": "Nhật ký Hệ thống",
+    "auditLogsSubtitle": "Ghi nhận toàn bộ thao tác thay đổi dữ liệu quan trọng của quản trị viên và người dùng"
   }
 }
