@@ -295,5 +295,36 @@
     "cancelSuccess": "Đã hủy lịch hẹn xem phòng!",
     "rejectReason": "Lý do từ chối",
     "cancelReason": "Lý do hủy lịch"
+  },
+  "deposits": {
+    "title": "Đặt cọc giữ phòng",
+    "subtitle": "Quản lý các yêu cầu đặt cọc giữ phòng, xem hợp đồng dự thảo và thanh toán cọc online",
+    "ownerTitle": "Quản lý Đặt cọc Giữ phòng",
+    "ownerSubtitle": "Duyệt yêu cầu giữ phòng, theo dõi trạng thái thanh toán cọc và chuyển đổi cọc thành Hợp đồng thuê",
+    "previewContract": "Dự thảo Hợp đồng",
+    "checkout": "Thanh toán cọc",
+    "confirmLease": "Tạo Hợp đồng & Nhận phòng",
+    "approveSuccess": "Đã duyệt giữ phòng trong 24 giờ!",
+    "rejectSuccess": "Đã từ chối yêu cầu đặt cọc!",
+    "cancelSuccess": "Đã hủy yêu cầu đặt cọc.",
+    "confirmLeaseSuccess": "Tạo hợp đồng thuê thành công!",
+    "selectGateway": "Chọn cổng thanh toán",
+    "momo": "Ví MoMo",
+    "vnpay": "Cổng VNPay"
+  },
+  "payments": {
+    "title": "Kết quả thanh toán",
+    "succeeded": "Thanh toán Thành công!",
+    "succeededDesc": "Giao dịch thanh toán của bạn đã được xác nhận và ghi nhận an toàn vào hệ thống.",
+    "failed": "Thanh toán Không thành công",
+    "failedDesc": "Giao dịch đã bị hủy hoặc gặp lỗi trong quá trình thanh toán.",
+    "pending": "Đang xác minh giao dịch...",
+    "pendingDesc": "Cổng thanh toán đang xử lý giao dịch. Hệ thống sẽ tự động cập nhật ngay khi nhận được tín hiệu IPN.",
+    "txnId": "Mã giao dịch",
+    "gateway": "Cổng thanh toán",
+    "amount": "Số tiền thanh toán",
+    "time": "Thời gian thực hiện",
+    "retry": "Thử thanh toán lại",
+    "viewDeposits": "Xem yêu cầu đặt cọc"
   }
 }

@@ -295,5 +295,36 @@
     "cancelSuccess": "Viewing appointment cancelled!",
     "rejectReason": "Rejection Reason",
     "cancelReason": "Cancellation Reason"
+  },
+  "deposits": {
+    "title": "Room Deposits",
+    "subtitle": "Manage room reservation deposit requests, preview draft contracts and pay online",
+    "ownerTitle": "Manage Room Deposits",
+    "ownerSubtitle": "Approve deposit requests, monitor payment deadlines and convert deposits to active leases",
+    "previewContract": "Draft Contract Preview",
+    "checkout": "Pay Deposit",
+    "confirmLease": "Create Lease & Move In",
+    "approveSuccess": "Deposit request approved for 24 hours!",
+    "rejectSuccess": "Deposit request rejected!",
+    "cancelSuccess": "Deposit request cancelled.",
+    "confirmLeaseSuccess": "Lease contract created successfully!",
+    "selectGateway": "Select Payment Gateway",
+    "momo": "MoMo Wallet",
+    "vnpay": "VNPay Gateway"
+  },
+  "payments": {
+    "title": "Payment Result",
+    "succeeded": "Payment Successful!",
+    "succeededDesc": "Your transaction has been securely confirmed and recorded into the system.",
+    "failed": "Payment Failed",
+    "failedDesc": "The transaction was cancelled or encountered an error during payment processing.",
+    "pending": "Verifying Transaction...",
+    "pendingDesc": "The payment gateway is processing your transaction. The system will update as soon as the IPN signal arrives.",
+    "txnId": "Transaction ID",
+    "gateway": "Payment Gateway",
+    "amount": "Payment Amount",
+    "time": "Timestamp",
+    "retry": "Try Payment Again",
+    "viewDeposits": "View My Deposits"
   }
 }

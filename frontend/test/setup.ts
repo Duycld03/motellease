@@ -55,6 +55,8 @@ config.global.stubs = {
 }
 
 // Global Nuxt helper mocks
+;(globalThis as any).confirm = vi.fn(() => true)
+;(globalThis as any).alert = vi.fn()
 ;(globalThis as any).navigateTo = vi.fn()
 ;(globalThis as any).definePageMeta = vi.fn()
 ;(globalThis as any).useRoute = () => ({ query: {}, params: { id: '01a047f0-a19c-72aa-99df-5dcae5b61001' } })
