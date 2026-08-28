@@ -264,5 +264,36 @@
     "area": "Diện tích",
     "sqm": "m²",
     "perMonth": "/tháng"
+  },
+  "ownerProperties": {
+    "title": "Quản lý khu trọ",
+    "subtitle": "Danh sách các khu trọ, quản lý loại phòng, phòng trống và bảng giá dịch vụ",
+    "createNew": "Thêm khu trọ mới",
+    "editTitle": "Chỉnh sửa thông tin khu trọ",
+    "createTitle": "Thêm khu trọ mới",
+    "basicInfo": "Thông tin cơ bản",
+    "locationInfo": "Địa chỉ & Vị trí bản đồ",
+    "utilityPrices": "Bảng giá dịch vụ điện nước cơ bản",
+    "saveChanges": "Lưu thay đổi",
+    "createSuccess": "Tạo khu trọ thành công!",
+    "updateSuccess": "Cập nhật khu trọ thành công!",
+    "addRoomType": "Thêm loại phòng",
+    "editRoomType": "Chỉnh sửa loại phòng",
+    "addRoom": "Thêm phòng mới",
+    "updateMeters": "Cập nhật chỉ số điện nước",
+    "submitReview": "Gửi duyệt bài đăng",
+    "submitReviewSuccess": "Đã gửi bài đăng khu trọ lên Admin để kiểm duyệt!"
+  },
+  "appointments": {
+    "title": "Lịch hẹn xem phòng",
+    "subtitle": "Quản lý và tiếp nhận các yêu cầu hẹn xem phòng từ khách thuê",
+    "approve": "Duyệt hẹn",
+    "reject": "Từ chối",
+    "cancel": "Hủy lịch hẹn",
+    "approveSuccess": "Đã duyệt lịch hẹn xem phòng!",
+    "rejectSuccess": "Đã từ chối lịch hẹn!",
+    "cancelSuccess": "Đã hủy lịch hẹn xem phòng!",
+    "rejectReason": "Lý do từ chối",
+    "cancelReason": "Lý do hủy lịch"
   }
 }

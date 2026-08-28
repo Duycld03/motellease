@@ -264,5 +264,36 @@
     "area": "Area",
     "sqm": "sqm",
     "perMonth": "/month"
+  },
+  "ownerProperties": {
+    "title": "Property Management",
+    "subtitle": "Manage boarding houses, room types, vacant rooms and utility pricing",
+    "createNew": "Add New Property",
+    "editTitle": "Edit Property Details",
+    "createTitle": "Add New Property",
+    "basicInfo": "Basic Information",
+    "locationInfo": "Address & Map Location",
+    "utilityPrices": "Base Utility Prices",
+    "saveChanges": "Save Changes",
+    "createSuccess": "Property created successfully!",
+    "updateSuccess": "Property updated successfully!",
+    "addRoomType": "Add Room Type",
+    "editRoomType": "Edit Room Type",
+    "addRoom": "Add New Room",
+    "updateMeters": "Update Meter Readings",
+    "submitReview": "Submit for Moderation",
+    "submitReviewSuccess": "Property listing submitted to Admin for moderation!"
+  },
+  "appointments": {
+    "title": "Viewing Appointments",
+    "subtitle": "Manage and handle room viewing requests from prospective tenants",
+    "approve": "Approve",
+    "reject": "Reject",
+    "cancel": "Cancel Appointment",
+    "approveSuccess": "Viewing appointment approved!",
+    "rejectSuccess": "Viewing appointment rejected!",
+    "cancelSuccess": "Viewing appointment cancelled!",
+    "rejectReason": "Rejection Reason",
+    "cancelReason": "Cancellation Reason"
   }
 }

@@ -24,8 +24,22 @@ function getNestedValue(obj: any, path: string): string {
   return typeof curr === 'string' ? curr : path
 }
 
+function hasNestedValue(obj: any, path: string): boolean {
+  const parts = path.split('.')
+  let curr = obj
+  for (const part of parts) {
+    if (curr && typeof curr === 'object' && part in curr) {
+      curr = curr[part]
+    } else {
+      return false
+    }
+  }
+  return typeof curr === 'string'
+}
+
 config.global.mocks = {
   $t: (key: string) => getNestedValue(translations, key),
+  $te: (key: string) => hasNestedValue(translations, key),
   $localePath: (path: string) => path,
 }
 
@@ -47,6 +61,7 @@ config.global.stubs = {
 ;(globalThis as any).useRouter = () => ({ push: vi.fn(), replace: vi.fn() })
 ;(globalThis as any).useI18n = () => ({
   t: (key: string) => getNestedValue(translations, key),
+  te: (key: string) => hasNestedValue(translations, key),
   locale: { value: 'vi' },
 })
 ;(globalThis as any).useToast = () => ({
