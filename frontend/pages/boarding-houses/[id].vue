@@ -452,7 +452,7 @@ import BaseDatePicker from '~/components/common/BaseDatePicker.vue'
 import BaseModal from '~/components/common/BaseModal.vue'
 import BaseSelect from '~/components/common/BaseSelect.vue'
 import LoadingSpinner from '~/components/common/LoadingSpinner.vue'
-import MapView from '~/components/common/MapView.client.vue'
+const MapView = defineAsyncComponent(() => import('~/components/common/MapView.client.vue'))
 import type {
   PublicBoardingHouseDetailResponse,
   PublicVacantRoomResponse,

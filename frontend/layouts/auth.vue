@@ -35,5 +35,6 @@
 
 <script setup lang="ts">
 import LanguageSwitcher from '~/components/common/LanguageSwitcher.vue'
+import ThemeSwitcher from '~/components/common/ThemeSwitcher.vue'
 import ToastContainer from '~/components/common/ToastContainer.vue'
 </script>

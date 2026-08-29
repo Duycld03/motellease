@@ -551,7 +551,7 @@ import BaseSelect from '~/components/common/BaseSelect.vue'
 import BaseModal from '~/components/common/BaseModal.vue'
 import LoadingSpinner from '~/components/common/LoadingSpinner.vue'
 import StatusBadge from '~/components/status/StatusBadge.vue'
-import MapView from '~/components/common/MapView.client.vue'
+const MapView = defineAsyncComponent(() => import('~/components/common/MapView.client.vue'))
 import ImageUploader from '~/components/common/ImageUploader.vue'
 import { RoomStatus } from '~/types/enums'
 import type {

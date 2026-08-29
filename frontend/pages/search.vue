@@ -333,7 +333,8 @@
 <script setup lang="ts">
 import BaseButton from '~/components/common/BaseButton.vue'
 import LoadingSpinner from '~/components/common/LoadingSpinner.vue'
-import MapView, { type MapMarker } from '~/components/common/MapView.client.vue'
+const MapView = defineAsyncComponent(() => import('~/components/common/MapView.client.vue'))
+import type { MapMarker } from '~/components/common/MapView.client.vue'
 import type {
   PublicBoardingHouseCardResponse,
   BoardingHouseMapMarkerResponse,

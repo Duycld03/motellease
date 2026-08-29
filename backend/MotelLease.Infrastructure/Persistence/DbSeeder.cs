@@ -195,6 +195,10 @@ public static class DbSeeder
             };
             db.Users.Add(admin);
         }
+        else
+        {
+            admin.PasswordHash = passwordHash;
+        }
 
         // 2. Owners (8)
         var ownerNames = new[]
@@ -241,6 +245,10 @@ public static class DbSeeder
                 };
                 db.OwnerProfiles.Add(profile);
             }
+            else
+            {
+                owner.PasswordHash = passwordHash;
+            }
             owners.Add(owner);
         }
 
@@ -286,6 +294,10 @@ public static class DbSeeder
                 };
                 db.StaffProfiles.Add(profile);
             }
+            else
+            {
+                staff.PasswordHash = passwordHash;
+            }
             staffList.Add(staff);
         }
 
@@ -322,6 +334,10 @@ public static class DbSeeder
                     EmailConfirmed = true
                 };
                 db.Users.Add(tenant);
+            }
+            else
+            {
+                tenant.PasswordHash = passwordHash;
             }
             tenants.Add(tenant);
         }

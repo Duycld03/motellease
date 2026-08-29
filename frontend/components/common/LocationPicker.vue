@@ -121,7 +121,7 @@
 </template>
 
 <script setup lang="ts">
-import MapView from './MapView.client.vue'
+const MapView = defineAsyncComponent(() => import('./MapView.client.vue'))
 import type { ProvinceResponse, DistrictResponse } from '~/types/api'
 
 const props = withDefaults(

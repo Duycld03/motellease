@@ -673,7 +673,7 @@
     "roomsTitle": "Danh sách Phòng",
     "roomsSubtitle": "Quản lý trạng thái phòng và chỉ số công tơ điện nước",
     "addRoomBtn": "+ Thêm phòng mới",
-    "roomTypeRequiredNotice": "⚠️ Bạn cần tạo ít nhất 1 <strong>Loại phòng</strong> trước khi thêm danh sách phòng cụ thể.",
+    "roomTypeRequiredNotice": "⚠️ Bạn cần tạo ít nhất 1 Loại phòng trước khi thêm danh sách phòng cụ thể.",
     "noRoomsMatchFilter": "Không có phòng nào phù hợp với bộ lọc.",
     "colRoomNumber": "Số phòng",
     "colRoomType": "Loại phòng",

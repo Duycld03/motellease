@@ -26,21 +26,40 @@
             <li>
               <NuxtLinkLocale to="/search" class="hover:text-white transition-colors">{{ $t('nav.search') }}</NuxtLinkLocale>
             </li>
-            <li>
-              <NuxtLinkLocale to="/auth/login" class="hover:text-white transition-colors">{{ $t('nav.login') }}</NuxtLinkLocale>
-            </li>
-            <li>
-              <NuxtLinkLocale to="/auth/register" class="hover:text-white transition-colors">{{ $t('nav.register') }}</NuxtLinkLocale>
-            </li>
+            <template v-if="!isAuthenticated">
+              <li>
+                <NuxtLinkLocale to="/auth/login" class="hover:text-white transition-colors">{{ $t('nav.login') }}</NuxtLinkLocale>
+              </li>
+              <li>
+                <NuxtLinkLocale to="/auth/register" class="hover:text-white transition-colors">{{ $t('nav.register') }}</NuxtLinkLocale>
+              </li>
+            </template>
+            <template v-else>
+              <li>
+                <NuxtLinkLocale :to="dashboardRoute" class="hover:text-white transition-colors">{{ $t('nav.dashboard') }}</NuxtLinkLocale>
+              </li>
+              <li>
+                <NuxtLinkLocale to="/tenant/profile" class="hover:text-white transition-colors">{{ $t('nav.profile') }}</NuxtLinkLocale>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  class="hover:text-red-400 text-slate-400 transition-colors text-left"
+                  @click="handleLogout"
+                >
+                  {{ $t('nav.logout') }}
+                </button>
+              </li>
+            </template>
           </ul>
         </div>
 
-        <!-- Portals -->
+        <!-- Portals / Role Navigation -->
         <div>
           <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-3">
             {{ $t('common.actions') }}
           </h4>
-          <ul class="space-y-2 text-xs">
+          <ul v-if="!isAuthenticated" class="space-y-2 text-xs">
             <li>
               <NuxtLinkLocale to="/tenant/dashboard" class="hover:text-white transition-colors">{{ $t('nav.tenantPortal') }}</NuxtLinkLocale>
             </li>
@@ -49,6 +68,56 @@
             </li>
             <li>
               <NuxtLinkLocale to="/staff/dashboard" class="hover:text-white transition-colors">{{ $t('nav.staffPortal') }}</NuxtLinkLocale>
+            </li>
+          </ul>
+          <ul v-else-if="role === 'Tenant'" class="space-y-2 text-xs">
+            <li>
+              <NuxtLinkLocale to="/tenant/leases" class="hover:text-white transition-colors">{{ $t('nav.myLeases') }}</NuxtLinkLocale>
+            </li>
+            <li>
+              <NuxtLinkLocale to="/tenant/bills" class="hover:text-white transition-colors">{{ $t('nav.myBills') }}</NuxtLinkLocale>
+            </li>
+            <li>
+              <NuxtLinkLocale to="/tenant/deposits" class="hover:text-white transition-colors">{{ $t('nav.myDeposits') }}</NuxtLinkLocale>
+            </li>
+            <li>
+              <NuxtLinkLocale to="/tenant/maintenance" class="hover:text-white transition-colors">{{ $t('nav.myMaintenance') }}</NuxtLinkLocale>
+            </li>
+          </ul>
+          <ul v-else-if="role === 'Owner'" class="space-y-2 text-xs">
+            <li>
+              <NuxtLinkLocale to="/owner/properties" class="hover:text-white transition-colors">{{ $t('nav.properties') }}</NuxtLinkLocale>
+            </li>
+            <li>
+              <NuxtLinkLocale to="/owner/leases" class="hover:text-white transition-colors">{{ $t('nav.myLeases') }}</NuxtLinkLocale>
+            </li>
+            <li>
+              <NuxtLinkLocale to="/owner/bills" class="hover:text-white transition-colors">{{ $t('nav.myBills') }}</NuxtLinkLocale>
+            </li>
+            <li>
+              <NuxtLinkLocale to="/owner/analytics" class="hover:text-white transition-colors">{{ $t('nav.analytics') }}</NuxtLinkLocale>
+            </li>
+          </ul>
+          <ul v-else-if="role === 'Staff'" class="space-y-2 text-xs">
+            <li>
+              <NuxtLinkLocale to="/staff/properties" class="hover:text-white transition-colors">{{ $t('nav.properties') }}</NuxtLinkLocale>
+            </li>
+            <li>
+              <NuxtLinkLocale to="/staff/tasks" class="hover:text-white transition-colors">{{ $t('nav.tasks') }}</NuxtLinkLocale>
+            </li>
+            <li>
+              <NuxtLinkLocale to="/staff/appointments" class="hover:text-white transition-colors">{{ $t('nav.appointments') }}</NuxtLinkLocale>
+            </li>
+          </ul>
+          <ul v-else class="space-y-2 text-xs">
+            <li>
+              <NuxtLinkLocale to="/admin/moderation" class="hover:text-white transition-colors">{{ $t('nav.moderation') }}</NuxtLinkLocale>
+            </li>
+            <li>
+              <NuxtLinkLocale to="/admin/users" class="hover:text-white transition-colors">{{ $t('nav.users') }}</NuxtLinkLocale>
+            </li>
+            <li>
+              <NuxtLinkLocale to="/admin/reports" class="hover:text-white transition-colors">{{ $t('nav.reports') }}</NuxtLinkLocale>
             </li>
           </ul>
         </div>
@@ -65,4 +134,11 @@
 </template>
 
 <script setup lang="ts">
+const { isAuthenticated, role, getDefaultRouteForRole, logout } = useAuth()
+
+const dashboardRoute = computed(() => getDefaultRouteForRole(role.value))
+
+const handleLogout = async () => {
+  await logout()
+}
 </script>

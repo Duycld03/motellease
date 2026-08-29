@@ -13,7 +13,7 @@ export const useTheme = () => {
   const isDark = computed(() => {
     if (mode.value === 'dark') return true
     if (mode.value === 'light') return false
-    if (import.meta.client) {
+    if (typeof window !== 'undefined' && window.matchMedia) {
       return window.matchMedia('(prefers-color-scheme: dark)').matches
     }
     return false

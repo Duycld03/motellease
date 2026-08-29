@@ -50,13 +50,13 @@
         </span>
       </div>
       <div class="p-3.5 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-100 dark:border-amber-900/40">
-        <span class="text-[10px] text-amber-500 font-semibold uppercase block">⚡ {{ $t('ownerProperties.elecPrice') }}</span>
+        <span class="text-[10px] text-amber-500 font-semibold uppercase block">{{ $t('ownerProperties.elecPrice') }}</span>
         <span class="text-base font-extrabold text-amber-700 dark:text-amber-300 mt-0.5 block">
           {{ formatCurrency(totalElectricityExpense) }}
         </span>
       </div>
       <div class="p-3.5 bg-blue-50 dark:bg-blue-950/30 rounded-xl border border-blue-100 dark:border-blue-900/40">
-        <span class="text-[10px] text-blue-500 font-semibold uppercase block">💧 {{ $t('ownerProperties.waterPrice') }}</span>
+        <span class="text-[10px] text-blue-500 font-semibold uppercase block">{{ $t('ownerProperties.waterPrice') }}</span>
         <span class="text-base font-extrabold text-blue-700 dark:text-blue-300 mt-0.5 block">
           {{ formatCurrency(totalWaterExpense) }}
         </span>
@@ -113,7 +113,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
           <!-- Electricity -->
           <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">⚡ {{ $t('ownerProperties.elecPrice') }}</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">{{ $t('ownerProperties.elecPrice') }}</span>
             <span class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 block">{{ formatCurrency(e.electricityAmount) }}</span>
             <span class="text-[10px] text-slate-400 block mt-0.5">
               {{ e.electricityOld }} ➔ {{ e.electricityNew }} ({{ e.electricityQty }} kWh)
@@ -122,7 +122,7 @@
 
           <!-- Water -->
           <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold block">💧 {{ $t('ownerProperties.waterPrice') }}</span>
+            <span class="text-[10px] text-slate-400 uppercase font-semibold block">{{ $t('ownerProperties.waterPrice') }}</span>
             <span class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 block">{{ formatCurrency(e.waterAmount) }}</span>
             <span class="text-[10px] text-slate-400 block mt-0.5">
               {{ e.waterOld }} ➔ {{ e.waterNew }} ({{ e.waterQty }} m³)
@@ -205,7 +205,7 @@
 
         <!-- Electricity master bill -->
         <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl space-y-2">
-          <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">⚡ {{ $t('ownerProperties.elecPrice') }}</span>
+          <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">{{ $t('ownerProperties.elecPrice') }}</span>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <div>
               <label class="block text-[10px] text-slate-500">{{ $t('bills.elecMeterStart') }}</label>
@@ -228,7 +228,7 @@
 
         <!-- Water master bill -->
         <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl space-y-2">
-          <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">💧 {{ $t('ownerProperties.waterPrice') }}</span>
+          <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">{{ $t('ownerProperties.waterPrice') }}</span>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <div>
               <label class="block text-[10px] text-slate-500">{{ $t('bills.elecMeterStart') }}</label>

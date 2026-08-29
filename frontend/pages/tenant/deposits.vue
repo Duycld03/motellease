@@ -6,7 +6,7 @@
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ $t('deposits.subtitle') }}</p>
       </div>
       <BaseButton variant="outline" size="sm" @click="navigateTo(localePath('/search'))">
-        🔍 {{ $t('saved.findNewRooms') }}
+        {{ $t('saved.findNewRooms') }}
       </BaseButton>
     </div>
 

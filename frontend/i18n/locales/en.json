@@ -673,7 +673,7 @@
     "roomsTitle": "Rooms List",
     "roomsSubtitle": "Manage room availability and utility meter readings",
     "addRoomBtn": "+ Add New Room",
-    "roomTypeRequiredNotice": "⚠️ You need to create at least 1 <strong>Room Type</strong> before adding individual rooms.",
+    "roomTypeRequiredNotice": "⚠️ You need to create at least 1 Room Type before adding individual rooms.",
     "noRoomsMatchFilter": "No rooms match current filter.",
     "colRoomNumber": "Room No.",
     "colRoomType": "Room Type",

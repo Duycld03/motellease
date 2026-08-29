@@ -14,5 +14,7 @@ export default defineConfig({
     globals: true,
     environment: 'happy-dom',
     setupFiles: ['./test/setup.ts'],
+    include: ['test/**/*.test.ts'],
+    exclude: ['e2e/**', 'node_modules/**'],
   },
 })

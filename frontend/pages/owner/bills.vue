@@ -469,15 +469,7 @@ const billForm = reactive({
   dueDate: '',
 })
 
-const openCreateBillModal = async () => {
-  // Load active leases to get occupied rooms
-  try {
-    const data = await get<PagedResult<LeaseResponse>>('/leases', { status: 'Active', pageSize: 100 })
-    activeLeaseRooms.value = data.items || []
-  } catch {
-    activeLeaseRooms.value = []
-  }
-
+const openCreateBillModal = () => {
   const nextWeek = new Date()
   nextWeek.setDate(nextWeek.getDate() + 7)
   billForm.dueDate = nextWeek.toISOString().slice(0, 10)
@@ -486,6 +478,15 @@ const openCreateBillModal = async () => {
   billForm.waterNew = 0
   billPreview.value = null
   isCreateModalOpen.value = true
+
+  // Load active leases to get occupied rooms
+  get<PagedResult<LeaseResponse>>('/leases', { status: 'Active', pageSize: 100 })
+    .then((data) => {
+      activeLeaseRooms.value = data.items || []
+    })
+    .catch(() => {
+      activeLeaseRooms.value = []
+    })
 }
 
 const onRoomChanged = () => {
