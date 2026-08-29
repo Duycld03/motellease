@@ -29,8 +29,15 @@ services:
       Jwt__SigningKey: "devonly-signing-key-change-me-at-least-32-bytes-long"
       ASPNETCORE_ENVIRONMENT: "Development"
       ASPNETCORE_URLS: "http://+:5004"
-      App__ApiBaseUrl: "http://localhost:5004"
+      App__ApiBaseUrl: "${PUBLIC_API_URL:-http://localhost:5004}"
       App__WebBaseUrl: "http://localhost:3000"
+      VnPay__TmnCode: "1NH5FYBW"
+      VnPay__HashSecret: "54OIM1MOPUK921EPHV7X2PUK6SV1JD2D"
+      MoMo__PartnerCode: "MOMO"
+      MoMo__AccessKey: "F8BBA842ECF85"
+      MoMo__SecretKey: "K951B6PE1waDMi640xX08PD3vg6EkVlz"
+      MoMo__CreateUrl: "https://test-payment.momo.vn/v2/gateway/api/create"
+      MoMo__RequestType: "payWithATM"
     ports:
       - "5004:5004"
     depends_on:
@@ -73,17 +80,16 @@ services:
     image: ngrok/ngrok:latest
     container_name: motellease-ngrok
     restart: unless-stopped
-    profiles: ["tunnel"]
     environment:
       NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN:-}
     command:
       - http
       - --url=${NGROK_DOMAIN:-set-NGROK_DOMAIN-in-dot-env}
-      - host.docker.internal:5004
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - backend:5004
     ports:
       - "4040:4040"
+    depends_on:
+      - backend
 
 volumes:
   db-data:

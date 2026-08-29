@@ -1,5 +1,3 @@
-import crypto from 'crypto'
-
 export interface LiveAuthResult {
   accessToken: string
   refreshToken: string
@@ -51,33 +49,63 @@ export async function getLiveAuth(email: string, password = 'Demo@1234'): Promis
   }
 }
 
-export function createVnPayIpnQuery(
-  orderId: string,
-  amount: number,
-  transactionNo = '12345678',
-  tmnCode = 'Z00D1YY7',
-  hashSecret = 'OTSTBBUGYTMOKQGEAEXNUBHZZLALRIWC'
-): string {
-  const fields: Record<string, string> = {
-    vnp_Amount: (Math.round(amount) * 100).toString(),
-    vnp_BankCode: 'NCB',
-    vnp_CardType: 'ATM',
-    vnp_OrderInfo: 'Thanh toan MotelLease',
-    vnp_PayDate: '20260829120000',
-    vnp_ResponseCode: '00',
-    vnp_TmnCode: tmnCode,
-    vnp_TransactionNo: transactionNo,
-    vnp_TransactionStatus: '00',
-    vnp_TxnRef: orderId,
-  }
-  const sortedKeys = Object.keys(fields).sort()
-  const canonical = sortedKeys.map((k) => `${k}=${encodeURIComponent(fields[k])}`).join('&')
-  const hash = crypto.createHmac('sha512', hashSecret).update(canonical).digest('hex')
-  return `?${canonical}&vnp_SecureHash=${hash}`
-}
+// =================================================================================
+// MoMo Live Sandbox & Napas Bank Card Payment Automation Helper (Real MoMo IPN)
+// =================================================================================
 
-export async function triggerLiveVnPayIpn(orderId: string, amount: number, transactionNo = '12345678'): Promise<any> {
-  const query = createVnPayIpnQuery(orderId, amount, transactionNo)
-  const res = await fetch(`http://localhost:5004/api/v1/payments/vnpay/ipn${query}`)
-  return await res.json()
+export async function completeMoMoCardPayment(page: any) {
+  // Wait for redirect to MoMo payment portal or result page
+  await page.waitForURL((url: URL) => url.hostname.includes('momo.vn') || url.hostname.includes('mservice') || url.pathname.includes('/payments/result'), { timeout: 30000 })
+
+  if (page.url().includes('momo.vn')) {
+    await page.waitForTimeout(2500)
+    const cardInput = page.locator('#addNewCard #card-number, #card-number').filter({ visible: true }).first()
+    await cardInput.waitFor({ state: 'visible', timeout: 30000 })
+    await cardInput.click()
+    await cardInput.pressSequentially('9704000000000018', { delay: 15 })
+
+    const expireInput = page.locator('#addNewCard #card-expire, #card-expire').filter({ visible: true }).first()
+    await expireInput.click()
+    await expireInput.pressSequentially('0307', { delay: 15 })
+
+    const nameInput = page.locator('#addNewCard #card-name, #card-name').filter({ visible: true }).first()
+    await nameInput.click()
+    await nameInput.pressSequentially('NGUYEN VAN A', { delay: 15 })
+
+    const phoneInput = page.locator('#addNewCard #number-phone, #number-phone').filter({ visible: true }).first()
+    await phoneInput.click()
+    await phoneInput.pressSequentially('0987654321', { delay: 15 })
+
+    const submitBtn = page.locator('#addNewCard #btn-pay-card, #btn-pay-card').filter({ visible: true }).first()
+    await submitBtn.click()
+
+    // Wait for Napas Bank OTP form on mservice
+    await page.waitForURL((url: URL) => url.hostname.includes('mservice.com.vn') || url.hostname.includes('napas') || url.pathname.includes('/payments/result'), { timeout: 30000 })
+    await page.waitForTimeout(2000)
+
+    const otpInput = page.locator('#otpInput').filter({ visible: true }).first()
+    if (await otpInput.isVisible({ timeout: 20000 }).catch(() => false)) {
+      await otpInput.click()
+      await otpInput.pressSequentially('123456', { delay: 15 })
+      await page.locator('#btnSubmit').click()
+    }
+  }
+
+  // Handle Ngrok interstitial visit page if shown on redirect
+  const startTime = Date.now()
+  while (Date.now() - startTime < 30000) {
+    if (page.url().includes('/payments/result')) {
+      break
+    }
+    if (page.url().includes('ngrok-free.dev')) {
+      const visitBtn = page.locator('button:has-text("Visit Site")').first()
+      if (await visitBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+        await visitBtn.click()
+        await page.waitForTimeout(1000)
+      }
+    }
+    await page.waitForTimeout(500)
+  }
+
+  await page.waitForURL((url: URL) => url.pathname.includes('/payments/result'), { timeout: 30000 })
 }
