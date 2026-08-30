@@ -4,8 +4,10 @@ import RegisterPage from '../../pages/auth/register.vue'
 import { UserRole } from '../../types/enums'
 
 const mockSendRegistrationOtp = vi.fn().mockResolvedValue({ message: 'OK', expiresInMinutes: 10 })
+const mockLoginWithGoogle = vi.fn()
 vi.stubGlobal('useAuth', () => ({
   sendRegistrationOtp: mockSendRegistrationOtp,
+  loginWithGoogle: mockLoginWithGoogle,
 }))
 
 describe('RegisterPage.vue', () => {
@@ -14,11 +16,12 @@ describe('RegisterPage.vue', () => {
     sessionStorage.clear()
   })
 
-  it('renders all registration form fields', () => {
+  it('renders all registration form fields and Google sign-in button', () => {
     const wrapper = mount(RegisterPage)
     expect(wrapper.find('input[type="text"]').exists()).toBe(true)
     expect(wrapper.find('input[type="email"]').exists()).toBe(true)
     expect(wrapper.find('input[type="password"]').exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'GoogleSignInButton' }).exists()).toBe(true)
   })
 
   it('submits registration form, calls sendRegistrationOtp and saves pending state in sessionStorage', async () => {

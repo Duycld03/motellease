@@ -338,7 +338,10 @@
     "phoneNumberPlaceholder": "0912345678",
     "idCardNumber": "Citizen ID / Passport",
     "role": "Account Role",
+    "or": "Or",
     "loginWithGoogle": "Continue with Google",
+    "googleNotConfigured": "Google sign-in is not configured with a Client ID.",
+    "googleSignInUnavailable": "Google Sign-In service is temporarily unavailable.",
     "rememberMe": "Remember me",
     "forgotPasswordQuestion": "Forgot password?",
     "dontHaveAccount": "Don't have an account?",
@@ -1217,8 +1220,10 @@
     "upcomingAppointments": "Upcoming appointments",
     "maintenanceRequests": "Maintenance requests",
     "currentLeaseTitle": "Current Active Lease",
-    "leaseSampleDesc": "Lease period: {start} - {end} · Rent: {price}/month",
-    "viewLease": "View lease contract"
+    "leaseSampleDesc": "Lease term: {start} - {end} · Monthly Rent: {price}/month",
+    "viewLease": "View Lease",
+    "noActiveLease": "You do not have any active leases yet.",
+    "findRoomNow": "Find a room now"
   },
   "search": {
     "resultsHeading": "Search Results",

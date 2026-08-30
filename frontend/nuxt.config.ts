@@ -23,6 +23,7 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:5004/api/v1',
       hubUrl: process.env.NUXT_PUBLIC_HUB_URL || 'http://localhost:5004/hubs/notifications',
+      googleClientId: process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID || '',
     },
   },
 

@@ -80,12 +80,13 @@ config.global.stubs = {
   locale: { value: 'vi' },
   setLocale: vi.fn(),
 })
-;(globalThis as any).useToast = () => ({
+const mockToastInstance = {
   success: vi.fn(),
   error: vi.fn(),
   info: vi.fn(),
   warning: vi.fn(),
-})
+}
+;(globalThis as any).useToast = () => mockToastInstance
 ;(globalThis as any).useFormat = () => ({
   formatCurrency: (val: number) => `${Number(val || 0).toLocaleString('vi-VN')} đ`,
   formatRelativeTime: (d: any) => '1 ngày trước',

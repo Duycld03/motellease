@@ -55,13 +55,18 @@ export const useAuth = () => {
     return data
   }
 
-  const loginWithGoogle = async (idToken: string) => {
+  const loginWithGoogle = async (idToken: string, role?: UserRole) => {
+    const payload: { idToken: string; role?: UserRole } = { idToken }
+    if (role) {
+      payload.role = role
+    }
+
     const data = await post<{
       accessToken: string
       refreshToken: string
       expiresIn: number
       user: User
-    }>('/auth/login/google', { idToken })
+    }>('/auth/login/google', payload)
 
     authStore.setAuth(data)
     toast.success(t('auth.loginSuccess'))

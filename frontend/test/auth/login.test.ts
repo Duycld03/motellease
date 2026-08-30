@@ -4,8 +4,10 @@ import LoginPage from '../../pages/auth/login.vue'
 
 // Mock useAuth
 const mockLogin = vi.fn()
+const mockLoginWithGoogle = vi.fn()
 vi.stubGlobal('useAuth', () => ({
   login: mockLogin,
+  loginWithGoogle: mockLoginWithGoogle,
 }))
 
 describe('LoginPage.vue', () => {
@@ -13,11 +15,12 @@ describe('LoginPage.vue', () => {
     vi.clearAllMocks()
   })
 
-  it('renders email and password inputs and submit button', () => {
+  it('renders email and password inputs, submit button, and Google sign-in button', () => {
     const wrapper = mount(LoginPage)
     expect(wrapper.find('input[type="email"]').exists()).toBe(true)
     expect(wrapper.find('input[type="password"]').exists()).toBe(true)
     expect(wrapper.find('button[type="submit"]').exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'GoogleSignInButton' }).exists()).toBe(true)
   })
 
   it('does not submit when fields are empty', async () => {

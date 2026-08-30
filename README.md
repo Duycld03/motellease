@@ -222,7 +222,8 @@ docker compose up db -d
 cd backend/MotelLease.Api
 dotnet user-secrets set "Jwt:SigningKey" "a-very-secret-and-secure-key-with-at-least-32-bytes"
 
-# (Optional) Configure payment gateways & external services
+# (Optional) Configure Google OAuth & payment gateways
+dotnet user-secrets set "GoogleAuth:ClientId" "<your-google-client-id>.apps.googleusercontent.com"
 dotnet user-secrets set "VnPay:TmnCode" "<your-tmn-code>"
 dotnet user-secrets set "VnPay:HashSecret" "<your-hash-secret>"
 dotnet user-secrets set "MoMo:PartnerCode" "MOMO"

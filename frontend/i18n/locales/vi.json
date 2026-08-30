@@ -338,7 +338,10 @@
     "phoneNumberPlaceholder": "0912345678",
     "idCardNumber": "Số CCCD / CMND",
     "role": "Vai trò tài khoản",
+    "or": "Hoặc",
     "loginWithGoogle": "Tiếp tục với Google",
+    "googleNotConfigured": "Đăng nhập Google chưa được cấu hình Client ID.",
+    "googleSignInUnavailable": "Dịch vụ Google Sign-In tạm thời không khả dụng.",
     "rememberMe": "Ghi nhớ đăng nhập",
     "forgotPasswordQuestion": "Quên mật khẩu?",
     "dontHaveAccount": "Chưa có tài khoản?",
@@ -1218,7 +1221,9 @@
     "maintenanceRequests": "Yêu cầu sửa chữa",
     "currentLeaseTitle": "Hợp đồng thuê hiện tại",
     "leaseSampleDesc": "Thời hạn hợp đồng: {start} - {end} · Tiền thuê: {price}/tháng",
-    "viewLease": "Xem hợp đồng"
+    "viewLease": "Xem hợp đồng",
+    "noActiveLease": "Bạn hiện chưa có hợp đồng thuê phòng nào đang hiệu lực.",
+    "findRoomNow": "Tìm phòng ngay"
   },
   "search": {
     "resultsHeading": "Kết quả tìm kiếm",

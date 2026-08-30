@@ -29,8 +29,9 @@ services:
       Jwt__SigningKey: "devonly-signing-key-change-me-at-least-32-bytes-long"
       ASPNETCORE_ENVIRONMENT: "Development"
       ASPNETCORE_URLS: "http://+:5004"
-      App__ApiBaseUrl: "${PUBLIC_API_URL:-http://localhost:5004}"
+      App__ApiBaseUrl: "${PUBLIC_API_URL:-https://jarrett-unpretentious-laryngeally.ngrok-free.dev}"
       App__WebBaseUrl: "http://localhost:3000"
+      GoogleAuth__ClientId: "${GOOGLE_CLIENT_ID:-}"
       VnPay__TmnCode: "1NH5FYBW"
       VnPay__HashSecret: "54OIM1MOPUK921EPHV7X2PUK6SV1JD2D"
       MoMo__PartnerCode: "MOMO"
@@ -51,6 +52,7 @@ services:
       args:
         NUXT_PUBLIC_API_BASE: "http://localhost:5004/api/v1"
         NUXT_PUBLIC_HUB_URL: "http://localhost:5004/hubs/notifications"
+        NUXT_PUBLIC_GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID:-}"
     container_name: motellease-frontend
     restart: unless-stopped
     ports:
@@ -76,20 +78,20 @@ services:
       - pgadmin-data:/var/lib/pgadmin
 
   ngrok:
-    # Only needed to receive a payment gateway's IPN callback.
+    # Tunnel to receive MoMo/VNPay IPN webhook callbacks directly from payment gateway servers.
     image: ngrok/ngrok:latest
     container_name: motellease-ngrok
     restart: unless-stopped
     environment:
-      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN:-}
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN:-2kEFOhwVc4Zj0Kj9nElDfWfiiFH_4irTzLAnVsUaVCvegAw47}
     command:
       - http
-      - --url=${NGROK_DOMAIN:-set-NGROK_DOMAIN-in-dot-env}
-      - backend:5004
+      - --url=${NGROK_DOMAIN:-jarrett-unpretentious-laryngeally.ngrok-free.dev}
+      - host.docker.internal:5004
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "4040:4040"
-    depends_on:
-      - backend
 
 volumes:
   db-data:
