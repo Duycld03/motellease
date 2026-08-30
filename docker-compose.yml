@@ -26,7 +26,7 @@ services:
     restart: unless-stopped
     environment:
       ConnectionStrings__Default: "Host=db;Port=5432;Database=motellease;Username=motellease;Password=${POSTGRES_PASSWORD:-devonly_change_me}"
-      Jwt__SigningKey: "devonly-signing-key-change-me-at-least-32-bytes-long"
+      Jwt__SigningKey: "${JWT_SIGNING_KEY:-devonly-signing-key-change-me-at-least-32-bytes-long}"
       ASPNETCORE_ENVIRONMENT: "Development"
       ASPNETCORE_URLS: "http://+:5004"
       App__ApiBaseUrl: "${PUBLIC_API_URL:-https://jarrett-unpretentious-laryngeally.ngrok-free.dev}"
