@@ -11,7 +11,7 @@ namespace MotelLease.Tests.Integration;
 
 /// <summary>
 /// The MoMo half of the payment group. Same rules as VNPay — only a signed server-to-server callback
-/// settles anything, a replay changes nothing (docs/domain-rules.md §9.7, §9.8) — reached over a
+/// settles anything, a replay changes nothing (AGENTS.md Invariants 7, 8) — reached over a
 /// protocol that agrees with VNPay's on almost nothing: the payment URL is fetched from MoMo rather
 /// than assembled, the callback arrives as a JSON body rather than a query string, the amount is plain
 /// VND, and the acknowledgement is an HTTP status rather than a code in a body.

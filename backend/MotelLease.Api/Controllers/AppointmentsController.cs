@@ -12,7 +12,7 @@ namespace MotelLease.Api.Controllers;
 /// <summary>
 /// Viewing appointments. Reading is open to everyone involved and the handler decides which rows
 /// that means; the write actions are split by who they belong to — a tenant books and cancels, the
-/// owner or assigned staff answer (docs/api-design.md).
+/// owner or assigned staff answer (API specification).
 /// </summary>
 [ApiController]
 [Route("api/v1/appointments")]

@@ -139,12 +139,10 @@ motellease/
 │   ├── locales/                     # Bilingual i18n message catalogs (vi, en)
 │   ├── nuxt.config.ts               # Nuxt 4 configuration & modules
 │   └── Dockerfile                   # Multi-stage Nuxt SSR production build
-├── docs/                            # Project specifications (Vietnamese source of truth)
-│   ├── features.md                  # Detailed feature matrix & state machines
-│   ├── erd.md                       # 29-table database ERD & spatial indexing
-│   ├── domain-rules.md              # 12 core domain invariants & business rules
-│   ├── api-design.md                # Complete REST API endpoint contracts (~150 endpoints)
-│   └── seed-plan.md                 # Realistic seed data and coordinate anchors
+├── openspec/                        # Pure OpenSpec specification and change management
+│   ├── config.yaml                 # OpenSpec configuration, tech stack, and artifact rules
+│   ├── specs/                      # Living capability specifications & acceptance criteria
+│   └── changes/                    # Tracked proposal, design, spec delta, and tasks
 ├── docker-compose.yml               # Complete container orchestration
 └── run-dev.sh                       # Local development startup script
 ```
@@ -158,7 +156,7 @@ The project includes complete test suites for both backend and frontend:
 ### Backend Integration Tests (100% Passing)
 - **Engine**: **xUnit** + **Testcontainers** running `postgis/postgis:17-3.5`.
 - **Coverage**: **144 / 144 tests passed**.
-- **Scope**: All 12 domain invariants from `docs/domain-rules.md` §9, state machines, financial transactions, spatial proximity queries, and QuestPDF generation.
+- **Scope**: All 12 core domain invariants documented in `AGENTS.md`, state machines, financial transactions, spatial proximity queries, and QuestPDF generation.
 - **Run command**:
   ```bash
   dotnet test backend/MotelLease.slnx
@@ -257,14 +255,14 @@ Alternatively, run both backend and frontend together with a single script:
 
 ---
 
-## 📚 Specification Reference
+## 📚 Architecture & Specifications (Pure OpenSpec)
 
-| Document | Description |
-|---|---|
-| [docs/features.md](docs/features.md) | Feature matrix, priority breakdown, and role state machines |
-| [docs/erd.md](docs/erd.md) | Database ERD, 29 tables, spatial geometries, indexes, and constraints |
-| [docs/domain-rules.md](docs/domain-rules.md) | Business logic specifications and 12 core domain invariants |
-| [docs/api-design.md](docs/api-design.md) | REST API endpoint contracts and request/response DTOs (~150 endpoints) |
-| [docs/seed-plan.md](docs/seed-plan.md) | Realistic seed dataset, Hanoi anchor coordinates, and test accounts |
+The project adheres to a **Pure OpenSpec** documentation architecture and "Code is Truth" philosophy:
 
+| Concern | Source of Truth | Description |
+|---|---|---|
+| **Feature Specifications** | `openspec/specs/` | Living capabilities, acceptance criteria, and WHEN/THEN verification scenarios |
+| **Domain Invariants & Rules** | `AGENTS.md` | 12 core architectural and domain invariants, policies, and anti-patterns |
+| **API Endpoints & Contracts** | ASP.NET Core Controllers & DTOs | Living C# code and OpenAPI documentation (`/swagger`) |
+| **Database Schema & Models** | EF Core Entity Models & Migrations | Living C# entity configurations in `MotelLease.Infrastructure` |
 

@@ -7,7 +7,7 @@ using MotelLease.Domain.Enums;
 namespace MotelLease.Application.Common.Security;
 
 /// <summary>
-/// Layer two of authorization (docs/domain-rules.md §6): the role in the token says the caller
+/// Layer two of authorization (AGENTS.md §6): the role in the token says the caller
 /// is an owner or a staff member, it does not say which boarding houses they are responsible
 /// for. Every handler that takes a boarding house id goes through here first.
 /// </summary>

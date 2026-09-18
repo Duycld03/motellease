@@ -13,7 +13,7 @@ public class LeaseConfiguration : IEntityTypeConfiguration<Lease>
         builder.Property(l => l.FinalWaterReading).HasColumnType("decimal(12,2)");
 
         // Verified on PostGIS image: blocks a second Active lease on a room while still
-        // allowing many Ended ones (docs/erd.md §8.5, invariant §9.1).
+        // allowing many Ended ones (database schema §8.5, invariant §9.1).
         builder.HasIndex(l => l.RoomId, "IX_Leases_RoomId_Active")
             .IsUnique()
             .HasFilter("\"Status\" = 'Active'");

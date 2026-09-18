@@ -16,7 +16,7 @@ namespace MotelLease.Application.Leases;
 ///
 /// The frozen amount travels from the deposit onto the lease and is never re-read from the room type
 /// — an owner raising the asking price after a tenant has paid must not change what that tenant
-/// signed for (docs/domain-rules.md §3). One transaction, because a lease created without its primary
+/// signed for (AGENTS.md §3). One transaction, because a lease created without its primary
 /// tenant would be a contract with nobody living under it, and the occupancy count is taken from
 /// those rows (§9.2).
 /// </summary>

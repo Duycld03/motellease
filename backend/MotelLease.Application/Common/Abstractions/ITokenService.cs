@@ -4,7 +4,7 @@ namespace MotelLease.Application.Common.Abstractions;
 
 /// <summary>
 /// Issues access tokens and the raw/hashed pair for refresh tokens. Only the hash is ever
-/// persisted, so a leaked RefreshTokens table cannot be replayed (docs/erd.md §1).
+/// persisted, so a leaked RefreshTokens table cannot be replayed (database schema §1).
 /// </summary>
 public interface ITokenService
 {

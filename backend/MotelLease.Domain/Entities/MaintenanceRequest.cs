@@ -34,7 +34,7 @@ public class WorkTask : Entity
 {
     /// <summary>
     /// Added in this version: without it an owner cannot list the work of one house
-    /// (docs/erd.md §5).
+    /// (database schema §5).
     /// </summary>
     public Guid BoardingHouseId { get; set; }
     public BoardingHouse BoardingHouse { get; set; } = null!;

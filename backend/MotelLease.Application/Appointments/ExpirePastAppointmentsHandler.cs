@@ -5,7 +5,7 @@ using MotelLease.Domain.Enums;
 namespace MotelLease.Application.Appointments;
 
 /// <summary>
-/// Closes viewing requests whose time has passed (docs/domain-rules.md §4). An unanswered request
+/// Closes viewing requests whose time has passed (AGENTS.md §4). An unanswered request
 /// becomes Expired; one the owner accepted becomes Completed, because the visit either happened or
 /// nobody is going to answer for it now.
 ///

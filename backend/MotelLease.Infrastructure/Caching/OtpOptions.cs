@@ -11,7 +11,7 @@ public sealed class OtpOptions
 
     /// <summary>
     /// How long before the same address may ask for another code. Without a cooldown the send
-    /// endpoint would double as a free mail cannon aimed at any address (docs/features.md §3.7).
+    /// endpoint would double as a free mail cannon aimed at any address (feature specifications §3.7).
     /// </summary>
     [Range(10, 600)]
     public int ResendCooldownSeconds { get; set; } = 60;

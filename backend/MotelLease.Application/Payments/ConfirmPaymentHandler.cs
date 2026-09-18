@@ -10,7 +10,7 @@ namespace MotelLease.Application.Payments;
 
 /// <summary>
 /// The IPN callback, and the only place in the application that moves money state
-/// (docs/domain-rules.md §9.7, §9.8). A browser return URL never reaches this code: the user controls
+/// (AGENTS.md Invariants 7, 8). A browser return URL never reaches this code: the user controls
 /// the URL they land on, so only a server-to-server callback carrying a signature made with our own
 /// secret is allowed to mark anything paid.
 ///
@@ -171,7 +171,7 @@ public sealed class ConfirmPaymentHandler(
     }
 
     /// <summary>
-    /// Both sides are told (docs/domain-rules.md §7): the payer that the money went through, and the
+    /// Both sides are told (AGENTS.md §7): the payer that the money went through, and the
     /// owner that it arrived.
     /// </summary>
     private async Task NotifyPaidAsync(

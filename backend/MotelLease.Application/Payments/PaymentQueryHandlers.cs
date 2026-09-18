@@ -58,7 +58,7 @@ internal static class PaymentRules
 
 /// <summary>
 /// GET /payments and GET /me/payments. One query, scoped by role, because a transaction history is
-/// the same list read from two sides (docs/api-design.md).
+/// the same list read from two sides (API specification).
 /// </summary>
 public sealed class ListPaymentsHandler(
     IAppDbContext database,

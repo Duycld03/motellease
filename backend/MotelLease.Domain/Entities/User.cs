@@ -48,7 +48,7 @@ public class OwnerProfile : Entity
 
     /// <summary>
     /// Withdrawable balance. A withdraw request may never exceed this
-    /// (docs/domain-rules.md §9.11).
+    /// (AGENTS.md Invariant 11).
     /// </summary>
     public decimal AvailableBalance { get; set; }
 }

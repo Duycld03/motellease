@@ -15,7 +15,7 @@ using MotelLease.Infrastructure.Persistence;
 namespace MotelLease.Tests.Integration;
 
 /// <summary>
-/// Drives the boarding house / room type / room group of docs/api-design.md against a real PostGIS
+/// Drives the boarding house / room type / room group of API specification against a real PostGIS
 /// database. The assertions are the rules that cannot be read off the schema: who reaches which
 /// property, which status changes a person may make, and what a soft delete frees up.
 /// </summary>
@@ -287,7 +287,7 @@ public sealed class PropertyManagementTests : IAsyncLifetime
         Assert.Equal(
             RoomStatus.Maintenance, (await ReadAsync<RoomResponse>(maintenance)).Status);
 
-        // Occupied is derived from the lease rows (docs/domain-rules.md §9.3).
+        // Occupied is derived from the lease rows (AGENTS.md Invariant 3).
         var occupied = await SendAsync(
             HttpMethod.Put,
             $"/api/v1/my/rooms/{roomId}/status",

@@ -13,7 +13,7 @@ using MotelLease.Infrastructure.Persistence;
 namespace MotelLease.Tests.Integration;
 
 /// <summary>
-/// Drives the viewing appointment group of docs/api-design.md. The rules worth asserting are who
+/// Drives the viewing appointment group of API specification. The rules worth asserting are who
 /// may book, answer or cancel a visit, and what the sweep does with one whose time has passed.
 /// </summary>
 [Collection(PostgresCollection.Name)]
@@ -62,7 +62,7 @@ public sealed class AppointmentFlowTests : IAsyncLifetime
         Assert.Equal(await _client.UserIdAsync(listing.OwnerToken), answer.HandledByUserId);
 
         // The tenant is told, in the same save as the status change, and the row carries keys
-        // rather than a sentence (docs/domain-rules.md §7).
+        // rather than a sentence (AGENTS.md §7).
         using var scope = _app.Services.CreateScope();
         var database = scope.ServiceProvider.GetRequiredService<MotelLeaseDbContext>();
 

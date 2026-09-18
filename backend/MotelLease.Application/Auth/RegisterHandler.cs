@@ -24,7 +24,7 @@ public sealed class RegisterHandler(
         CancellationToken cancellationToken = default)
     {
         // Staff accounts are created by an owner, admins are seeded — neither is reachable
-        // from a public form (docs/features.md §1).
+        // from a public form (feature specifications §1).
         if (!SelfAssignableRoles.IsAllowed(request.Role))
         {
             throw new ForbiddenException(MessageKeys.Auth.RoleNotSelfAssignable);

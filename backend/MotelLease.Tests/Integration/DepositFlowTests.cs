@@ -13,7 +13,7 @@ using MotelLease.Infrastructure.Persistence;
 namespace MotelLease.Tests.Integration;
 
 /// <summary>
-/// Drives the deposit group of docs/api-design.md, minus the payment endpoints. What is worth
+/// Drives the deposit group of API specification, minus the payment endpoints. What is worth
 /// asserting here is the amount being frozen at request time, who may answer a request, and that the
 /// room's status keeps following the deposit rows rather than drifting from them (§9.3).
 /// </summary>
@@ -67,7 +67,7 @@ public sealed class DepositFlowTests : IAsyncLifetime
         Assert.NotNull(accepted.ExpiresAt);
         Assert.True(accepted.ExpiresAt > DateTimeOffset.UtcNow);
 
-        // And now it is held (docs/domain-rules.md §9.3).
+        // And now it is held (AGENTS.md Invariant 3).
         Assert.Equal(RoomStatus.Reserved, await RoomStatusAsync(listing.RoomId));
     }
 
@@ -80,7 +80,7 @@ public sealed class DepositFlowTests : IAsyncLifetime
         var requested = await RequestAsync(tenant, listing.RoomId);
 
         // The owner raises the asking price after the fact. The agreed figure must not follow it
-        // (docs/domain-rules.md §2).
+        // (AGENTS.md §2).
         var repriced = await _client.SendAsync(
             HttpMethod.Put,
             $"/api/v1/my/boarding-houses/{listing.HouseId}/room-types/{listing.RoomTypeId}",

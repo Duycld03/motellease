@@ -10,7 +10,7 @@ namespace MotelLease.Application.Notifications;
 /// <summary>
 /// Writes in-app notifications. The row carries i18n keys plus a payload, never a finished
 /// sentence, so the recipient reads it in the language they have selected when they open it
-/// rather than the one in force when it was sent (docs/domain-rules.md §7).
+/// rather than the one in force when it was sent (AGENTS.md §7).
 ///
 /// Nothing is saved here: the row joins the caller's own SaveChanges, so a notification about
 /// something that failed to commit is never left behind. Realtime delivery is the separate
@@ -51,7 +51,7 @@ public sealed class NotificationDispatcher(
     ///
     /// The sentence is rendered in each recipient's own stored language rather than the language of
     /// the request that triggered it: the person being told is not the person acting, and an owner
-    /// working in English must not force English onto a Vietnamese tenant (docs/features.md §3.12).
+    /// working in English must not force English onto a Vietnamese tenant (feature specifications §3.12).
     /// </summary>
     public async Task DeliverAsync(CancellationToken cancellationToken = default)
     {

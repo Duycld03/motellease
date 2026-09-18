@@ -58,7 +58,7 @@ public class MotelLeaseDbContext(DbContextOptions<MotelLeaseDbContext> options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // PostGIS only. gen_random_uuid() needs no extension on PostgreSQL 13+, and ids are
-        // generated as UUIDv7 by the application anyway — see docs/erd.md §8.
+        // generated as UUIDv7 by the application anyway — see database schema §8.
         modelBuilder.HasPostgresExtension("postgis");
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MotelLeaseDbContext).Assembly);

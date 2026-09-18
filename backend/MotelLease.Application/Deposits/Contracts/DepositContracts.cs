@@ -4,7 +4,7 @@ namespace MotelLease.Application.Deposits.Contracts;
 
 /// <summary>
 /// One request to hold a room. <c>Amount</c> is the figure frozen when the request was made, not
-/// today's asking price (docs/domain-rules.md §2), and <c>ExpiresAt</c> is filled once the request
+/// today's asking price (AGENTS.md §2), and <c>ExpiresAt</c> is filled once the request
 /// has been accepted and the tenant is on the clock to pay.
 /// </summary>
 public sealed record DepositResponse(
@@ -37,7 +37,7 @@ public sealed record CancelDepositRequest(string? Reason);
 /// <summary>
 /// What the contract would say if it were signed now. Every figure comes from the deposit row, so
 /// the preview cannot drift from the amount already agreed: a historical document never reads a
-/// current price (docs/domain-rules.md §3).
+/// current price (AGENTS.md §3).
 /// </summary>
 public sealed record DepositContractPreviewResponse(
     Guid DepositId,

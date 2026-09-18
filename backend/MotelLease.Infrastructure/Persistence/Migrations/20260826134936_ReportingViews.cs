@@ -6,7 +6,7 @@ namespace MotelLease.Infrastructure.Persistence.Migrations
 {
     /// <summary>
     /// Reporting figures are derived here rather than cached in columns, so no counter can
-    /// drift out of step with the rows it summarises (docs/erd.md §7). Both views carry a
+    /// drift out of step with the rows it summarises (database schema §7). Both views carry a
     /// unique index because REFRESH MATERIALIZED VIEW CONCURRENTLY fails without one.
     /// </summary>
     public partial class ReportingViews : Migration

@@ -6,7 +6,7 @@ using MotelLease.Domain.Enums;
 namespace MotelLease.Application.Deposits;
 
 /// <summary>
-/// Releases accepted requests whose payment deadline has passed (docs/domain-rules.md §2, §8). The
+/// Releases accepted requests whose payment deadline has passed (AGENTS.md §2, §8). The
 /// request becomes Expired and the room returns to Available, so an unpaid request cannot hold a
 /// room indefinitely.
 ///

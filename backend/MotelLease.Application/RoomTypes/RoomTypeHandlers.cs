@@ -30,7 +30,7 @@ internal static class RoomTypeRules
                 .ToList()));
 
     /// <summary>
-    /// docs/domain-rules.md §1: only a DormStyle house shares a room. Allowing a higher cap
+    /// AGENTS.md §1: only a DormStyle house shares a room. Allowing a higher cap
     /// elsewhere would describe an occupancy the lease rules refuse to create.
     /// </summary>
     internal static void EnsureOccupancyFitsHouse(BoardingHouse house, int maxOccupants)
@@ -132,7 +132,7 @@ public sealed class CreateRoomTypeHandler(IAppDbContext database, BoardingHouseA
 
 /// <summary>
 /// PUT /my/boarding-houses/{id}/room-types/{typeId}. Raising the price is allowed and affects
-/// nobody who already signed: a lease froze its own rent (docs/domain-rules.md §3.2).
+/// nobody who already signed: a lease froze its own rent (AGENTS.md §3.2).
 /// </summary>
 public sealed class UpdateRoomTypeHandler(IAppDbContext database, BoardingHouseAccess access)
 {

@@ -30,7 +30,7 @@ public class PaymentTransaction : Entity
 
     /// <summary>
     /// Gateway-side transaction id. Unique so a replayed IPN callback cannot be recorded
-    /// twice (docs/domain-rules.md §9.7).
+    /// twice (AGENTS.md Invariant 7).
     /// </summary>
     public string? ProviderTxnId { get; set; }
 

@@ -3,7 +3,7 @@ using MotelLease.Application.Deposits;
 namespace MotelLease.Api.Jobs;
 
 /// <summary>
-/// Runs the deposit sweep on a timer (docs/domain-rules.md §8). Every 15 minutes, because the
+/// Runs the deposit sweep on a timer (AGENTS.md §8). Every 15 minutes, because the
 /// payment deadline is the tenant's promise and the room stays off the market until it is released.
 /// Registered explicitly in Program.cs and nowhere else.
 ///

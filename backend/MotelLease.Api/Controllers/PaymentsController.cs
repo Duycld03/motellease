@@ -13,7 +13,7 @@ using MotelLease.Infrastructure.Payments;
 namespace MotelLease.Api.Controllers;
 
 /// <summary>
-/// Payment transactions and the gateway callbacks (docs/api-design.md).
+/// Payment transactions and the gateway callbacks (API specification).
 ///
 /// The two callback shapes are deliberately not symmetrical. The IPN endpoint is the only place in
 /// the system allowed to move money state: it is server-to-server, it verifies a signature made with
@@ -49,7 +49,7 @@ public sealed class PaymentsController : ControllerBase
 
     /// <summary>
     /// Opens a payment attempt for a monthly bill. As with a deposit, this pays nothing: the bill
-    /// becomes Paid only when the IPN callback confirms it (docs/domain-rules.md §9.8).
+    /// becomes Paid only when the IPN callback confirms it (AGENTS.md Invariant 8).
     /// </summary>
     [HttpPost("bills/{billId:guid}/checkout")]
     [Authorize(Policy = AuthPolicies.RequireTenant)]

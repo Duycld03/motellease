@@ -13,7 +13,7 @@ namespace MotelLease.Application.Deposits;
 
 /// <summary>
 /// How long an accepted request waits for its payment before it stops holding the room
-/// (docs/domain-rules.md §2). Long enough to arrange the money, short enough that a room is not
+/// (AGENTS.md §2). Long enough to arrange the money, short enough that a room is not
 /// taken off the market for a request nobody intends to pay.
 /// </summary>
 public sealed record DepositPaymentWindow(TimeSpan Lifetime)
@@ -77,7 +77,7 @@ internal static class DepositRules
             .FirstOrDefaultAsync(cancellationToken);
 
     /// <summary>
-    /// Re-derives the room's status from the rows that commit it (docs/domain-rules.md §9.3). Called
+    /// Re-derives the room's status from the rows that commit it (AGENTS.md Invariant 3). Called
     /// after any change to a deposit's hold, so the column stays a summary of the rows rather than a
     /// second source of truth free to drift from them.
     ///
@@ -200,7 +200,7 @@ internal static class DepositRules
 /// <summary>
 /// GET /deposits. A tenant sees the requests they made, an owner or staff member the ones on the
 /// properties they run. Same endpoint, different rows — the role decides the scope, not the path
-/// (docs/api-design.md).
+/// (API specification).
 /// </summary>
 public sealed class ListDepositsHandler(
     IAppDbContext database,
@@ -270,7 +270,7 @@ public sealed class GetDepositHandler(
 /// POST /deposits. Only a vacant room of a published listing can be asked for, and the amount owed
 /// is frozen here: one month of the room type's price, copied onto the row. Reading the price again
 /// at payment or contract time would let an already-agreed figure change after the fact
-/// (docs/domain-rules.md §2).
+/// (AGENTS.md §2).
 /// </summary>
 public sealed class RequestDepositHandler(
     IAppDbContext database,
@@ -456,7 +456,7 @@ public sealed class AnswerDepositHandler(
 /// refund flow instead.
 ///
 /// The withdrawal is recorded as Rejected with the reason on the row: DepositStatus has no Cancelled
-/// value (docs/erd.md §3), and from the room's side the outcome is identical — the hold is gone.
+/// value (database schema §3), and from the room's side the outcome is identical — the hold is gone.
 /// </summary>
 public sealed class CancelDepositHandler(
     IAppDbContext database,

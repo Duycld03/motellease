@@ -125,7 +125,7 @@ public sealed class GetNearbyBoardingHousesHandler(IAppDbContext database)
         BoardingHouseNearbyRequest request,
         CancellationToken cancellationToken = default)
     {
-        // Longitude first in Point constructor (docs/seed-plan.md §3, domain-rules.md §9)
+        // Longitude first in Point constructor (seed data plan §3, domain-rules.md §9)
         var userPoint = new Point(request.Lon, request.Lat) { SRID = 4326 };
         var radiusMeters = request.RadiusKm * 1000.0;
         var limit = Math.Clamp(request.Limit, 1, 100);

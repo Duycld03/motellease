@@ -10,7 +10,7 @@ namespace MotelLease.Application.Payments;
 /// <summary>
 /// POST /deposits/{id}/checkout. Opens a payment attempt for an accepted deposit and hands back the
 /// gateway URL. Nothing about money moves here — the row is Initiated and stays that way until the
-/// IPN callback says otherwise (docs/domain-rules.md §9.8).
+/// IPN callback says otherwise (AGENTS.md Invariant 8).
 /// </summary>
 public sealed class StartDepositPaymentHandler(
     IAppDbContext database,

@@ -22,7 +22,7 @@ public sealed class GetProfileHandler(IAppDbContext database, ICurrentUser curre
             ?? throw new NotFoundException(MessageKeys.Account.NotFound);
 
         // Staff see how many houses they currently cover; the count is the live assignments,
-        // never the historical ones (docs/domain-rules.md §9.12).
+        // never the historical ones (AGENTS.md Invariant 12).
         var activeAssignments = user.StaffProfile is null
             ? 0
             : await database.StaffAssignments

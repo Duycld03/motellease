@@ -48,7 +48,7 @@ public sealed record GatewayPaymentRequest(
 
 /// <param name="SignatureVerified">
 /// Whether the payload was signed with our secret. Money state may only move when this is true
-/// (docs/domain-rules.md §9.8).
+/// (AGENTS.md Invariant 8).
 /// </param>
 /// <param name="Succeeded">Whether the gateway is reporting a completed payment.</param>
 /// <param name="ProviderTxnId">

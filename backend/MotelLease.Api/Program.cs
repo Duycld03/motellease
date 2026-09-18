@@ -34,7 +34,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Background work is registered here and only here (docs/domain-rules.md §8).
+// Background work is registered here and only here (AGENTS.md §8).
 builder.Services.AddHostedService<AppointmentExpiryJob>();
 builder.Services.AddHostedService<DepositExpiryJob>();
 builder.Services.AddHostedService<BillReminderJob>();

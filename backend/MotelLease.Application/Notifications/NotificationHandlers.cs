@@ -13,7 +13,7 @@ namespace MotelLease.Application.Notifications;
 /// Turns a stored row into a sentence. The template comes from the resource catalogue in the
 /// reader's language and the values come from the row's own payload, so the same notification
 /// reads differently to two people and differently again after one of them switches language
-/// (docs/erd.md §6).
+/// (database schema §6).
 /// </summary>
 internal static class NotificationText
 {
@@ -90,7 +90,7 @@ internal static class NotificationText
 
 /// <summary>
 /// GET /notifications. Own rows only, newest first, with <c>unreadOnly</c> for the bell dropdown
-/// (docs/api-design.md). There is no role branch: a notification is addressed to one person.
+/// (API specification). There is no role branch: a notification is addressed to one person.
 /// </summary>
 public sealed class ListNotificationsHandler(
     IAppDbContext database,

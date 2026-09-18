@@ -10,7 +10,7 @@ namespace MotelLease.Tests.Integration;
 
 /// <summary>
 /// Paying a monthly bill. The rule under test is the same one the deposit payments prove — a bill
-/// reaches Paid only from a signed server-to-server callback (docs/domain-rules.md §9.8) — plus who
+/// reaches Paid only from a signed server-to-server callback (AGENTS.md Invariant 8) — plus who
 /// is allowed to settle one: anybody living under the contract, not only whoever signed it.
 ///
 /// The bill itself is seeded. Issuing one is a later feature group, and the payment path does not wait

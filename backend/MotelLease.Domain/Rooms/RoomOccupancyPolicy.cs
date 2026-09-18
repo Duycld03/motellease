@@ -3,7 +3,7 @@ using MotelLease.Domain.Enums;
 namespace MotelLease.Domain.Rooms;
 
 /// <summary>
-/// How many people may live in one room (docs/domain-rules.md §1). Only a DormStyle house
+/// How many people may live in one room (AGENTS.md §1). Only a DormStyle house
 /// shares a room, so <c>RoomType.MaxOccupants</c> is the cap there and one tenant is the cap
 /// everywhere else.
 ///

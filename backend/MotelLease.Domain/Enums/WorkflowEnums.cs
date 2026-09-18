@@ -18,7 +18,7 @@ public enum RequestStatus
 /// <summary>
 /// A deposit outlives a simple approval: it is approved, then paid, then either consumed by
 /// a lease or refunded. <c>Accepted</c> means "approved, waiting for payment before
-/// <see cref="Entities.Deposit.ExpiresAt"/>" (docs/domain-rules.md §2).
+/// <see cref="Entities.Deposit.ExpiresAt"/>" (AGENTS.md §2).
 /// </summary>
 public enum DepositStatus
 {
@@ -69,7 +69,7 @@ public enum PaymentProvider
 
 /// <summary>
 /// Only the IPN endpoint may advance this past <c>Pending</c>
-/// (docs/domain-rules.md §9.7, §9.8).
+/// (AGENTS.md Invariants 7, 8).
 /// </summary>
 public enum PaymentStatus
 {
@@ -136,7 +136,7 @@ public enum WorkTaskStatus
 }
 
 /// <summary>
-/// One value per row of docs/domain-rules.md §7. The value is also the i18n key prefix:
+/// One value per row of AGENTS.md §7. The value is also the i18n key prefix:
 /// <c>notification.{Type}.title</c> / <c>.body</c>.
 /// </summary>
 public enum NotificationType

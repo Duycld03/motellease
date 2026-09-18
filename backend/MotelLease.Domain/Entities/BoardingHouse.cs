@@ -21,7 +21,7 @@ public class BoardingHouse : Entity, ISoftDeletable
     /// Latitude/Longitude are the writable source of truth. Location is a STORED generated
     /// column derived from them — never assign to it (PostgreSQL rejects the write).
     /// Keeping lat/lon as the input also means PostGIS can be dropped later without a
-    /// data migration. See docs/erd.md §8.
+    /// data migration. See database schema §8.
     /// </summary>
     public decimal Latitude { get; set; }
     public decimal Longitude { get; set; }
@@ -68,7 +68,7 @@ public class RoomType : Entity, ISoftDeletable
 
     public decimal RoomSizeM2 { get; set; }
 
-    /// <summary>Occupancy cap for DormStyle houses (docs/domain-rules.md §1).</summary>
+    /// <summary>Occupancy cap for DormStyle houses (AGENTS.md §1).</summary>
     public int MaxOccupants { get; set; } = 1;
 
     public string? Description { get; set; }

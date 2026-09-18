@@ -15,7 +15,7 @@ namespace MotelLease.Api.Controllers;
 
 /// <summary>
 /// Deposit requests: a tenant asks to hold a room, the owner or assigned staff answer, and an
-/// accepted request holds the room until its payment deadline (docs/api-design.md).
+/// accepted request holds the room until its payment deadline (API specification).
 ///
 /// Checkout opens a payment attempt only. Money state moves in one place and it is not here — see
 /// <see cref="PaymentsController"/> for the IPN callback that confirms it.
@@ -98,7 +98,7 @@ public sealed class DepositsController : ControllerBase
 
     /// <summary>
     /// Opens a payment attempt and returns the gateway URL. Nothing is paid by calling this: the
-    /// deposit only becomes Paid when the IPN callback confirms it (docs/domain-rules.md §9.8).
+    /// deposit only becomes Paid when the IPN callback confirms it (AGENTS.md Invariant 8).
     /// </summary>
     [HttpPost("{id:guid}/checkout")]
     [Authorize(Policy = AuthPolicies.RequireTenant)]

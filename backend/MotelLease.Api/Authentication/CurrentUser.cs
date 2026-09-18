@@ -10,7 +10,7 @@ namespace MotelLease.Api.Authentication;
 /// <summary>
 /// Reads the caller from the validated access token. Claims only — anything that can change
 /// after the token was issued (a lock, a revoked staff assignment) is checked against the
-/// database by the handler that cares (docs/domain-rules.md §6).
+/// database by the handler that cares (AGENTS.md §6).
 /// </summary>
 public sealed class CurrentUser(IHttpContextAccessor accessor) : ICurrentUser
 {

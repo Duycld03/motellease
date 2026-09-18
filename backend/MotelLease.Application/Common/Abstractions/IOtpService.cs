@@ -13,7 +13,7 @@ public enum OtpPurpose
 
 /// <summary>
 /// One-time codes with resend throttling and an attempt limit, so the send endpoint cannot be
-/// used to flood a mailbox and the code cannot be brute-forced (docs/features.md §3.7).
+/// used to flood a mailbox and the code cannot be brute-forced (feature specifications §3.7).
 /// Codes live in a distributed cache rather than a table: they expire in minutes, so
 /// losing them on restart is harmless and the ERD needs no extra entity.
 /// </summary>

@@ -18,7 +18,7 @@ public static class AuthenticationSetup
     /// <summary>
     /// Layer one of authorization: what role the caller has, read from the access token.
     /// Whether that caller may touch a particular boarding house is a separate, data-driven
-    /// check (docs/domain-rules.md §6) and deliberately not expressed as a policy here.
+    /// check (AGENTS.md §6) and deliberately not expressed as a policy here.
     /// </summary>
     public static IServiceCollection AddApiAuthentication(this IServiceCollection services)
     {

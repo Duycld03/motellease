@@ -9,7 +9,7 @@ namespace MotelLease.Api.Controllers;
 /// <summary>
 /// In-app notifications. Every action is scoped to the caller's own rows by the handler, so there
 /// is no role policy beyond being signed in — a notification is addressed to one person
-/// (docs/api-design.md). Realtime delivery of the same rows is the SignalR hub at
+/// (API specification). Realtime delivery of the same rows is the SignalR hub at
 /// <c>/hubs/notifications</c>.
 /// </summary>
 [ApiController]

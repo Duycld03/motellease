@@ -9,7 +9,7 @@ namespace MotelLease.Api.Controllers;
 /// <summary>
 /// Room types of one property: the price, size, occupancy cap and facilities that its rooms
 /// inherit. A signed lease keeps its own copy of the rent, so editing a price here never changes
-/// an existing contract (docs/domain-rules.md §3.2).
+/// an existing contract (AGENTS.md §3.2).
 /// </summary>
 [ApiController]
 [Route("api/v1/my/boarding-houses/{boardingHouseId:guid}/room-types")]

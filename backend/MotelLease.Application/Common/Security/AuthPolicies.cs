@@ -3,7 +3,7 @@ using MotelLease.Domain.Enums;
 namespace MotelLease.Application.Common.Security;
 
 /// <summary>
-/// Role policies, layer one of authorization (docs/domain-rules.md §6). Resource-level
+/// Role policies, layer one of authorization (AGENTS.md §6). Resource-level
 /// checks are separate handlers — a role alone never proves access to a given boarding
 /// house, which is exactly what the old middlewares got wrong.
 /// </summary>
@@ -27,7 +27,7 @@ public static class SupportedLanguages
 
 /// <summary>
 /// Roles a visitor may pick when registering. Staff accounts are created by an owner and
-/// admins are seeded or created by another admin (docs/features.md §1).
+/// admins are seeded or created by another admin (feature specifications §1).
 /// </summary>
 public static class SelfAssignableRoles
 {

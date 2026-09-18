@@ -1,7 +1,7 @@
 namespace MotelLease.Domain.Enums;
 
 /// <summary>
-/// Occupancy rules branch on these values (see docs/domain-rules.md §1), so they are an enum
+/// Occupancy rules branch on these values (see AGENTS.md §1), so they are an enum
 /// rather than an admin-managed lookup table: a new row would have no rule attached to it.
 /// </summary>
 public enum BoardingHouseType

@@ -21,7 +21,7 @@ public class Lease : Entity
 
     /// <summary>
     /// Rent agreed at signing. Bills read this, never RoomType.Price, so a later price
-    /// change cannot rewrite an existing contract (docs/domain-rules.md §3).
+    /// change cannot rewrite an existing contract (AGENTS.md §3).
     /// </summary>
     public decimal MonthlyRent { get; set; }
 

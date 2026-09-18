@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MotelLease.Application.Common.Contracts;
 
-/// <summary>The paging envelope every list endpoint returns (docs/api-design.md, Conventions).</summary>
+/// <summary>The paging envelope every list endpoint returns (API specification, Conventions).</summary>
 public sealed record PagedResponse<T>(
     IReadOnlyList<T> Items,
     int Page,

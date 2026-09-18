@@ -47,7 +47,7 @@ public interface IAppDbContext
 
     /// <summary>
     /// One transaction around a whole use case. Required by every flow that moves money
-    /// (docs/domain-rules.md §9) and used here to keep refresh-token rotation atomic.
+    /// (AGENTS.md Invariants) and used here to keep refresh-token rotation atomic.
     /// </summary>
     Task<IAppTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 }

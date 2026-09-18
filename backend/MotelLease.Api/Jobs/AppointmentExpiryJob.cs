@@ -3,7 +3,7 @@ using MotelLease.Application.Appointments;
 namespace MotelLease.Api.Jobs;
 
 /// <summary>
-/// Runs the appointment sweep on a timer (docs/domain-rules.md §8). Registered explicitly in
+/// Runs the appointment sweep on a timer (AGENTS.md §8). Registered explicitly in
 /// Program.cs and nowhere else: a job declared inside an entity or a configuration runs whenever
 /// that type is loaded, including during tests, and nobody controls its lifetime.
 ///

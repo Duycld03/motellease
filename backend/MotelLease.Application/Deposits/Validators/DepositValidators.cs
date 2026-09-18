@@ -7,7 +7,7 @@ namespace MotelLease.Application.Deposits.Validators;
 public sealed class RequestDepositRequestValidator : AbstractValidator<RequestDepositRequest>
 {
     /// <summary>
-    /// Two years. Terms are normalised to whole months (docs/domain-rules.md §2), and a bound keeps
+    /// Two years. Terms are normalised to whole months (AGENTS.md §2), and a bound keeps
     /// a typo from producing a contract nobody meant to sign.
     /// </summary>
     private const int MaxTermMonths = 24;

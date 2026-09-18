@@ -12,7 +12,7 @@ namespace MotelLease.Application.BoardingHouses;
 
 /// <summary>
 /// GET /my/boarding-houses. One endpoint for both roles: an owner sees the properties they own,
-/// a staff member the ones they hold a live assignment for (docs/api-design.md).
+/// a staff member the ones they hold a live assignment for (API specification).
 /// </summary>
 public sealed class ListMyBoardingHousesHandler(
     IAppDbContext database,
@@ -118,7 +118,7 @@ public sealed class GetBoardingHouseHandler(IAppDbContext database, BoardingHous
 
 /// <summary>
 /// POST /my/boarding-houses. The listing starts as a Draft: it becomes visible only after an
-/// admin approves it (docs/features.md §3, P2). Latitude and Longitude are written; Location is
+/// admin approves it (feature specifications §3, P2). Latitude and Longitude are written; Location is
 /// a generated column and PostgreSQL rejects any write to it (CLAUDE.md, Database rules).
 /// </summary>
 public sealed class CreateBoardingHouseHandler(IAppDbContext database, ICurrentUser currentUser)
@@ -165,7 +165,7 @@ public sealed class UpdateBoardingHouseHandler(
     {
         var house = await access.RequireStaffOrOwnerAsync(boardingHouseId, cancellationToken);
 
-        // Occupancy branches on the house type (docs/domain-rules.md §1). Turning a shared house
+        // Occupancy branches on the house type (AGENTS.md §1). Turning a shared house
         // into a single-occupant one while a room type still allows several tenants would leave
         // rows that break §9.2, so the room types have to be corrected first.
         if (house.Type != request.Type
@@ -225,7 +225,7 @@ public sealed class DeleteBoardingHouseHandler(
 
         // The query filter is per entity and does not follow the parent, so the children are
         // marked in the same save. The images stay in storage: a soft delete is reversible
-        // (docs/features.md §3, P2) and deleting the remote files would not be.
+        // (feature specifications §3, P2) and deleting the remote files would not be.
         house.IsDeleted = true;
 
         foreach (var room in await database.Rooms
@@ -287,7 +287,7 @@ public sealed class SubmitBoardingHouseForReviewHandler(
 
 /// <summary>
 /// PUT /my/boarding-houses/{id}/utility-prices. Bills multiply these by the metered quantity
-/// (docs/domain-rules.md §3); an already issued bill froze its own amounts and does not change.
+/// (AGENTS.md §3); an already issued bill froze its own amounts and does not change.
 /// </summary>
 public sealed class UpdateUtilityPricesHandler(
     IAppDbContext database,

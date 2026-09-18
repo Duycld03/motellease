@@ -8,7 +8,7 @@ namespace MotelLease.Application.Auth;
 /// <summary>
 /// POST /auth/refresh. Rotates: the presented token is revoked and pointed at its
 /// replacement, so presenting it a second time proves the value leaked and the whole chain
-/// is dropped (docs/features.md §3.6).
+/// is dropped (feature specifications §3.6).
 /// </summary>
 public sealed class RefreshTokenHandler(
     IAppDbContext database,

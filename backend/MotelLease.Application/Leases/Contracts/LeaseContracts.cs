@@ -4,7 +4,7 @@ namespace MotelLease.Application.Leases.Contracts;
 
 /// <summary>
 /// A rental contract. <c>MonthlyRent</c> and <c>DepositHeld</c> are the figures frozen at signing;
-/// bills read them rather than the room type's current price (docs/domain-rules.md §3).
+/// bills read them rather than the room type's current price (AGENTS.md §3).
 /// </summary>
 public sealed record LeaseResponse(
     Guid Id,

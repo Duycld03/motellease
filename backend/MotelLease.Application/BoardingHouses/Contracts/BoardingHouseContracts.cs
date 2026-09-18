@@ -5,7 +5,7 @@ namespace MotelLease.Application.BoardingHouses.Contracts;
 /// <summary>
 /// One row of the owner's or staff member's property list. The room counts and the price range
 /// are computed per request rather than stored: a cached count that drifts gives no sign that
-/// it has (docs/features.md §0.2).
+/// it has (feature specifications §0.2).
 /// </summary>
 public sealed record BoardingHouseSummaryResponse(
     Guid Id,

@@ -94,7 +94,7 @@ internal static class AppointmentRules
 /// <summary>
 /// GET /appointments. A tenant sees the visits they booked; an owner or staff member sees the
 /// ones on the properties they run. Same endpoint, different rows — the role decides the scope,
-/// not the path (docs/api-design.md).
+/// not the path (API specification).
 /// </summary>
 public sealed class ListAppointmentsHandler(
     IAppDbContext database,

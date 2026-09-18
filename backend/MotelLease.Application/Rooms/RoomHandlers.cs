@@ -204,7 +204,7 @@ public sealed class DeleteRoomHandler(IAppDbContext database, BoardingHouseAcces
             ?? throw new NotFoundException(MessageKeys.Room.NotFound);
 
         // Asked of the lease and deposit rows rather than of room.Status: the rows are the
-        // source of truth for occupancy (docs/domain-rules.md §9.3).
+        // source of truth for occupancy (AGENTS.md Invariant 3).
         var leased = await database.Leases.AnyAsync(
             l => l.RoomId == room.Id
                  && (l.Status == LeaseStatus.Active || l.Status == LeaseStatus.Expiring),
@@ -260,7 +260,7 @@ public sealed class UpdateRoomStatusHandler(IAppDbContext database, BoardingHous
 
 /// <summary>
 /// PUT /my/rooms/{roomId}/meter-readings. One current figure per meter, which next month's bill
-/// reads as its opening value (docs/domain-rules.md §3). A reading that moves backwards would
+/// reads as its opening value (AGENTS.md §3). A reading that moves backwards would
 /// produce a negative quantity, so it is refused rather than stored.
 /// </summary>
 public sealed class UpdateMeterReadingsHandler(IAppDbContext database, BoardingHouseAccess access)

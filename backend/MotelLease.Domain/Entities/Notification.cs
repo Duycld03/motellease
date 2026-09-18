@@ -5,7 +5,7 @@ namespace MotelLease.Domain.Entities;
 
 /// <summary>
 /// Stores i18n keys plus parameters, never a rendered sentence: an old notification then
-/// follows the reader's current language (docs/erd.md §6).
+/// follows the reader's current language (database schema §6).
 /// </summary>
 public class Notification : Entity
 {
@@ -28,7 +28,7 @@ public class Notification : Entity
 
 /// <summary>
 /// Append-only. Deliberately not an <see cref="Entity"/>: there is no UpdatedAt because a
-/// row is never modified or deleted (docs/erd.md §6).
+/// row is never modified or deleted (database schema §6).
 /// </summary>
 public class AuditLog
 {

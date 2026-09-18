@@ -11,7 +11,7 @@ namespace MotelLease.Api.Controllers;
 /// <summary>
 /// The properties the caller runs. One set of endpoints for owners and staff: the role opens the
 /// door, the <see cref="BoardingHouseAccess"/> check inside each handler decides which rows are
-/// reachable (docs/domain-rules.md §6). The owner-only actions add the stricter policy.
+/// reachable (AGENTS.md §6). The owner-only actions add the stricter policy.
 /// </summary>
 [ApiController]
 [Route("api/v1/my/boarding-houses")]

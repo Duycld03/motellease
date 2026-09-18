@@ -6,7 +6,7 @@ namespace MotelLease.Domain.Entities;
 /// <summary>
 /// A monthly invoice. Quantities, unit prices and amounts are all stored, not computed:
 /// the bill is a historical document and must not follow later price changes
-/// (docs/domain-rules.md §3).
+/// (AGENTS.md §3).
 /// </summary>
 public class PaymentBill : Entity
 {
@@ -88,7 +88,7 @@ public class BoardingHouseExpense : Entity
 
     /// <summary>
     /// <c>[{"feeName": ..., "feeAmount": ...}]</c>. Stored as jsonb rather than a child
-    /// table because it is only ever displayed and summed, never filtered on (docs/erd.md §4).
+    /// table because it is only ever displayed and summed, never filtered on (database schema §4).
     /// </summary>
     public string OtherExpenses { get; set; } = "[]";
 

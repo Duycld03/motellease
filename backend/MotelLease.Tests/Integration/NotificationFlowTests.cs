@@ -8,7 +8,7 @@ using MotelLease.Domain.Enums;
 namespace MotelLease.Tests.Integration;
 
 /// <summary>
-/// Drives the notification group of docs/api-design.md. What is worth asserting is that a stored
+/// Drives the notification group of API specification. What is worth asserting is that a stored
 /// row becomes a sentence in the reader's language rather than the sender's, that reading is
 /// per-person and idempotent, and that one user never sees or clears another user's rows.
 /// </summary>
@@ -54,7 +54,7 @@ public sealed class NotificationFlowTests : IAsyncLifetime
         Assert.Null(listed.ReadAt);
 
         // The values stay machine-readable alongside the sentence, so a client can format them
-        // its own way (docs/erd.md §6).
+        // its own way (database schema §6).
         Assert.Equal("101", listed.Payload?["roomNumber"]?.GetValue<string>());
     }
 

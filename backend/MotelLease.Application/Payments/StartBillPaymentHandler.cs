@@ -10,7 +10,7 @@ namespace MotelLease.Application.Payments;
 /// <summary>
 /// POST /payments/bills/{billId}/checkout. The same shape as a deposit checkout — an attempt is
 /// opened and a gateway URL handed back, and nothing is paid until the IPN callback says so
-/// (docs/domain-rules.md §9.8).
+/// (AGENTS.md Invariant 8).
 ///
 /// An overdue bill stays payable: the due date decides whether a reminder goes out, not whether the
 /// money is still owed. Only a bill that was never issued, or is already settled, is refused.

@@ -8,7 +8,7 @@ public sealed class SaveRoomTypeRequestValidator : AbstractValidator<SaveRoomTyp
 {
     /// <summary>
     /// A cap high enough for a dorm room and low enough to stay a typo check; the house type
-    /// decides whether more than one is allowed at all (docs/domain-rules.md §1).
+    /// decides whether more than one is allowed at all (AGENTS.md §1).
     /// </summary>
     private const int MaxOccupantsCeiling = 20;
 

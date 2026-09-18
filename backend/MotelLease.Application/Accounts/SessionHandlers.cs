@@ -7,7 +7,7 @@ namespace MotelLease.Application.Accounts;
 
 /// <summary>
 /// GET /me/sessions — the "signed-in devices" list. Each live refresh token is one device,
-/// which is what makes the list possible at all (docs/features.md §3.6).
+/// which is what makes the list possible at all (feature specifications §3.6).
 /// </summary>
 public sealed class GetSessionsHandler(
     IAppDbContext database,

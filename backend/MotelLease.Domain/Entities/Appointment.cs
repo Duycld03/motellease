@@ -31,7 +31,7 @@ public class Deposit : Entity
 
     /// <summary>
     /// One month of rent, frozen when the request is made. Reading RoomType.Price later
-    /// would change the amount owed after the fact (docs/domain-rules.md §2).
+    /// would change the amount owed after the fact (AGENTS.md §2).
     /// </summary>
     public decimal Amount { get; set; }
 

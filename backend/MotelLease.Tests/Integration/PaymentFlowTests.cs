@@ -12,10 +12,10 @@ using MotelLease.Infrastructure.Persistence;
 namespace MotelLease.Tests.Integration;
 
 /// <summary>
-/// Drives the payment group of docs/api-design.md for a deposit. Almost everything worth asserting
+/// Drives the payment group of API specification for a deposit. Almost everything worth asserting
 /// here is a guard rather than a happy path: that only a signed server-to-server callback moves money
 /// state, that the browser's return URL moves nothing, and that a replayed callback is a no-op
-/// (docs/domain-rules.md §9.7, §9.8).
+/// (AGENTS.md Invariants 7, 8).
 /// </summary>
 [Collection(PostgresCollection.Name)]
 public sealed class PaymentFlowTests : IAsyncLifetime

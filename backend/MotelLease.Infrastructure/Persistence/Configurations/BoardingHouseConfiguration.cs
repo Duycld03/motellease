@@ -9,7 +9,7 @@ public class BoardingHouseConfiguration : IEntityTypeConfiguration<BoardingHouse
 {
     /// <summary>
     /// Longitude first. Verified against PostGIS 3.5.2: ST_MakePoint accepts the
-    /// decimal(9,6) columns directly, no cast needed (docs/verification/erd-check.sql).
+    /// decimal(9,6) columns directly, no cast needed (PostgreSQL schema).
     /// </summary>
     private const string LocationSql =
         "ST_SetSRID(ST_MakePoint(\"Longitude\", \"Latitude\"), 4326)::geography";
